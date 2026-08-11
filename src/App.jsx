@@ -150,6 +150,17 @@ export default function App() {
     setPassword(newPw)
   }
 
+  // ---- 백업 복원 ----
+  function restoreBackup(data) {
+    setStudents(data.students)
+    setBehaviors(data.behaviors)
+    setPeriods(data.periods)
+    setRecords(data.records)
+    setDetailHistory(data.detailHistory)
+    if (data.password) setPassword(data.password)
+    showToast(`백업을 불러왔습니다 (기록 ${data.records.length}건)`)
+  }
+
   return (
     <>
       {view === 'main' && (
@@ -182,6 +193,8 @@ export default function App() {
           onUpdatePeriod={updatePeriod}
           onDeletePeriod={deletePeriod}
           onChangePassword={changePassword}
+          detailHistory={detailHistory}
+          onRestoreBackup={restoreBackup}
           showToast={showToast}
         />
       )}

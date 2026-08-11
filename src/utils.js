@@ -117,10 +117,8 @@ export function csvEscape(value) {
   return `"${str.replace(/"/g, '""')}"`
 }
 
-export function downloadCsv(rows, filename) {
-  const body = rows.map((row) => row.map(csvEscape).join(',')).join('\r\n')
-  const content = '﻿' + body
-  const blob = new Blob([content], { type: 'text/csv;charset=utf-8;' })
+export function downloadFile(content, filename, mime) {
+  const blob = new Blob([content], { type: mime })
   const url = URL.createObjectURL(blob)
   const link = document.createElement('a')
   link.href = url
@@ -129,6 +127,12 @@ export function downloadCsv(rows, filename) {
   link.click()
   document.body.removeChild(link)
   URL.revokeObjectURL(url)
+}
+
+export function downloadCsv(rows, filename) {
+  const body = rows.map((row) => row.map(csvEscape).join(',')).join('\r\n')
+  // 엑셀이 UTF-8로 인식하도록 BOM을 앞에 붙인다
+  downloadFile('﻿' + body, filename, 'text/csv;charset=utf-8;')
 }
 
 export function genId(prefix) {

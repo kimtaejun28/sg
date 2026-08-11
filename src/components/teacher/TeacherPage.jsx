@@ -6,6 +6,7 @@ import StudentsTab from './StudentsTab'
 import BehaviorsTab from './BehaviorsTab'
 import PeriodsTab from './PeriodsTab'
 import SecurityTab from './SecurityTab'
+import DataTab from './DataTab'
 
 const TABS = [
   { key: 'dashboard', label: '대시보드' },
@@ -14,6 +15,7 @@ const TABS = [
   { key: 'behaviors', label: '행동유형' },
   { key: 'periods', label: '교시 설정' },
   { key: 'security', label: '보안' },
+  { key: 'data', label: '데이터 백업' },
 ]
 
 export default function TeacherPage({
@@ -34,6 +36,8 @@ export default function TeacherPage({
   onUpdatePeriod,
   onDeletePeriod,
   onChangePassword,
+  detailHistory,
+  onRestoreBackup,
   showToast,
 }) {
   const [tab, setTab] = useState('dashboard')
@@ -114,6 +118,18 @@ export default function TeacherPage({
       )}
       {tab === 'security' && (
         <SecurityTab password={password} onChangePassword={onChangePassword} showToast={showToast} />
+      )}
+      {tab === 'data' && (
+        <DataTab
+          students={students}
+          behaviors={behaviors}
+          periods={periods}
+          records={records}
+          password={password}
+          detailHistory={detailHistory}
+          onRestore={onRestoreBackup}
+          showToast={showToast}
+        />
       )}
     </div>
   )
