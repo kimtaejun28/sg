@@ -42,9 +42,16 @@ export default function RecordsTab({ students, behaviors, records, onDeleteRecor
   const [deleteTarget, setDeleteTarget] = useState(null)
   const [summaryOpen, setSummaryOpen] = useState(true)
 
+  // 선택된 기간의 시작·종료일. '전체'만 구간이 고정되지 않으므로 null이고,
+  // 이 경우 요약 영역이 기록에서 직접 범위를 도출한다.
   const range = useMemo(() => {
     if (periodFilterType === 'week') return getWeekRange(selectedDate)
     if (periodFilterType === 'month') return getMonthRange(selectedMonth)
+    if (periodFilterType === 'date') return { start: selectedDate, end: selectedDate }
+    if (periodFilterType === 'today') {
+      const today = todayStr()
+      return { start: today, end: today }
+    }
     return null
   }, [periodFilterType, selectedDate, selectedMonth])
 
@@ -107,7 +114,6 @@ export default function RecordsTab({ students, behaviors, records, onDeleteRecor
   }
 
   const showEmptyState = periodFilterType !== 'all' && sorted.length === 0
-  const isCrosstabRange = periodFilterType === 'week' || periodFilterType === 'month'
 
   return (
     <div>
@@ -239,7 +245,7 @@ export default function RecordsTab({ students, behaviors, records, onDeleteRecor
         </div>
       ) : (
         <>
-          {isCrosstabRange && (
+          {sorted.length > 0 && (
             <BehaviorSummary
               records={sorted}
               students={students}
@@ -394,18 +400,35 @@ function BehaviorSummary({ records, students, behaviors, range, periodFilterType
     return best && best.total > 0 ? best : null
   }, [behaviors, columnTotals])
 
-  const periodLabel =
-    periodFilterType === 'month'
-      ? `${selectedMonth.slice(0, 4)}년 ${Number(selectedMonth.slice(5, 7))}월`
-      : `${range.start} ~ ${range.end}`
+  // '전체'는 구간이 정해져 있지 않으므로 기록이 있는 날짜만 모은다.
+  // 달력상의 모든 날을 채우면 기간이 길 때 막대가 수백 개로 불어난다.
+  const dateList = useMemo(() => {
+    if (range) return daysInRange(range.start, range.end)
+    return [...new Set(records.map((r) => r.date))].sort()
+  }, [range, records])
 
-  const dateList = useMemo(() => daysInRange(range.start, range.end), [range])
+  const periodLabel = useMemo(() => {
+    if (periodFilterType === 'month') {
+      return `${selectedMonth.slice(0, 4)}년 ${Number(selectedMonth.slice(5, 7))}월`
+    }
+    if (periodFilterType === 'today') return `오늘 (${range.start})`
+    if (periodFilterType === 'date') return range.start
+    if (periodFilterType === 'week') return `${range.start} ~ ${range.end}`
+    if (dateList.length === 0) return '전체 기간'
+    if (dateList.length === 1) return `전체 기간 (${dateList[0]})`
+    return `전체 기간 (${dateList[0]} ~ ${dateList[dateList.length - 1]})`
+  }, [periodFilterType, selectedMonth, range, dateList])
 
   const trendData = useMemo(() => {
     return dateList.map((date) => {
       const row = {
         date,
-        label: periodFilterType === 'week' ? weekdayLabel(date) : String(Number(date.slice(8, 10))),
+        label:
+          periodFilterType === 'week'
+            ? weekdayLabel(date)
+            : periodFilterType === 'month'
+              ? String(Number(date.slice(8, 10)))
+              : date.slice(5),
       }
       behaviors.forEach((b) => {
         row[b.name] = records.filter((r) => r.date === date && r.behaviorId === b.id).length
@@ -488,8 +511,10 @@ function BehaviorSummary({ records, students, behaviors, range, periodFilterType
             </div>
           )}
 
+          {/* 하루짜리 기간(오늘·날짜 지정)은 막대가 하나뿐이라 추이로서 의미가 없다 */}
+          {dateList.length > 1 && (
           <div className="overflow-x-auto">
-            <div style={{ minWidth: 480, height: 260 }}>
+            <div style={{ minWidth: Math.max(480, dateList.length * 34), height: 260 }}>
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={trendData} margin={{ top: 10, right: 10, left: 0, bottom: 10 }}>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} />
@@ -504,6 +529,7 @@ function BehaviorSummary({ records, students, behaviors, range, periodFilterType
               </ResponsiveContainer>
             </div>
           </div>
+          )}
         </div>
       )}
     </div>
