@@ -1,16 +1,13 @@
 import { useRef, useState } from 'react'
-import { Cloud, CloudOff, Download, FileSpreadsheet, RefreshCw, TriangleAlert, Upload } from 'lucide-react'
+import { Cloud, CloudOff, FileSpreadsheet, RefreshCw, TriangleAlert, Upload } from 'lucide-react'
 import ConfirmModal from '../ConfirmModal'
 import { isSyncConfigured } from '../../supabase'
 import { DETAIL_HISTORY_MAX, OUT_OF_SCHEDULE } from '../../constants'
-import { downloadFile, todayStr } from '../../utils'
+import { todayStr } from '../../utils'
 
 // 엑셀 라이브러리는 무겁고 이 탭에서만 쓰이므로, 버튼을 누른 순간에만 받아온다.
 // 기록 화면이 이 때문에 느려지면 안 된다.
 const loadExcel = () => import('../../excel')
-
-const BACKUP_FORMAT = 'bt-backup'
-const BACKUP_VERSION = 1
 
 // 손상되거나 다른 앱에서 만든 파일을 그대로 state에 넣으면 앱이 깨지므로,
 // 필드 단위로 검사하고 빠진 값은 안전한 기본값으로 채운다.
@@ -173,8 +170,6 @@ export default function DataTab({
 
   function backupPayload() {
     return {
-      format: BACKUP_FORMAT,
-      version: BACKUP_VERSION,
       exportedAt: new Date().toISOString(),
       students,
       behaviors,
@@ -183,15 +178,6 @@ export default function DataTab({
       password,
       detailHistory,
     }
-  }
-
-  function handleExportJson() {
-    downloadFile(
-      JSON.stringify(backupPayload(), null, 2),
-      `도전행동기록_백업_${todayStr()}.json`,
-      'application/json'
-    )
-    showToast('백업 파일이 저장되었습니다')
   }
 
   async function handleExportXlsx() {
@@ -245,36 +231,29 @@ export default function DataTab({
           <span className="rounded-xl bg-slate-100 px-3 py-1.5">행동유형 {behaviors.length}개</span>
           <span className="rounded-xl bg-slate-100 px-3 py-1.5">교시 {periods.length}개</span>
         </div>
-        <div className="flex flex-col gap-2 sm:flex-row">
-          <button
-            type="button"
-            onClick={handleExportXlsx}
-            className="flex flex-1 items-center justify-center gap-2 rounded-2xl bg-emerald-600 py-3 font-bold text-white transition active:scale-95"
-          >
-            <FileSpreadsheet size={18} />
-            엑셀 파일로 내보내기
-          </button>
-          <button
-            type="button"
-            onClick={handleExportJson}
-            className="flex flex-1 items-center justify-center gap-2 rounded-2xl bg-sky-500 py-3 font-bold text-white transition active:scale-95"
-          >
-            <Download size={18} />
-            JSON 파일로 내보내기
-          </button>
-        </div>
+        <button
+          type="button"
+          onClick={handleExportXlsx}
+          className="flex w-full items-center justify-center gap-2 rounded-2xl bg-emerald-600 py-3 font-bold text-white transition active:scale-95"
+        >
+          <FileSpreadsheet size={18} />
+          엑셀 파일로 내보내기
+        </button>
         <p className="mt-3 text-xs leading-relaxed text-slate-400">
-          엑셀 파일은 학생·기록·행동유형·교시가 시트별로 나뉘어 있어 바로 열어 볼 수 있고, 그대로
-          다시 불러오는 것도 됩니다. JSON은 사람이 읽기는 어렵지만 원본을 가장 정확하게 보존합니다.
+          학생·기록·행동유형·교시가 시트별로 나뉘어 있어 엑셀에서 바로 열어 볼 수 있고, 그대로 다시
+          불러오는 것도 됩니다.
         </p>
       </div>
 
       <div className="rounded-3xl bg-white p-6 shadow-sm">
         <h3 className="mb-2 font-display text-lg text-slate-700">백업 파일 불러오기</h3>
         <p className="mb-4 text-sm leading-relaxed text-slate-500">
-          내보낸 백업 파일(엑셀 또는 JSON)을 선택하면 현재 데이터를 파일의 내용으로 되돌립니다.
+          내보낸 엑셀 파일을 선택하면 현재 데이터를 파일의 내용으로 되돌립니다.
           <span className="font-semibold text-rose-500"> 지금 저장된 내용은 모두 대체되니</span> 먼저
           위에서 백업을 받아두시길 권합니다.
+        </p>
+        <p className="mb-4 text-xs text-slate-400">
+          예전에 내려받은 JSON 백업 파일도 그대로 불러올 수 있습니다.
         </p>
         <input
           ref={fileRef}
