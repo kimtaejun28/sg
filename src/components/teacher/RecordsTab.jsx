@@ -242,6 +242,7 @@ export default function RecordsTab({ students, behaviors, records, onDeleteRecor
           {isCrosstabRange && (
             <BehaviorSummary
               records={sorted}
+              students={students}
               behaviors={behaviors}
               range={range}
               periodFilterType={periodFilterType}
@@ -329,14 +330,18 @@ export default function RecordsTab({ students, behaviors, records, onDeleteRecor
   )
 }
 
-function BehaviorSummary({ records, behaviors, range, periodFilterType, selectedMonth, open, onToggle }) {
+function BehaviorSummary({ records, students, behaviors, range, periodFilterType, selectedMonth, open, onToggle }) {
+  // 학생 등록(추가) 순서로 정렬한다. students에 없는 학생(과거 기록 등)은 뒤로 밀고,
+  // 순위가 같으면 기록에 먼저 등장한 순서를 유지한다(sort는 안정 정렬).
   const studentNames = useMemo(() => {
-    const names = []
+    const rankByName = new Map()
     records.forEach((r) => {
-      if (!names.includes(r.studentName)) names.push(r.studentName)
+      if (rankByName.has(r.studentName)) return
+      const index = students.findIndex((s) => s.id === r.studentId)
+      rankByName.set(r.studentName, index === -1 ? Number.MAX_SAFE_INTEGER : index)
     })
-    return names
-  }, [records])
+    return [...rankByName.keys()].sort((a, b) => rankByName.get(a) - rankByName.get(b))
+  }, [records, students])
 
   const counts = useMemo(() => {
     const map = {}
