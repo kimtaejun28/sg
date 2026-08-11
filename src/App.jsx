@@ -1,5 +1,9 @@
-import { useRef, useState } from 'react'
+import { useCallback, useMemo, useRef, useState } from 'react'
 import { useLocalStorage } from './hooks/useLocalStorage'
+import { useAuthSession } from './hooks/useAuthSession'
+import { useSupabaseSync } from './hooks/useSupabaseSync'
+import { getSupabase, isSyncConfigured } from './supabase'
+import LoginScreen from './components/LoginScreen'
 import {
   STORAGE_KEYS,
   DEFAULT_PASSWORD,
@@ -36,8 +40,43 @@ export default function App() {
   const [password, setPassword] = useLocalStorage(STORAGE_KEYS.password, DEFAULT_PASSWORD, onSaveError)
   const [detailHistory, setDetailHistory] = useLocalStorage(STORAGE_KEYS.detailHistory, {}, onSaveError)
 
+  // ---- 기기 간 동기화 ----
+  const { session, loading: sessionLoading } = useAuthSession()
+  const [skipLogin, setSkipLogin] = useState(false)
+
+  const syncState = useMemo(
+    () => ({ students, behaviors, periods, records, password, detailHistory }),
+    [students, behaviors, periods, records, password, detailHistory]
+  )
+
+  const applyRemote = useCallback(
+    (remote) => {
+      setStudents(remote.students)
+      setBehaviors(remote.behaviors)
+      setPeriods(remote.periods)
+      setRecords(remote.records)
+      setDetailHistory(remote.detailHistory)
+      if (remote.password) setPassword(remote.password)
+    },
+    [setStudents, setBehaviors, setPeriods, setRecords, setDetailHistory, setPassword]
+  )
+
+  const syncStatus = useSupabaseSync({
+    enabled: Boolean(session),
+    state: syncState,
+    applyRemote,
+  })
+
   const [view, setView] = useState('main') // 'main' | 'teacher'
   const [authenticated, setAuthenticated] = useState(false)
+
+  async function signOut() {
+    await getSupabase().auth.signOut()
+    setSkipLogin(false)
+    setAuthenticated(false)
+    setView('main')
+  }
+
   const [showPasswordModal, setShowPasswordModal] = useState(false)
   const [studentModal, setStudentModal] = useState(null) // null | {} (add) | student (edit)
   const [recordStudent, setRecordStudent] = useState(null)
@@ -193,6 +232,15 @@ export default function App() {
     showToast(`백업을 불러왔습니다 (기록 ${data.records.length}건)`)
   }
 
+  // 동기화를 설정해 두었다면 로그인 여부를 먼저 확인한다.
+  // 설정하지 않았으면 이 화면은 아예 나오지 않고 기존처럼 이 기기에만 저장한다.
+  if (isSyncConfigured && sessionLoading) {
+    return <div className="flex min-h-screen items-center justify-center text-slate-400">불러오는 중…</div>
+  }
+  if (isSyncConfigured && !session && !skipLogin) {
+    return <LoginScreen onUseLocalOnly={() => setSkipLogin(true)} />
+  }
+
   return (
     <>
       {view === 'main' && (
@@ -229,6 +277,9 @@ export default function App() {
           onDeletePeriod={deletePeriod}
           onChangePassword={changePassword}
           detailHistory={detailHistory}
+          syncStatus={syncStatus}
+          syncEmail={session?.user?.email ?? null}
+          onSignOut={session ? signOut : null}
           onUpdateRecordDetail={updateRecordDetail}
           onRestoreBackup={restoreBackup}
           showToast={showToast}

@@ -39,6 +39,9 @@ export default function TeacherPage({
   onDeletePeriod,
   onChangePassword,
   detailHistory,
+  syncStatus,
+  syncEmail,
+  onSignOut,
   onUpdateRecordDetail,
   onRestoreBackup,
   showToast,
@@ -135,6 +138,9 @@ export default function TeacherPage({
           detailHistory={detailHistory}
           onRestore={onRestoreBackup}
           onClearRecords={onClearRecords}
+          syncStatus={syncStatus}
+          syncEmail={syncEmail}
+          onSignOut={onSignOut}
           showToast={showToast}
         />
       )}

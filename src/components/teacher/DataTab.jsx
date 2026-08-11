@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react'
-import { Download, FileSpreadsheet, Upload } from 'lucide-react'
+import { Cloud, CloudOff, Download, FileSpreadsheet, RefreshCw, TriangleAlert, Upload } from 'lucide-react'
 import ConfirmModal from '../ConfirmModal'
+import { isSyncConfigured } from '../../supabase'
 import { DETAIL_HISTORY_MAX, OUT_OF_SCHEDULE } from '../../constants'
 import { downloadFile, todayStr } from '../../utils'
 
@@ -99,6 +100,59 @@ function normalizeBackup(raw) {
   }
 }
 
+const SYNC_LABEL = {
+  syncing: { text: '동기화 중…', tone: 'text-sky-600', Icon: RefreshCw, spin: true },
+  synced: { text: '다른 기기와 동기화됨', tone: 'text-emerald-600', Icon: Cloud },
+  error: { text: '동기화에 실패했습니다', tone: 'text-rose-600', Icon: TriangleAlert },
+}
+
+function SyncCard({ status, email, onSignOut }) {
+  // 동기화를 아예 설정하지 않은 경우와, 설정했지만 로그인하지 않은 경우를 나눠 안내한다
+  if (!isSyncConfigured || !email) {
+    return (
+      <div className="flex items-start gap-3 rounded-3xl bg-white p-5 shadow-sm">
+        <CloudOff size={20} className="mt-0.5 shrink-0 text-slate-400" />
+        <div>
+          <p className="font-semibold text-slate-700">이 기기에만 저장 중</p>
+          <p className="mt-1 text-sm leading-relaxed text-slate-500">
+            {isSyncConfigured
+              ? '로그인하면 다른 기기에서도 같은 기록을 볼 수 있습니다. 로그인하려면 앱을 새로고침해 주세요.'
+              : '기기 간 동기화가 설정되어 있지 않습니다. 다른 기기로 옮기려면 아래에서 백업 파일을 사용하세요.'}
+          </p>
+        </div>
+      </div>
+    )
+  }
+
+  const label = SYNC_LABEL[status] ?? SYNC_LABEL.syncing
+  const { Icon } = label
+
+  return (
+    <div className="flex items-start gap-3 rounded-3xl bg-white p-5 shadow-sm">
+      <Icon size={20} className={`mt-0.5 shrink-0 ${label.tone} ${label.spin ? 'animate-spin' : ''}`} />
+      <div className="flex-1">
+        <p className={`font-semibold ${label.tone}`}>{label.text}</p>
+        <p className="mt-1 text-sm text-slate-500">{email}</p>
+        {status === 'error' && (
+          <p className="mt-1 text-sm text-slate-500">
+            인터넷 연결을 확인해주세요. 기록은 이 기기에 그대로 저장되어 있고, 연결되면 다시
+            올라갑니다.
+          </p>
+        )}
+      </div>
+      {onSignOut && (
+        <button
+          type="button"
+          onClick={onSignOut}
+          className="shrink-0 rounded-xl bg-slate-100 px-3 py-2 text-sm font-semibold text-slate-600 transition active:scale-95"
+        >
+          로그아웃
+        </button>
+      )}
+    </div>
+  )
+}
+
 export default function DataTab({
   students,
   behaviors,
@@ -108,6 +162,9 @@ export default function DataTab({
   detailHistory,
   onRestore,
   onClearRecords,
+  syncStatus,
+  syncEmail,
+  onSignOut,
   showToast,
 }) {
   const [pending, setPending] = useState(null)
@@ -174,6 +231,8 @@ export default function DataTab({
 
   return (
     <div className="mx-auto max-w-2xl space-y-4">
+      <SyncCard status={syncStatus} email={syncEmail} onSignOut={onSignOut} />
+
       <div className="rounded-3xl bg-white p-6 shadow-sm">
         <h3 className="mb-2 font-display text-lg text-slate-700">백업 파일 내보내기</h3>
         <p className="mb-4 text-sm leading-relaxed text-slate-500">
