@@ -112,6 +112,11 @@ export function weekdayLabel(dateStr) {
   return WEEKDAY_LABELS[d.getDay()]
 }
 
+export function isWeekend(dateStr) {
+  const day = parseDateLocal(dateStr).getDay()
+  return day === 0 || day === 6
+}
+
 export function csvEscape(value) {
   const str = String(value ?? '')
   return `"${str.replace(/"/g, '""')}"`

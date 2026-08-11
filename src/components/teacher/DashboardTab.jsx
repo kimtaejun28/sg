@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import {
   Bar,
   BarChart,
@@ -9,8 +9,27 @@ import {
   XAxis,
   YAxis,
 } from 'recharts'
+import ConfirmModal from '../ConfirmModal'
 import { OUT_OF_SCHEDULE, SAMPLE_DETAILS } from '../../constants'
-import { sortedPeriods, genId, todayStr, pad2 } from '../../utils'
+import { sortedPeriods, genId, todayStr, pad2, addDays, isWeekend } from '../../utils'
+
+const TEST_DATA_DAYS = 30
+const MIN_PER_STUDENT_PER_DAY = 3
+const MAX_PER_STUDENT_PER_DAY = 5
+
+// 최근 TEST_DATA_DAYS일 중 주말을 뺀 날짜들. 교실 기록이므로 등교일에만 쌓인다.
+function recentSchoolDays() {
+  const days = []
+  for (let offset = TEST_DATA_DAYS - 1; offset >= 0; offset--) {
+    const date = addDays(todayStr(), -offset)
+    if (!isWeekend(date)) days.push(date)
+  }
+  return days
+}
+
+function pickRandom(list) {
+  return list[Math.floor(Math.random() * list.length)]
+}
 
 function randomTimeInPeriod(period) {
   const [sh, sm] = period.start.split(':').map(Number)
@@ -27,7 +46,9 @@ function randomTimeInPeriod(period) {
 }
 
 export default function DashboardTab({ students, behaviors, periods, records, onGenerateTestData, showToast }) {
+  const [confirmTestData, setConfirmTestData] = useState(false)
   const activeStudents = students.filter((s) => s.active)
+  const schoolDays = useMemo(() => recentSchoolDays(), [])
   const totalCount = records.length
   const today = todayStr()
   const todayCount = records.filter((r) => r.date === today).length
@@ -54,7 +75,7 @@ export default function DashboardTab({ students, behaviors, periods, records, on
     })
   }, [periods, behaviors, records])
 
-  function handleGenerateTestData() {
+  function requestTestData() {
     if (activeStudents.length === 0) {
       showToast('먼저 학생을 등록해주세요')
       return
@@ -63,28 +84,36 @@ export default function DashboardTab({ students, behaviors, periods, records, on
       showToast('먼저 행동유형과 교시를 등록해주세요')
       return
     }
+    setConfirmTestData(true)
+  }
+
+  function handleGenerateTestData() {
+    setConfirmTestData(false)
     const newRecords = []
-    for (let i = 0; i < 40; i++) {
-      const student = activeStudents[Math.floor(Math.random() * activeStudents.length)]
-      const behavior = behaviors[Math.floor(Math.random() * behaviors.length)]
-      const period = periods[Math.floor(Math.random() * periods.length)]
-      const time = randomTimeInPeriod(period)
-      const detail = behavior.requiresDetail
-        ? SAMPLE_DETAILS[Math.floor(Math.random() * SAMPLE_DETAILS.length)]
-        : ''
-      newRecords.push({
-        id: genId('r'),
-        studentId: student.id,
-        studentName: student.name,
-        behaviorId: behavior.id,
-        behaviorName: behavior.name,
-        detail,
-        color: behavior.color,
-        date: todayStr(),
-        time,
-        period: period.name,
+    schoolDays.forEach((date) => {
+      activeStudents.forEach((student) => {
+        const perDay =
+          MIN_PER_STUDENT_PER_DAY +
+          Math.floor(Math.random() * (MAX_PER_STUDENT_PER_DAY - MIN_PER_STUDENT_PER_DAY + 1))
+        for (let i = 0; i < perDay; i++) {
+          const behavior = pickRandom(behaviors)
+          const period = pickRandom(periods)
+          newRecords.push({
+            // 한 번에 수백 건을 만들므로 genId만으로는 충돌 가능성이 있어 순번을 덧붙인다
+            id: `${genId('r')}_${newRecords.length}`,
+            studentId: student.id,
+            studentName: student.name,
+            behaviorId: behavior.id,
+            behaviorName: behavior.name,
+            detail: behavior.requiresDetail ? pickRandom(SAMPLE_DETAILS) : '',
+            color: behavior.color,
+            date,
+            time: randomTimeInPeriod(period),
+            period: period.name,
+          })
+        }
       })
-    }
+    })
     onGenerateTestData(newRecords)
   }
 
@@ -103,7 +132,7 @@ export default function DashboardTab({ students, behaviors, periods, records, on
         <h3 className="font-display text-xl text-slate-700">교시별 행동 분석</h3>
         <button
           type="button"
-          onClick={handleGenerateTestData}
+          onClick={requestTestData}
           className="rounded-xl bg-emerald-500 px-4 py-2 text-sm font-semibold text-white shadow-sm transition active:scale-95"
         >
           테스트 데이터 생성
@@ -138,6 +167,24 @@ export default function DashboardTab({ students, behaviors, periods, records, on
             </ResponsiveContainer>
           </div>
         </div>
+      )}
+
+      {confirmTestData && (
+        <ConfirmModal
+          title="테스트 데이터 생성"
+          message={
+            `최근 ${TEST_DATA_DAYS}일 중 주말을 뺀 ${schoolDays.length}일 동안,\n` +
+            `학생 ${activeStudents.length}명에게 하루 ${MIN_PER_STUDENT_PER_DAY}~${MAX_PER_STUDENT_PER_DAY}건씩 ` +
+            `약 ${schoolDays.length * activeStudents.length * MIN_PER_STUDENT_PER_DAY}~` +
+            `${schoolDays.length * activeStudents.length * MAX_PER_STUDENT_PER_DAY}건을 만듭니다.\n\n` +
+            `기존 기록 ${records.length}건에 더해지며, 생성된 기록은 되돌릴 수 없습니다.\n` +
+            '실제 기록이 있다면 먼저 [데이터 백업]에서 백업해 주세요.'
+          }
+          danger={records.length > 0}
+          confirmLabel="생성"
+          onConfirm={handleGenerateTestData}
+          onCancel={() => setConfirmTestData(false)}
+        />
       )}
     </div>
   )
