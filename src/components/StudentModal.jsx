@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Check } from 'lucide-react'
+import { Check, Star } from 'lucide-react'
 import Modal from './Modal'
 
 export default function StudentModal({ student, behaviors, onSave, onClose }) {
@@ -11,19 +11,33 @@ export default function StudentModal({ student, behaviors, onSave, onClose }) {
   const [selectedIds, setSelectedIds] = useState(
     student?.behaviorIds ?? behaviors.map((b) => b.id)
   )
+  const [priorityIds, setPriorityIds] = useState(student?.priorityBehaviorIds ?? [])
+
+  // 이 학생이 쓸 수 있는 유형. 주요 행동은 이 안에서만 고를 수 있다.
+  const availableBehaviors = useAllBehaviors
+    ? behaviors
+    : behaviors.filter((b) => selectedIds.includes(b.id))
 
   const canSave = name.trim() && (useAllBehaviors || selectedIds.length > 0)
 
   function toggleBehavior(id) {
     setSelectedIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]))
+    // 쓰지 않는 유형이 주요 행동으로 남아 있으면 안 된다
+    setPriorityIds((prev) => prev.filter((x) => x !== id || !selectedIds.includes(id)))
+  }
+
+  function togglePriority(id) {
+    setPriorityIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]))
   }
 
   function handleSave() {
     if (!canSave) return
+    const availableIds = availableBehaviors.map((b) => b.id)
     onSave({
       name: name.trim(),
       memo: memo.trim(),
       behaviorIds: useAllBehaviors ? null : selectedIds,
+      priorityBehaviorIds: priorityIds.filter((id) => availableIds.includes(id)),
     })
   }
 
@@ -92,6 +106,34 @@ export default function StudentModal({ student, behaviors, onSave, onClose }) {
         <p className="mb-2 text-sm font-medium text-rose-500">
           최소 한 개의 행동유형을 선택해주세요
         </p>
+      )}
+
+      {availableBehaviors.length > 0 && (
+        <div className="mt-4 rounded-2xl bg-amber-50/60 p-3">
+          <label className="mb-1 block text-sm font-semibold text-slate-600">주요 행동</label>
+          <p className="mb-2 text-xs text-slate-400">
+            체크한 행동이 기록 화면 맨 위에 먼저 나옵니다. 이 학생에게 자주 나타나는 행동을 골라
+            주세요.
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {availableBehaviors.map((b) => {
+              const on = priorityIds.includes(b.id)
+              return (
+                <button
+                  key={b.id}
+                  type="button"
+                  onClick={() => togglePriority(b.id)}
+                  className={`flex items-center gap-1.5 rounded-full px-3 py-2 text-sm font-semibold transition active:scale-95 ${
+                    on ? 'bg-amber-400 text-white shadow-sm' : 'bg-white text-slate-500'
+                  }`}
+                >
+                  <Star size={14} fill={on ? 'currentColor' : 'none'} />
+                  {b.name}
+                </button>
+              )
+            })}
+          </div>
+        </div>
       )}
 
       <button

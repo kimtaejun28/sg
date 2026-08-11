@@ -1,8 +1,12 @@
 import { useRef, useState } from 'react'
-import { Download, Upload } from 'lucide-react'
+import { Download, FileSpreadsheet, Upload } from 'lucide-react'
 import ConfirmModal from '../ConfirmModal'
 import { DETAIL_HISTORY_MAX, OUT_OF_SCHEDULE } from '../../constants'
 import { downloadFile, todayStr } from '../../utils'
+
+// 엑셀 라이브러리는 무겁고 이 탭에서만 쓰이므로, 버튼을 누른 순간에만 받아온다.
+// 기록 화면이 이 때문에 느려지면 안 된다.
+const loadExcel = () => import('../../excel')
 
 const BACKUP_FORMAT = 'bt-backup'
 const BACKUP_VERSION = 1
@@ -24,6 +28,9 @@ function normalizeBackup(raw) {
       behaviorIds: Array.isArray(s.behaviorIds)
         ? s.behaviorIds.filter((id) => typeof id === 'string')
         : null,
+      priorityBehaviorIds: Array.isArray(s.priorityBehaviorIds)
+        ? s.priorityBehaviorIds.filter((id) => typeof id === 'string')
+        : [],
       active: s.active !== false,
     }))
 
@@ -104,8 +111,8 @@ export default function DataTab({
   const [pending, setPending] = useState(null)
   const fileRef = useRef(null)
 
-  function handleExport() {
-    const payload = {
+  function backupPayload() {
+    return {
       format: BACKUP_FORMAT,
       version: BACKUP_VERSION,
       exportedAt: new Date().toISOString(),
@@ -116,20 +123,37 @@ export default function DataTab({
       password,
       detailHistory,
     }
+  }
+
+  function handleExportJson() {
     downloadFile(
-      JSON.stringify(payload, null, 2),
+      JSON.stringify(backupPayload(), null, 2),
       `도전행동기록_백업_${todayStr()}.json`,
       'application/json'
     )
     showToast('백업 파일이 저장되었습니다')
   }
 
+  async function handleExportXlsx() {
+    try {
+      const { exportBackupXlsx } = await loadExcel()
+      await exportBackupXlsx(backupPayload(), `도전행동기록_백업_${todayStr()}.xlsx`)
+      showToast('엑셀 파일이 저장되었습니다')
+    } catch {
+      showToast('엑셀 파일을 만들지 못했습니다')
+    }
+  }
+
   async function handleFileChange(e) {
     const file = e.target.files?.[0]
     e.target.value = '' // 같은 파일을 연속으로 고를 수 있게 초기화
     if (!file) return
+    const isExcel = /\.xlsx$/i.test(file.name)
     try {
-      const data = normalizeBackup(JSON.parse(await file.text()))
+      const raw = isExcel
+        ? await (await loadExcel()).parseBackupXlsx(file)
+        : JSON.parse(await file.text())
+      const data = normalizeBackup(raw)
       if (!data) {
         showToast('백업 파일 형식이 올바르지 않습니다')
         return
@@ -159,27 +183,41 @@ export default function DataTab({
           <span className="rounded-xl bg-slate-100 px-3 py-1.5">행동유형 {behaviors.length}개</span>
           <span className="rounded-xl bg-slate-100 px-3 py-1.5">교시 {periods.length}개</span>
         </div>
-        <button
-          type="button"
-          onClick={handleExport}
-          className="flex w-full items-center justify-center gap-2 rounded-2xl bg-sky-500 py-3 font-bold text-white transition active:scale-95"
-        >
-          <Download size={18} />
-          백업 파일 내보내기
-        </button>
+        <div className="flex flex-col gap-2 sm:flex-row">
+          <button
+            type="button"
+            onClick={handleExportXlsx}
+            className="flex flex-1 items-center justify-center gap-2 rounded-2xl bg-emerald-600 py-3 font-bold text-white transition active:scale-95"
+          >
+            <FileSpreadsheet size={18} />
+            엑셀 파일로 내보내기
+          </button>
+          <button
+            type="button"
+            onClick={handleExportJson}
+            className="flex flex-1 items-center justify-center gap-2 rounded-2xl bg-sky-500 py-3 font-bold text-white transition active:scale-95"
+          >
+            <Download size={18} />
+            JSON 파일로 내보내기
+          </button>
+        </div>
+        <p className="mt-3 text-xs leading-relaxed text-slate-400">
+          엑셀 파일은 학생·기록·행동유형·교시가 시트별로 나뉘어 있어 바로 열어 볼 수 있고, 그대로
+          다시 불러오는 것도 됩니다. JSON은 사람이 읽기는 어렵지만 원본을 가장 정확하게 보존합니다.
+        </p>
       </div>
 
       <div className="rounded-3xl bg-white p-6 shadow-sm">
         <h3 className="mb-2 font-display text-lg text-slate-700">백업 파일 불러오기</h3>
         <p className="mb-4 text-sm leading-relaxed text-slate-500">
-          내보낸 백업 파일을 선택하면 현재 데이터를 파일의 내용으로 되돌립니다.
+          내보낸 백업 파일(엑셀 또는 JSON)을 선택하면 현재 데이터를 파일의 내용으로 되돌립니다.
           <span className="font-semibold text-rose-500"> 지금 저장된 내용은 모두 대체되니</span> 먼저
           위에서 백업을 받아두시길 권합니다.
         </p>
         <input
           ref={fileRef}
           type="file"
-          accept="application/json,.json"
+          accept=".json,.xlsx,application/json"
           onChange={handleFileChange}
           className="hidden"
         />

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { PenLine } from 'lucide-react'
+import { PenLine, Star } from 'lucide-react'
 import Modal from './Modal'
 
 export default function RecordModal({ student, behaviors, detailHistory, onSave, onClose }) {
@@ -45,9 +45,15 @@ export default function RecordModal({ student, behaviors, detailHistory, onSave,
   const chips = selected ? detailHistory[selected.id] || [] : []
 
   // 학생별로 사용할 유형을 정해두었으면 그 유형만 보여준다
-  const visibleBehaviors = student.behaviorIds?.length
+  const allowed = student.behaviorIds?.length
     ? behaviors.filter((b) => student.behaviorIds.includes(b.id))
     : behaviors
+
+  // 주요 행동을 앞으로 끌어올린다. sort가 안정 정렬이라 그룹 안에서는 원래 순서가 유지된다.
+  const priorityIds = student.priorityBehaviorIds ?? []
+  const visibleBehaviors = [...allowed].sort(
+    (a, b) => (priorityIds.includes(a.id) ? 0 : 1) - (priorityIds.includes(b.id) ? 0 : 1)
+  )
 
   return (
     <Modal onClose={handleModalClose} widthClass="max-w-lg">
@@ -69,8 +75,11 @@ export default function RecordModal({ student, behaviors, detailHistory, onSave,
                   type="button"
                   onClick={() => chooseBehavior(b)}
                   style={{ backgroundColor: b.color }}
-                  className="flex items-center justify-center gap-2 rounded-2xl px-4 py-6 text-lg font-bold text-white shadow-sm transition active:scale-95"
+                  className="relative flex items-center justify-center gap-2 rounded-2xl px-4 py-6 text-lg font-bold text-white shadow-sm transition active:scale-95"
                 >
+                  {priorityIds.includes(b.id) && (
+                    <Star size={14} fill="currentColor" className="absolute left-3 top-3 opacity-80" />
+                  )}
                   {b.requiresDetail && <PenLine size={18} />}
                   <span>{b.name}</span>
                 </button>

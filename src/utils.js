@@ -122,8 +122,7 @@ export function csvEscape(value) {
   return `"${str.replace(/"/g, '""')}"`
 }
 
-export function downloadFile(content, filename, mime) {
-  const blob = new Blob([content], { type: mime })
+export function downloadBlob(blob, filename) {
   const url = URL.createObjectURL(blob)
   const link = document.createElement('a')
   link.href = url
@@ -132,6 +131,10 @@ export function downloadFile(content, filename, mime) {
   link.click()
   document.body.removeChild(link)
   URL.revokeObjectURL(url)
+}
+
+export function downloadFile(content, filename, mime) {
+  downloadBlob(new Blob([content], { type: mime }), filename)
 }
 
 export function downloadCsv(rows, filename) {

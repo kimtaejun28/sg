@@ -51,6 +51,7 @@ export default function App() {
       name: data.name,
       memo: data.memo,
       behaviorIds: data.behaviorIds,
+      priorityBehaviorIds: data.priorityBehaviorIds,
       active: true,
     }
     setStudents((prev) => [...prev, student])
