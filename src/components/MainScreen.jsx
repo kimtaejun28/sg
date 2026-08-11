@@ -1,15 +1,41 @@
-import { Lock, Plus } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { Clock, Lock, Plus } from 'lucide-react'
 import StudentCard from './StudentCard'
 import { CARD_GRADIENTS } from '../constants'
+import { getPeriodName, nowTimeStr, pad2 } from '../utils'
 
-export default function MainScreen({ students, todayCount, onOpenRecord, onEditStudent, onAddStudent, onOpenTeacherPage }) {
+export default function MainScreen({
+  students,
+  periods,
+  todayCount,
+  onOpenRecord,
+  onEditStudent,
+  onAddStudent,
+  onOpenTeacherPage,
+}) {
   const activeStudents = students.filter((s) => s.active)
+
+  // 교시는 분 단위로 바뀌므로 주기적으로 현재 시각을 다시 읽는다
+  const [now, setNow] = useState(() => new Date())
+  useEffect(() => {
+    const timer = setInterval(() => setNow(new Date()), 10000)
+    return () => clearInterval(timer)
+  }, [])
+
+  const currentPeriod = getPeriodName(nowTimeStr(now), periods)
+  const clock = `${pad2(now.getHours())}:${pad2(now.getMinutes())}`
 
   return (
     <div className="mx-auto min-h-screen max-w-6xl px-4 pb-28 pt-6 sm:px-6">
-      <header className="mb-6 flex items-center justify-between">
+      <header className="mb-6 flex items-start justify-between gap-3">
         <div>
-          <h1 className="font-display text-3xl text-slate-800">도전행동 기록판</h1>
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+            <h1 className="font-display text-3xl text-slate-800">도전행동 기록판</h1>
+            <span className="flex items-center gap-1.5 rounded-full bg-white/80 px-3 py-1.5 text-sm font-bold text-sky-600 shadow-sm backdrop-blur">
+              <Clock size={15} />
+              {clock} · {currentPeriod}
+            </span>
+          </div>
           <p className="mt-1 text-sm text-slate-500">오늘 {todayCount}건</p>
         </div>
         <button

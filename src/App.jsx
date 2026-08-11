@@ -46,7 +46,13 @@ export default function App() {
 
   // ---- 학생 ----
   function handleAddStudent(data) {
-    const student = { id: genId('s'), name: data.name, memo: data.memo, active: true }
+    const student = {
+      id: genId('s'),
+      name: data.name,
+      memo: data.memo,
+      behaviorIds: data.behaviorIds,
+      active: true,
+    }
     setStudents((prev) => [...prev, student])
     showToast('학생이 추가되었습니다')
     setStudentModal(null)
@@ -63,6 +69,16 @@ export default function App() {
   }
 
   // ---- 행동 기록 ----
+  // 입력한 문구를 유형별 최근 목록 맨 앞으로 올린다(중복 제거, 최대 DETAIL_HISTORY_MAX개)
+  function rememberDetail(behaviorId, detail) {
+    if (!detail) return
+    setDetailHistory((prev) => {
+      const list = prev[behaviorId] || []
+      const next = [detail, ...list.filter((d) => d !== detail)].slice(0, DETAIL_HISTORY_MAX)
+      return { ...prev, [behaviorId]: next }
+    })
+  }
+
   function handleSaveRecord(behavior, detail) {
     const now = new Date()
     const date = todayStr(now)
@@ -82,13 +98,7 @@ export default function App() {
     }
     setRecords((prev) => [...prev, record])
 
-    if (detail) {
-      setDetailHistory((prev) => {
-        const list = prev[behavior.id] || []
-        const next = [detail, ...list.filter((d) => d !== detail)].slice(0, DETAIL_HISTORY_MAX)
-        return { ...prev, [behavior.id]: next }
-      })
-    }
+    rememberDetail(behavior.id, detail)
 
     showToast(`${recordStudent.name} · ${behavior.name} 기록됨 (${period})`)
     setRecordStudent(null)
@@ -96,6 +106,15 @@ export default function App() {
 
   function deleteRecord(id) {
     setRecords((prev) => prev.filter((r) => r.id !== id))
+  }
+
+  // 급하게 유형만 남긴 기록의 상세내용을 교사 페이지에서 나중에 채운다
+  function updateRecordDetail(id, detail) {
+    const target = records.find((r) => r.id === id)
+    setRecords((prev) => prev.map((r) => (r.id === id ? { ...r, detail } : r)))
+    if (detail && target) {
+      rememberDetail(target.behaviorId, detail)
+    }
   }
 
   function generateTestData(newRecords) {
@@ -166,6 +185,7 @@ export default function App() {
       {view === 'main' && (
         <MainScreen
           students={students}
+          periods={periods}
           todayCount={todayCount}
           onOpenRecord={(s) => setRecordStudent(s)}
           onEditStudent={(s) => setStudentModal(s)}
@@ -194,6 +214,7 @@ export default function App() {
           onDeletePeriod={deletePeriod}
           onChangePassword={changePassword}
           detailHistory={detailHistory}
+          onUpdateRecordDetail={updateRecordDetail}
           onRestoreBackup={restoreBackup}
           showToast={showToast}
         />
@@ -202,6 +223,7 @@ export default function App() {
       {studentModal !== null && (
         <StudentModal
           student={studentModal.id ? studentModal : null}
+          behaviors={behaviors}
           onSave={studentModal.id ? handleUpdateStudent : handleAddStudent}
           onClose={() => setStudentModal(null)}
         />

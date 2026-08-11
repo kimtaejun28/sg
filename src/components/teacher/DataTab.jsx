@@ -20,6 +20,10 @@ function normalizeBackup(raw) {
       id: s.id,
       name: s.name,
       memo: asString(s.memo),
+      // 학생별 행동유형 제한. 배열이 아니면 '전체 사용'으로 둔다
+      behaviorIds: Array.isArray(s.behaviorIds)
+        ? s.behaviorIds.filter((id) => typeof id === 'string')
+        : null,
       active: s.active !== false,
     }))
 

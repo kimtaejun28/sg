@@ -44,26 +44,39 @@ export default function RecordModal({ student, behaviors, detailHistory, onSave,
 
   const chips = selected ? detailHistory[selected.id] || [] : []
 
+  // 학생별로 사용할 유형을 정해두었으면 그 유형만 보여준다
+  const visibleBehaviors = student.behaviorIds?.length
+    ? behaviors.filter((b) => student.behaviorIds.includes(b.id))
+    : behaviors
+
   return (
     <Modal onClose={handleModalClose} widthClass="max-w-lg">
       {step === 1 && (
         <>
           <h3 className="mb-1 pr-6 text-2xl font-display text-slate-800">{student.name}</h3>
           <p className="mb-5 text-sm text-slate-500">행동을 선택한 뒤 내용을 적어 저장하세요</p>
-          <div className="grid grid-cols-2 gap-3">
-            {behaviors.map((b) => (
-              <button
-                key={b.id}
-                type="button"
-                onClick={() => chooseBehavior(b)}
-                style={{ backgroundColor: b.color }}
-                className="flex items-center justify-center gap-2 rounded-2xl px-4 py-6 text-lg font-bold text-white shadow-sm transition active:scale-95"
-              >
-                {b.requiresDetail && <PenLine size={18} />}
-                <span>{b.name}</span>
-              </button>
-            ))}
-          </div>
+          {visibleBehaviors.length === 0 ? (
+            <p className="rounded-2xl bg-slate-50 px-4 py-8 text-center text-sm text-slate-400">
+              사용할 수 있는 행동유형이 없습니다.
+              <br />
+              카드의 설정 버튼에서 행동유형을 선택해주세요.
+            </p>
+          ) : (
+            <div className="grid grid-cols-2 gap-3">
+              {visibleBehaviors.map((b) => (
+                <button
+                  key={b.id}
+                  type="button"
+                  onClick={() => chooseBehavior(b)}
+                  style={{ backgroundColor: b.color }}
+                  className="flex items-center justify-center gap-2 rounded-2xl px-4 py-6 text-lg font-bold text-white shadow-sm transition active:scale-95"
+                >
+                  {b.requiresDetail && <PenLine size={18} />}
+                  <span>{b.name}</span>
+                </button>
+              ))}
+            </div>
+          )}
         </>
       )}
 
@@ -128,6 +141,17 @@ export default function RecordModal({ student, behaviors, detailHistory, onSave,
           >
             기록 저장
           </button>
+
+          {/* 급할 때는 유형만 남기고 상세는 교사 페이지에서 나중에 채운다 */}
+          {selected.requiresDetail && (
+            <button
+              type="button"
+              onClick={() => onSave(selected, '')}
+              className="mt-2 w-full rounded-2xl bg-slate-100 py-3 font-semibold text-slate-500 transition active:scale-95"
+            >
+              비워두고 저장 (나중에 작성)
+            </button>
+          )}
         </>
       )}
     </Modal>

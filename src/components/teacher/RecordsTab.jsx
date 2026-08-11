@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
-import { ChevronDown, ChevronLeft, ChevronRight, ChevronUp, Download, Trash2 } from 'lucide-react'
+import { ChevronDown, ChevronLeft, ChevronRight, ChevronUp, Download, PenLine, Trash2 } from 'lucide-react'
 import ConfirmModal from '../ConfirmModal'
+import DetailEditModal from '../DetailEditModal'
 import {
   addDays,
   addMonths,
@@ -32,7 +33,15 @@ const PERIOD_FILTER_LABELS = {
   month: '월간',
 }
 
-export default function RecordsTab({ students, behaviors, records, onDeleteRecord, showToast }) {
+export default function RecordsTab({
+  students,
+  behaviors,
+  records,
+  detailHistory,
+  onDeleteRecord,
+  onUpdateDetail,
+  showToast,
+}) {
   const [studentFilter, setStudentFilter] = useState('all')
   const [behaviorFilter, setBehaviorFilter] = useState('all')
   const [periodFilterType, setPeriodFilterType] = useState('all')
@@ -40,6 +49,8 @@ export default function RecordsTab({ students, behaviors, records, onDeleteRecor
   const [selectedMonth, setSelectedMonth] = useState(todayStr().slice(0, 7))
   const [sortAsc, setSortAsc] = useState(true)
   const [deleteTarget, setDeleteTarget] = useState(null)
+  const [editTarget, setEditTarget] = useState(null)
+  const [onlyMissingDetail, setOnlyMissingDetail] = useState(false)
   const [summaryOpen, setSummaryOpen] = useState(true)
 
   // 선택된 기간의 시작·종료일. '전체'만 구간이 고정되지 않으므로 null이고,
@@ -59,6 +70,7 @@ export default function RecordsTab({ students, behaviors, records, onDeleteRecor
     return records.filter((r) => {
       if (studentFilter !== 'all' && r.studentId !== studentFilter) return false
       if (behaviorFilter !== 'all' && r.behaviorId !== behaviorFilter) return false
+      if (onlyMissingDetail && r.detail) return false
       if (periodFilterType === 'today') return r.date === todayStr()
       if (periodFilterType === 'date') return r.date === selectedDate
       if (periodFilterType === 'week' || periodFilterType === 'month') {
@@ -66,7 +78,7 @@ export default function RecordsTab({ students, behaviors, records, onDeleteRecor
       }
       return true
     })
-  }, [records, studentFilter, behaviorFilter, periodFilterType, selectedDate, range])
+  }, [records, studentFilter, behaviorFilter, periodFilterType, selectedDate, range, onlyMissingDetail])
 
   const sorted = useMemo(() => {
     const arr = [...baseFiltered].sort((a, b) => {
@@ -113,6 +125,7 @@ export default function RecordsTab({ students, behaviors, records, onDeleteRecor
     showToast('CSV 파일이 다운로드되었습니다')
   }
 
+  const missingDetailCount = records.filter((r) => !r.detail).length
   const showEmptyState = periodFilterType !== 'all' && sorted.length === 0
 
   return (
@@ -164,6 +177,18 @@ export default function RecordsTab({ students, behaviors, records, onDeleteRecor
           className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-600 transition active:scale-95"
         >
           {sortAsc ? '이른 시간순' : '최근 시간순'}
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setOnlyMissingDetail((v) => !v)}
+          className={`rounded-xl border px-3 py-2 text-sm font-medium transition active:scale-95 ${
+            onlyMissingDetail
+              ? 'border-amber-300 bg-amber-100 text-amber-700'
+              : 'border-slate-200 bg-white text-slate-600'
+          }`}
+        >
+          상세 미작성{missingDetailCount > 0 && ` ${missingDetailCount}`}
         </button>
 
         <button
@@ -277,7 +302,7 @@ export default function RecordsTab({ students, behaviors, records, onDeleteRecor
                       </span>
                     </th>
                     <th className="px-4 py-3 text-left font-semibold">교시</th>
-                    <th className="px-4 py-3 text-left font-semibold">삭제</th>
+                    <th className="px-4 py-3 text-left font-semibold">관리</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -299,19 +324,43 @@ export default function RecordsTab({ students, behaviors, records, onDeleteRecor
                             {r.behaviorName}
                           </span>
                         </td>
-                        <td className="max-w-[220px] px-4 py-3 text-slate-500">{r.detail || '-'}</td>
+                        <td className="max-w-[220px] px-4 py-3">
+                          <button
+                            type="button"
+                            onClick={() => setEditTarget(r)}
+                            className="text-left transition active:scale-95"
+                          >
+                            {r.detail ? (
+                              <span className="text-slate-500">{r.detail}</span>
+                            ) : (
+                              <span className="rounded-lg bg-amber-50 px-2 py-1 text-xs font-medium text-amber-600">
+                                작성하기
+                              </span>
+                            )}
+                          </button>
+                        </td>
                         <td className="px-4 py-3 text-slate-500">{r.date}</td>
                         <td className="px-4 py-3 text-slate-500">{r.time}</td>
                         <td className="px-4 py-3 text-slate-500">{r.period}</td>
                         <td className="px-4 py-3">
-                          <button
-                            type="button"
-                            onClick={() => setDeleteTarget(r)}
-                            aria-label="기록 삭제"
-                            className="rounded-lg p-2 text-rose-400 transition hover:bg-rose-50 active:scale-90"
-                          >
-                            <Trash2 size={16} />
-                          </button>
+                          <div className="flex gap-1">
+                            <button
+                              type="button"
+                              onClick={() => setEditTarget(r)}
+                              aria-label="상세내용 작성"
+                              className="rounded-lg p-2 text-slate-400 transition hover:bg-slate-100 active:scale-90"
+                            >
+                              <PenLine size={16} />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setDeleteTarget(r)}
+                              aria-label="기록 삭제"
+                              className="rounded-lg p-2 text-rose-400 transition hover:bg-rose-50 active:scale-90"
+                            >
+                              <Trash2 size={16} />
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     ))
@@ -321,6 +370,19 @@ export default function RecordsTab({ students, behaviors, records, onDeleteRecor
             </div>
           </div>
         </>
+      )}
+
+      {editTarget && (
+        <DetailEditModal
+          record={editTarget}
+          detailHistory={detailHistory}
+          onSave={(id, detail) => {
+            onUpdateDetail(id, detail)
+            setEditTarget(null)
+            showToast(detail ? '상세내용이 저장되었습니다' : '상세내용을 비웠습니다')
+          }}
+          onClose={() => setEditTarget(null)}
+        />
       )}
 
       {deleteTarget && (

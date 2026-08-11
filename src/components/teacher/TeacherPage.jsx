@@ -37,6 +37,7 @@ export default function TeacherPage({
   onDeletePeriod,
   onChangePassword,
   detailHistory,
+  onUpdateRecordDetail,
   onRestoreBackup,
   showToast,
 }) {
@@ -86,7 +87,9 @@ export default function TeacherPage({
           students={students}
           behaviors={behaviors}
           records={records}
+          detailHistory={detailHistory}
           onDeleteRecord={onDeleteRecord}
+          onUpdateDetail={onUpdateRecordDetail}
           showToast={showToast}
         />
       )}
