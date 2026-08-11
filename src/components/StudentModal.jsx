@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Check, Star } from 'lucide-react'
+import { Check, ChevronDown, ChevronUp, Star } from 'lucide-react'
 import Modal from './Modal'
 
 export default function StudentModal({ student, behaviors, onSave, onClose }) {
@@ -18,6 +18,12 @@ export default function StudentModal({ student, behaviors, onSave, onClose }) {
     ? behaviors
     : behaviors.filter((b) => selectedIds.includes(b.id))
 
+  // 주요 행동은 priorityIds에 담긴 순서 그대로, 나머지는 원래 목록 순서로 보여준다
+  const orderedPriority = priorityIds
+    .map((id) => availableBehaviors.find((b) => b.id === id))
+    .filter(Boolean)
+  const restBehaviors = availableBehaviors.filter((b) => !priorityIds.includes(b.id))
+
   const canSave = name.trim() && (useAllBehaviors || selectedIds.length > 0)
 
   function toggleBehavior(id) {
@@ -28,6 +34,17 @@ export default function StudentModal({ student, behaviors, onSave, onClose }) {
 
   function togglePriority(id) {
     setPriorityIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]))
+  }
+
+  // 배열 순서가 곧 기록 화면에 나오는 순서다
+  function movePriority(index, direction) {
+    setPriorityIds((prev) => {
+      const next = [...prev]
+      const target = index + direction
+      if (target < 0 || target >= next.length) return prev
+      ;[next[index], next[target]] = [next[target], next[index]]
+      return next
+    })
   }
 
   function handleSave() {
@@ -112,27 +129,68 @@ export default function StudentModal({ student, behaviors, onSave, onClose }) {
         <div className="mt-4 rounded-2xl bg-amber-50/60 p-3">
           <label className="mb-1 block text-sm font-semibold text-slate-600">주요 행동</label>
           <p className="mb-2 text-xs text-slate-400">
-            체크한 행동이 기록 화면 맨 위에 먼저 나옵니다. 이 학생에게 자주 나타나는 행동을 골라
-            주세요.
+            별을 누른 행동이 기록 화면 맨 위에 먼저 나옵니다. 화살표로 순서를 바꿀 수 있습니다.
           </p>
-          <div className="flex flex-wrap gap-2">
-            {availableBehaviors.map((b) => {
-              const on = priorityIds.includes(b.id)
-              return (
+
+          {orderedPriority.length > 0 && (
+            <div className="mb-3 space-y-2">
+              {orderedPriority.map((b, i) => (
+                <div
+                  key={b.id}
+                  className="flex items-center gap-2 rounded-xl bg-white px-2 py-1.5 shadow-sm"
+                >
+                  <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-amber-400 text-xs font-bold text-white">
+                    {i + 1}
+                  </span>
+                  <span className="flex-1 truncate text-sm font-semibold text-slate-700">
+                    {b.name}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => movePriority(i, -1)}
+                    disabled={i === 0}
+                    aria-label="위로"
+                    className="rounded-lg p-1.5 text-slate-500 transition active:scale-90 disabled:opacity-25"
+                  >
+                    <ChevronUp size={16} />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => movePriority(i, 1)}
+                    disabled={i === orderedPriority.length - 1}
+                    aria-label="아래로"
+                    className="rounded-lg p-1.5 text-slate-500 transition active:scale-90 disabled:opacity-25"
+                  >
+                    <ChevronDown size={16} />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => togglePriority(b.id)}
+                    aria-label="주요 행동 해제"
+                    className="rounded-lg p-1.5 text-amber-500 transition active:scale-90"
+                  >
+                    <Star size={16} fill="currentColor" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {restBehaviors.length > 0 && (
+            <div className="flex flex-wrap gap-2">
+              {restBehaviors.map((b) => (
                 <button
                   key={b.id}
                   type="button"
                   onClick={() => togglePriority(b.id)}
-                  className={`flex items-center gap-1.5 rounded-full px-3 py-2 text-sm font-semibold transition active:scale-95 ${
-                    on ? 'bg-amber-400 text-white shadow-sm' : 'bg-white text-slate-500'
-                  }`}
+                  className="flex items-center gap-1.5 rounded-full bg-white px-3 py-2 text-sm font-semibold text-slate-500 transition active:scale-95"
                 >
-                  <Star size={14} fill={on ? 'currentColor' : 'none'} />
+                  <Star size={14} />
                   {b.name}
                 </button>
-              )
-            })}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
 

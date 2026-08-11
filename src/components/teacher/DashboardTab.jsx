@@ -45,8 +45,18 @@ function randomTimeInPeriod(period) {
   return `${pad2(h)}:${pad2(m)}:${pad2(s)}`
 }
 
-export default function DashboardTab({ students, behaviors, periods, records, onGenerateTestData, showToast }) {
+export default function DashboardTab({
+  students,
+  behaviors,
+  periods,
+  records,
+  onGenerateTestData,
+  onDeleteTestData,
+  showToast,
+}) {
   const [confirmTestData, setConfirmTestData] = useState(false)
+  const [confirmDeleteTest, setConfirmDeleteTest] = useState(false)
+  const testCount = records.filter((r) => r.isTest).length
   const activeStudents = students.filter((s) => s.active)
   const schoolDays = useMemo(() => recentSchoolDays(), [])
   const totalCount = records.length
@@ -110,6 +120,7 @@ export default function DashboardTab({ students, behaviors, periods, records, on
             date,
             time: randomTimeInPeriod(period),
             period: period.name,
+            isTest: true, // 나중에 한 번에 지울 수 있도록 표시해 둔다
           })
         }
       })
@@ -130,13 +141,24 @@ export default function DashboardTab({ students, behaviors, periods, records, on
 
       <div className="mb-4 flex items-center justify-between">
         <h3 className="font-display text-xl text-slate-700">교시별 행동 분석</h3>
-        <button
-          type="button"
-          onClick={requestTestData}
-          className="rounded-xl bg-emerald-500 px-4 py-2 text-sm font-semibold text-white shadow-sm transition active:scale-95"
-        >
-          테스트 데이터 생성
-        </button>
+        <div className="flex gap-2">
+          {testCount > 0 && (
+            <button
+              type="button"
+              onClick={() => setConfirmDeleteTest(true)}
+              className="rounded-xl bg-rose-50 px-4 py-2 text-sm font-semibold text-rose-500 transition active:scale-95"
+            >
+              테스트 데이터 삭제 {testCount}
+            </button>
+          )}
+          <button
+            type="button"
+            onClick={requestTestData}
+            className="rounded-xl bg-emerald-500 px-4 py-2 text-sm font-semibold text-white shadow-sm transition active:scale-95"
+          >
+            테스트 데이터 생성
+          </button>
+        </div>
       </div>
 
       {records.length === 0 ? (
@@ -184,6 +206,22 @@ export default function DashboardTab({ students, behaviors, periods, records, on
           confirmLabel="생성"
           onConfirm={handleGenerateTestData}
           onCancel={() => setConfirmTestData(false)}
+        />
+      )}
+
+      {confirmDeleteTest && (
+        <ConfirmModal
+          title="테스트 데이터 삭제"
+          message={
+            `테스트로 만든 기록 ${testCount}건을 모두 지웁니다.\n` +
+            '직접 기록한 내용은 지워지지 않습니다.'
+          }
+          confirmLabel="삭제"
+          onConfirm={() => {
+            onDeleteTestData()
+            setConfirmDeleteTest(false)
+          }}
+          onCancel={() => setConfirmDeleteTest(false)}
         />
       )}
     </div>

@@ -123,6 +123,18 @@ export default function App() {
     showToast(`테스트 데이터 ${newRecords.length}건이 생성되었습니다`)
   }
 
+  function deleteTestData() {
+    const removed = records.filter((r) => r.isTest).length
+    setRecords((prev) => prev.filter((r) => !r.isTest))
+    showToast(`테스트 데이터 ${removed}건이 삭제되었습니다`)
+  }
+
+  function clearRecords() {
+    const removed = records.length
+    setRecords([])
+    showToast(`기록 ${removed}건이 삭제되었습니다`)
+  }
+
   // ---- 행동유형 ----
   function addBehavior(data) {
     setBehaviors((prev) => [...prev, { id: genId('b'), ...data }])
@@ -207,6 +219,8 @@ export default function App() {
           onSetStudentActive={setStudentActive}
           onDeleteRecord={deleteRecord}
           onGenerateTestData={generateTestData}
+          onDeleteTestData={deleteTestData}
+          onClearRecords={clearRecords}
           onAddBehavior={addBehavior}
           onUpdateBehavior={updateBehavior}
           onDeleteBehavior={deleteBehavior}

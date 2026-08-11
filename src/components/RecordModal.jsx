@@ -49,11 +49,14 @@ export default function RecordModal({ student, behaviors, detailHistory, onSave,
     ? behaviors.filter((b) => student.behaviorIds.includes(b.id))
     : behaviors
 
-  // 주요 행동을 앞으로 끌어올린다. sort가 안정 정렬이라 그룹 안에서는 원래 순서가 유지된다.
+  // 주요 행동은 교사가 정한 순서대로 앞에 놓는다.
+  // 나머지는 rank가 모두 같아 안정 정렬 덕분에 원래 목록 순서가 유지된다.
   const priorityIds = student.priorityBehaviorIds ?? []
-  const visibleBehaviors = [...allowed].sort(
-    (a, b) => (priorityIds.includes(a.id) ? 0 : 1) - (priorityIds.includes(b.id) ? 0 : 1)
-  )
+  const rankOf = (id) => {
+    const index = priorityIds.indexOf(id)
+    return index === -1 ? Number.MAX_SAFE_INTEGER : index
+  }
+  const visibleBehaviors = [...allowed].sort((a, b) => rankOf(a.id) - rankOf(b.id))
 
   return (
     <Modal onClose={handleModalClose} widthClass="max-w-lg">

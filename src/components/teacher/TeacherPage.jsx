@@ -29,6 +29,8 @@ export default function TeacherPage({
   onSetStudentActive,
   onDeleteRecord,
   onGenerateTestData,
+  onDeleteTestData,
+  onClearRecords,
   onAddBehavior,
   onUpdateBehavior,
   onDeleteBehavior,
@@ -79,6 +81,7 @@ export default function TeacherPage({
           periods={periods}
           records={records}
           onGenerateTestData={onGenerateTestData}
+          onDeleteTestData={onDeleteTestData}
           showToast={showToast}
         />
       )}
@@ -131,6 +134,7 @@ export default function TeacherPage({
           password={password}
           detailHistory={detailHistory}
           onRestore={onRestoreBackup}
+          onClearRecords={onClearRecords}
           showToast={showToast}
         />
       )}

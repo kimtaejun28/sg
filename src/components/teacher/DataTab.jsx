@@ -73,6 +73,7 @@ function normalizeBackup(raw) {
       date: r.date,
       time: r.time,
       period: asString(r.period, OUT_OF_SCHEDULE),
+      isTest: r.isTest === true,
     }))
 
   // 네 종류가 모두 비어 있으면 백업 파일로 보기 어렵다
@@ -106,9 +107,11 @@ export default function DataTab({
   password,
   detailHistory,
   onRestore,
+  onClearRecords,
   showToast,
 }) {
   const [pending, setPending] = useState(null)
+  const [confirmClear, setConfirmClear] = useState(false)
   const fileRef = useRef(null)
 
   function backupPayload() {
@@ -231,10 +234,44 @@ export default function DataTab({
         </button>
       </div>
 
+      <div className="rounded-3xl border-2 border-rose-100 bg-white p-6 shadow-sm">
+        <h3 className="mb-2 font-display text-lg text-rose-600">기록 전체 삭제</h3>
+        <p className="mb-4 text-sm leading-relaxed text-slate-500">
+          지금까지 쌓인 기록 {records.length}건을 모두 지웁니다. 학생·행동유형·교시 설정은 그대로
+          남습니다. 대시보드의 [테스트 데이터 삭제]로 지워지지 않는 예전 테스트 기록을 정리할 때
+          사용하세요.
+        </p>
+        <button
+          type="button"
+          disabled={records.length === 0}
+          onClick={() => setConfirmClear(true)}
+          className="w-full rounded-2xl bg-rose-500 py-3 font-bold text-white transition active:scale-95 disabled:bg-slate-200 disabled:text-slate-400"
+        >
+          기록 전체 삭제
+        </button>
+      </div>
+
       <p className="px-2 text-xs leading-relaxed text-slate-400">
         백업 파일에는 학생 이름과 교사 페이지 비밀번호가 그대로 담깁니다. 외부로 전송하지 말고 개인
         기기에만 보관해 주세요.
       </p>
+
+      {confirmClear && (
+        <ConfirmModal
+          title="기록 전체 삭제"
+          message={
+            `기록 ${records.length}건을 모두 지웁니다.\n` +
+            '되돌릴 수 없으니 먼저 위에서 백업 파일을 받아두세요.\n\n' +
+            '학생·행동유형·교시 설정은 지워지지 않습니다.'
+          }
+          confirmLabel="모두 삭제"
+          onConfirm={() => {
+            onClearRecords()
+            setConfirmClear(false)
+          }}
+          onCancel={() => setConfirmClear(false)}
+        />
+      )}
 
       {pending && (
         <ConfirmModal
