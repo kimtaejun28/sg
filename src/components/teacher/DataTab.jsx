@@ -194,12 +194,13 @@ export default function DataTab({
     const file = e.target.files?.[0]
     e.target.value = '' // 같은 파일을 연속으로 고를 수 있게 초기화
     if (!file) return
-    const isExcel = /\.xlsx$/i.test(file.name)
+    if (!/\.xlsx$/i.test(file.name)) {
+      showToast('엑셀(.xlsx) 백업 파일을 선택해주세요')
+      return
+    }
     try {
-      const raw = isExcel
-        ? await (await loadExcel()).parseBackupXlsx(file)
-        : JSON.parse(await file.text())
-      const data = normalizeBackup(raw)
+      const { parseBackupXlsx } = await loadExcel()
+      const data = normalizeBackup(await parseBackupXlsx(file))
       if (!data) {
         showToast('백업 파일 형식이 올바르지 않습니다')
         return
@@ -252,13 +253,10 @@ export default function DataTab({
           <span className="font-semibold text-rose-500"> 지금 저장된 내용은 모두 대체되니</span> 먼저
           위에서 백업을 받아두시길 권합니다.
         </p>
-        <p className="mb-4 text-xs text-slate-400">
-          예전에 내려받은 JSON 백업 파일도 그대로 불러올 수 있습니다.
-        </p>
         <input
           ref={fileRef}
           type="file"
-          accept=".json,.xlsx,application/json"
+          accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
           onChange={handleFileChange}
           className="hidden"
         />
