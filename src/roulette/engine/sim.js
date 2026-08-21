@@ -19,9 +19,11 @@ function mulberry32(seed) {
 }
 
 export class Race {
-  constructor(mapId, names, seed = Date.now()) {
+  // entries: [{ name, color }] — color 가 없으면 순서대로 색을 만들어 쓴다
+  constructor(mapId, entries, seed = Date.now()) {
+    this.mapId = mapId
     this.map = buildMap(mapId)
-    this.names = names
+    this.entries = entries
     this.rand = mulberry32(seed)
     this.time = 0
     this.results = []
@@ -81,12 +83,12 @@ export class Race {
     const perRow = 9
     const spacing = (WORLD_W - 2) / (perRow - 1)
     // 출발 위치에 따른 유불리가 참가자 순서와 엮이지 않도록 자리를 섞는다
-    const slots = this.names.map((_, i) => i)
+    const slots = this.entries.map((_, i) => i)
     for (let i = slots.length - 1; i > 0; i--) {
       const j = Math.floor(this.rand() * (i + 1))
       ;[slots[i], slots[j]] = [slots[j], slots[i]]
     }
-    this.names.forEach((name, i) => {
+    this.entries.forEach((entry, i) => {
       const slot = slots[i]
       const row = Math.floor(slot / perRow)
       const col = slot % perRow
@@ -107,9 +109,9 @@ export class Race {
       })
       this.marbles.push({
         index: i,
-        name,
+        name: entry.name,
         body,
-        color: marbleColor(i),
+        color: entry.color || marbleColor(i),
         rank: null,
         stuckFor: 0,
         rescues: 0,
