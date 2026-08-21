@@ -245,7 +245,7 @@ svg.scene{display:block;width:100%;height:100%;touch-action:manipulation}
     <span class="lockmsg" id="lockmsg">원을 모두 찾으면 다음 페이지가 열려요</span>
     <button class="btn btn-hint" id="btnHint">정답 보기</button>
     <button class="btn" id="btnReset">다시하기</button>
-    <button class="btn" id="btnPrev">← 이전</button>
+    <button class="btn" id="btnPrev" title="이전 페이지를 처음부터 다시 풉니다">← 이전</button>
     <button class="btn btn-next" id="btnNext">다음 페이지 →</button>
   </footer>
 </div>
@@ -757,7 +757,7 @@ svg.scene{display:block;width:100%;height:100%;touch-action:manipulation}
       b.setAttribute("aria-label", (i + 1) + "단계 " + s.title);
       if (i === page) b.setAttribute("aria-current", "true");
       b.disabled = i + 1 > unlocked;
-      b.addEventListener("click", function () { go(i); });
+      b.addEventListener("click", function () { (i < page ? restart : go)(i); });
       steps.appendChild(b);
     });
 
@@ -772,6 +772,13 @@ svg.scene{display:block;width:100%;height:100%;touch-action:manipulation}
     $("lockmsg").textContent = isDone(page)
       ? "잘했어요! 다음 페이지로 넘어가 보세요"
       : "원을 모두 찾으면 다음 페이지가 열려요";
+  }
+
+  function restart(i, message) {
+    found[i] = {};
+    hinted[i] = false;
+    go(i);
+    speak(message || SCENES[i].title + " — 처음부터 다시 찾아보세요");
   }
 
   function go(i) {
@@ -855,14 +862,8 @@ svg.scene{display:block;width:100%;height:100%;touch-action:manipulation}
 
   /* ── 버튼 ──────────────────────────────────── */
   $("btnNext").addEventListener("click", function () { if (page < SCENES.length - 1) go(page + 1); });
-  $("btnPrev").addEventListener("click", function () { if (page > 0) go(page - 1); });
-  $("btnReset").addEventListener("click", function () {
-    found[page] = {};
-    hinted[page] = false;
-    draw();
-    refresh();
-    speak("이 페이지를 처음부터 다시 찾아보세요");
-  });
+  $("btnPrev").addEventListener("click", function () { if (page > 0) restart(page - 1); });
+  $("btnReset").addEventListener("click", function () { restart(page, "이 페이지를 처음부터 다시 찾아보세요"); });
   $("btnHint").addEventListener("click", function () {
     hinted[page] = !hinted[page];
     draw();
