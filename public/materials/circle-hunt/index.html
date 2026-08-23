@@ -263,7 +263,9 @@ svg.scene{display:block;width:100%;height:100%;touch-action:manipulation}
   var ln = function (x1, y1, x2, y2, stroke, w) {
     return { t: "line", a: { x1: x1, y1: y1, x2: x2, y2: y2, stroke: stroke, "stroke-width": w || 6, "stroke-linecap": "round" } };
   };
-  var item = function (name, isCircle, base, over) { return { name: name, ans: !!isCircle, base: base, over: over || [] }; };
+  var item = function (name, isCircle, base, over, kind) {
+    return { name: name, ans: !!isCircle, base: base, over: over || [], kind: kind || "" };
+  };
   var onRim = function (cx, cy, r, deg) {
     var t = (deg * Math.PI) / 180;
     return [cx + r * Math.cos(t), cy - r * Math.sin(t)];
@@ -555,7 +557,8 @@ svg.scene{display:block;width:100%;height:100%;touch-action:manipulation}
       pt("M 870 252 L 870 276 M 836 276 L 904 276", "none", { stroke: "#8C6A4A", "stroke-width": 12, "stroke-linecap": "round" }),
       pt("M 796 180 A 74 74 0 0 0 944 180", "none", { stroke: "#B08A5E", "stroke-width": 9, fill: "none" }),
       /* 연필꽂이 속 연필 */
-      rc(716, 250, 14, 90, "#4C86D6"), rc(742, 236, 14, 104, "#E4574C"), rc(766, 258, 14, 82, "#57B871")
+      rc(716, 250, 14, 90, "#4C86D6"), rc(742, 236, 14, 104, "#E4574C"), rc(766, 258, 14, 82, "#57B871"),
+      pt("M 648 276 L 692 320", "none", { stroke: "#8C6A4A", "stroke-width": 22, "stroke-linecap": "round" })
     ],
     items: [
       item("탁상시계", true, c(150, 160, 62, WHITE), [
@@ -566,10 +569,10 @@ svg.scene{display:block;width:100%;height:100%;touch-action:manipulation}
       item("비스듬히 놓인 컵", false, el(340, 150, 72, 44, "#D7E8F7"), [
         el(340, 150, 54, 30, "#A9CBE8", { class: "deco" })
       ]),
-      item("시디", true, c(600, 220, 84, "#DCE6EE"), [
-        pt("M 600 152 A 68 68 0 0 1 668 220", "none", { class: "deco", stroke: "#9BD3E8", "stroke-width": 16 }),
-        pt("M 668 220 A 68 68 0 0 1 600 288", "none", { class: "deco", stroke: "#E7A9D2", "stroke-width": 16 }),
-        c(600, 220, 18, "#EADFC8", { class: "deco" })
+      item("돋보기", true, c(600, 220, 80, "#8C6A4A"), [
+        c(600, 220, 64, "#DCEDF5", { class: "deco" }),
+        pt("M 566 180 A 46 46 0 0 0 552 214", "none",
+           { class: "deco", stroke: "rgba(255,255,255,.85)", "stroke-width": 10, "stroke-linecap": "round" })
       ]),
       item("지구본", true, c(870, 180, 72, "#79BEE6"), [
         pt("M 826 142 q 30 -14 52 4 q -10 26 -46 22 z", "#7FB56A", { class: "deco" }),
@@ -601,8 +604,8 @@ svg.scene{display:block;width:100%;height:100%;touch-action:manipulation}
            { class: "deco", stroke: "rgba(120,100,40,.4)", "stroke-width": 4 })
       ]),
       item("동전", true, c(560, 542, 26, "#E5C64B"), [c(560, 542, 17, "none", { class: "deco", stroke: "#C9A82F", "stroke-width": 3 })]),
-      item("동전", true, c(628, 562, 22, "#D8C07E"), [c(628, 562, 14, "none", { class: "deco", stroke: "#B7A05E", "stroke-width": 3 })]),
-      item("동전", true, c(694, 524, 24, "#E5C64B"), [c(694, 524, 15, "none", { class: "deco", stroke: "#C9A82F", "stroke-width": 3 })]),
+      item("바둑돌", true, c(628, 562, 22, "#3C4650"), [c(628, 562, 13, "none", { class: "deco", stroke: "rgba(255,255,255,.35)", "stroke-width": 3 })]),
+      item("탁구공", true, c(694, 524, 24, "#F3A94D"), [c(694, 524, 15, "none", { class: "deco", stroke: "#D98C2E", "stroke-width": 3 })]),
       item("단추", true, c(846, 524, 26, "#B98BD6"), [
         rc(834, 514, 24, 7, "#7A5AA8", { class: "deco", rx: 3 }),
         rc(834, 528, 24, 7, "#7A5AA8", { class: "deco", rx: 3 })
@@ -610,7 +613,129 @@ svg.scene{display:block;width:100%;height:100%;touch-action:manipulation}
     ]
   };
 
-  var SCENES = [scene1, scene2, scene3, scene4, scene5, scene6];
+  /* ── 7단계 · 문구점 진열대 ─────────────────── */
+  var scene7 = {
+    title: "문구점 진열대",
+    level: "최고 도전!",
+    hint: "원과 아주 비슷한 다각형이 숨어 있어요. 가장자리에 곧은 곳이 있는지 살펴보세요",
+    bg: [
+      rc(0, 0, 1000, 620, "#EFE3CC"),
+      rc(0, 163, 1000, 13, "#B5793F"), rc(0, 298, 1000, 13, "#B5793F"),
+      rc(0, 433, 1000, 13, "#B5793F"), rc(0, 568, 1000, 13, "#B5793F"),
+      rc(0, 176, 1000, 6, "rgba(0,0,0,.08)"), rc(0, 311, 1000, 6, "rgba(0,0,0,.08)"),
+      rc(0, 446, 1000, 6, "rgba(0,0,0,.08)"), rc(0, 581, 1000, 6, "rgba(0,0,0,.08)"),
+      /* 손거울 손잡이 */
+      rc(322, 140, 16, 30, "#8C6A4A"), rc(457, 138, 16, 28, "#7E8A94"),
+      /* 시계 받침 */
+      rc(66, 150, 12, 18, "#8C6A4A"), rc(98, 150, 12, 18, "#8C6A4A"),
+      /* 도장 손잡이 */
+      rc(257, 348, 16, 26, "#4C86D6"),
+      /* 색연필 */
+      rc(430, 330, 11, 52, "#E4574C"), rc(446, 320, 11, 62, "#4C86D6"), rc(462, 336, 11, 46, "#57B871")
+    ],
+    items: [
+      /* 첫째 칸 */
+      item("미니 탁상시계", true, c(88, 118, 36, WHITE), [
+        c(88, 118, 27, "none", { class: "deco", stroke: "#DCE3E8", "stroke-width": 3 }),
+        ln(88, 118, 88, 96, "#2F3E4C", 4), ln(88, 118, 104, 126, "#E4574C", 3.5),
+        c(88, 118, 4, "#2F3E4C", { class: "deco" })
+      ]),
+      item("십이각형 컵받침", false,
+        pg("205,82 224,87 238,101 243,120 238,139 224,153 205,158 186,153 172,139 167,120 172,101 186,87", "#E8A0A8"),
+        [pg("205,98 216,101 224,109 227,120 224,131 216,139 205,142 194,139 186,131 183,120 186,109 194,101",
+            "#F6D3D6", { class: "deco" })], "십이각형"),
+      item("동그란 손거울", true, c(330, 116, 38, "#B08A5E"), [
+        c(330, 116, 29, "#D7E8F7", { class: "deco" }),
+        pt("M 312 100 A 22 22 0 0 0 306 116", "none",
+           { class: "deco", stroke: "rgba(255,255,255,.9)", "stroke-width": 6, "stroke-linecap": "round" })
+      ]),
+      item("타원 손거울", false, el(465, 116, 44, 29, "#9FAEB8"), [
+        el(465, 116, 33, 19, "#D7E8F7", { class: "deco" })
+      ]),
+      item("공책", false, rc(560, 62, 116, 100, "#F7F2E4", { rx: 4 }), [
+        rc(560, 62, 11, 100, "#57B871", { class: "deco" }),
+        pt("M 588 92 L 660 92 M 588 112 L 660 112 M 588 132 L 636 132", "none",
+           { class: "deco", stroke: "#C9D6DE", "stroke-width": 3.5 })
+      ]),
+      item("팔각형 스티커", false, pg("752,88 770,106 770,130 752,148 728,148 710,130 710,106 728,88", "#F2C33C"), [
+        pg("740,100 752,112 740,124 728,112", WHITE, { class: "deco" })
+      ]),
+      item("동그란 배지", true, c(890, 118, 24, "#E4574C"), [
+        c(890, 118, 15, "none", { class: "deco", stroke: "rgba(255,255,255,.85)", "stroke-width": 4 })
+      ]),
+
+      /* 둘째 칸 */
+      item("열쇠고리 링", true, c(80, 253, 30, "#B6C0C8"), [
+        c(80, 253, 18, "#EFE3CC", { class: "deco" })
+      ]),
+      item("병뚜껑", true, c(168, 257, 17, "#4C86D6"), [
+        c(168, 257, 10, "none", { class: "deco", stroke: "rgba(255,255,255,.7)", "stroke-width": 3 })
+      ]),
+      item("구슬", true, c(225, 262, 12, "#9B7BD4"), []),
+      item("동그란 자석", true, c(285, 257, 16, "#E4574C"), [
+        c(285, 257, 7, "#EFE3CC", { class: "deco" })
+      ]),
+      item("반원 자석", false, pt("M 338 285 A 34 34 0 0 1 406 285 Z", "#57B871"), [
+        pt("M 350 285 A 22 22 0 0 1 394 285 Z", "#8ED0A0", { class: "deco" })
+      ], "반원"),
+      item("지우개", false, rc(440, 225, 78, 64, "#F0918F", { rx: 18 }), [
+        rc(440, 250, 78, 14, "#E8EDF0", { class: "deco" })
+      ]),
+      item("스마일 스티커", true, c(580, 253, 19, "#F5D547"), [
+        ln(574, 245, 574, 250, "#2F3E4C", 3), ln(587, 245, 587, 250, "#2F3E4C", 3),
+        pt("M 571 257 A 11 11 0 0 0 589 257", "none",
+           { class: "deco", stroke: "#2F3E4C", "stroke-width": 2.5, "stroke-linecap": "round" })
+      ]),
+      item("타원 스티커", false, el(645, 253, 28, 18, "#7FB56A"), [
+        el(645, 253, 17, 9, "#B8DFA8", { class: "deco" })
+      ]),
+      item("풀", false, rc(720, 214, 54, 84, "#E7A9D2", { rx: 6 }), [
+        rc(720, 214, 54, 18, "#B97BB0", { class: "deco", rx: 6 })
+      ]),
+      item("팔각 연필깎이", false, pg("880,232 900,252 900,280 880,300 852,300 832,280 832,252 852,232", "#5C6975"), [
+        rc(854, 260, 24, 12, "#2F3E4C", { class: "deco", rx: 3 })
+      ]),
+
+      /* 셋째 칸 */
+      item("탁구공", true, c(85, 390, 21, "#F3A94D"), [
+        c(85, 390, 13, "none", { class: "deco", stroke: "#D98C2E", "stroke-width": 2.5 })
+      ]),
+      item("메모지", false, rc(140, 352, 72, 72, "#F5E27C", { rx: 3 }), [
+        pt("M 156 376 L 196 376 M 156 394 L 182 394", "none",
+           { class: "deco", stroke: "rgba(120,100,40,.45)", "stroke-width": 3 })
+      ]),
+      item("동그란 도장", true, c(265, 386, 23, "#E08A16"), [
+        c(265, 386, 13, "#FBEBD5", { class: "deco" })
+      ]),
+      item("길쭉한 스티커", false, el(345, 386, 36, 21, "#4C86D6"), []),
+      item("색연필 통", false, el(450, 370, 46, 26, "#9FAEB8"), [
+        el(450, 370, 32, 15, "#6E7A85", { class: "deco" })
+      ]),
+      item("필통", false, rc(540, 352, 150, 66, "#57A8B8", { rx: 8 }), [
+        rc(540, 380, 150, 10, "#3E8595", { class: "deco" }),
+        rc(650, 379, 22, 12, "#2F3E4C", { class: "deco", rx: 4 })
+      ]),
+      item("오각형 배지", false, pg("780,358 809,379 798,412 762,412 751,379", "#9B7BD4"), []),
+      item("삼각자", false, pg("870,424 980,424 980,344", "#F2C33C"), [
+        pg("892,414 962,414 962,364", "#EFE3CC", { class: "deco" })
+      ]),
+
+      /* 넷째 칸 */
+      item("육각 연필", false, pg("80,523 102,507 260,507 282,523 260,539 102,539", ORANGE), [
+        pt("M 80 523 l 22 -8 l 0 16 z", "#4A3B2F", { class: "deco" })
+      ]),
+      item("삼각 깃발", false, pg("330,556 460,556 460,470", "#E4574C"), []),
+      item("자", false, rc(520, 505, 300, 36, "#8ED0A0", { rx: 3 }), [
+        pt("M 550 505 L 550 523 M 580 505 L 580 517 M 610 505 L 610 523 M 640 505 L 640 517 M 670 505 L 670 523 M 700 505 L 700 517 M 730 505 L 730 523 M 760 505 L 760 517 M 790 505 L 790 523",
+           "none", { class: "deco", stroke: "#3F8B57", "stroke-width": 2.5 })
+      ]),
+      item("타원 클립통", false, el(890, 523, 52, 32, "#B6C0C8"), [
+        el(890, 523, 36, 19, "#7E8A94", { class: "deco" })
+      ])
+    ]
+  };
+
+  var SCENES = [scene1, scene2, scene3, scene4, scene5, scene6, scene7];
 
   /* ── 원이 아닌 까닭 ─────────────────────────── */
   var WHY = {
@@ -622,9 +747,12 @@ svg.scene{display:block;width:100%;height:100%;touch-action:manipulation}
     "둥근 사각형": "모서리만 둥글 뿐, 곧고 평평한 변이 있어요.",
     "오각형": "곧은 변 5개로 둘러싸인 다각형이에요.",
     "육각형": "곧은 변 6개와 꼭짓점 6개로 둘러싸여 있어요.",
-    "다각형": "곧은 변으로 둘러싸인 다각형이에요."
+    "팔각형": "곧은 변이 여덟 개예요. 가장자리에 곧은 곳이 보이나요?",
+    "다각형": "곧은 변으로 둘러싸인 다각형이에요. 가장자리를 따라가면 꺾이는 곳이 있어요.",
+    "십이각형": "곧은 변이 열두 개예요. 원처럼 보여도 가장자리가 조금씩 꺾여요.",
+    "반원": "원을 반으로 자른 모양이라 한쪽에 곧은 변이 있어요."
   };
-  var SIDES = { 3: "삼각형", 4: "사각형", 5: "오각형", 6: "육각형" };
+  var SIDES = { 3: "삼각형", 4: "사각형", 5: "오각형", 6: "육각형", 8: "팔각형", 12: "십이각형" };
 
   function shapeKind(spec) {
     if (spec.t === "ellipse") return "타원";
@@ -743,7 +871,7 @@ svg.scene{display:block;width:100%;height:100%;touch-action:manipulation}
       void g.getBoundingClientRect();
       g.classList.add("nope");
       setTimeout(function () { g.classList.remove("nope"); }, 500);
-      var kind = shapeKind(it.base);
+      var kind = it.kind || shapeKind(it.base);
       speak(kind
         ? it.name + " — " + kind + "이에요. " + WHY[kind]
         : it.name + " — 이건 원이 아니에요. 어디가 다른지 살펴볼까요?", "bad");
@@ -831,7 +959,7 @@ svg.scene{display:block;width:100%;height:100%;touch-action:manipulation}
   function celebrate() {
     var last = page === SCENES.length - 1;
     var total = circleCount(SCENES[page]);
-    $("cheerTitle").textContent = last ? "6단계를 모두 마쳤어요!" : "원을 모두 찾았어요!";
+    $("cheerTitle").textContent = last ? SCENES.length + "단계를 모두 마쳤어요!" : "원을 모두 찾았어요!";
     $("cheerText").textContent = last
       ? "우리 주변에는 이렇게 많은 원이 숨어 있어요. 교실에서도 원을 찾아볼까요?"
       : SCENES[page].title + "에서 원 " + total + "개를 찾았어요." +
