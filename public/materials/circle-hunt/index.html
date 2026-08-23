@@ -389,7 +389,7 @@ svg.scene{display:block;width:100%;height:100%;touch-action:manipulation}
     ],
     items: [
       item("도마", false, rc(58, 74, 232, 132, "#BE8347", { rx: 26 }), [
-        c(268, 96, 12, "#E7DBC4", { class: "deco" }),
+        rc(246, 88, 36, 14, "#E7DBC4", { class: "deco", rx: 7 }),
         pt("M 92 140 L 250 140", "none", { class: "deco", stroke: "rgba(90,60,30,.25)", "stroke-width": 5 })
       ]),
       item("타원 접시", false, el(486, 148, 124, 74, CREAM), [
@@ -416,7 +416,7 @@ svg.scene{display:block;width:100%;height:100%;touch-action:manipulation}
         pt("M 172 496 q 26 -18 40 -4 q -14 20 -40 4 z", "#4C9E63", { class: "deco" })
       ]),
       item("달걀 프라이", false, el(408, 540, 92, 62, WHITE), [
-        c(420, 536, 26, "#F5C542", { class: "deco" })
+        el(420, 536, 32, 21, "#F5C542", { class: "deco" })
       ]),
       item("샌드위치", false, pg("598,586 726,586 662,466", "#F0D9A8"), [
         pg("614,566 710,566 662,476", "#7FB56A", { class: "deco" })
@@ -469,7 +469,8 @@ svg.scene{display:block;width:100%;height:100%;touch-action:manipulation}
       item("앞바퀴", true, c(272, 500, 44, "#2F3A44"), [c(272, 500, 20, STEEL, { class: "deco" })]),
       item("뒷바퀴", true, c(478, 500, 44, "#2F3A44"), [c(478, 500, 20, STEEL, { class: "deco" })]),
       item("화단", false, el(890, 402, 104, 46, "#7FB56A"), [
-        c(856, 388, 13, PINK, { class: "deco" }), c(920, 382, 13, "#F2C33C", { class: "deco" })
+        pg("846,398 856,374 866,398", PINK, { class: "deco" }),
+        pg("910,392 920,368 930,392", "#F2C33C", { class: "deco" })
       ])
     ]
   };
@@ -515,11 +516,13 @@ svg.scene{display:block;width:100%;height:100%;touch-action:manipulation}
       ]),
       item("빨간 풍선", true, c(700, 150, 44, "#E4574C"), [
         pt("M 700 194 l -9 12 l 18 0 z", "#C8564C", { class: "deco" }),
-        c(686, 134, 12, "rgba(255,255,255,.6)", { class: "deco" })
+        pt("M 672 140 A 32 32 0 0 1 694 118", "none",
+           { class: "deco", stroke: "rgba(255,255,255,.65)", "stroke-width": 9, "stroke-linecap": "round" })
       ]),
       item("파란 풍선", true, c(880, 214, 38, "#4C86D6"), [
         pt("M 880 252 l -8 11 l 16 0 z", "#3B6BB5", { class: "deco" }),
-        c(868, 200, 10, "rgba(255,255,255,.6)", { class: "deco" })
+        pt("M 856 208 A 27 27 0 0 1 874 190", "none",
+           { class: "deco", stroke: "rgba(255,255,255,.6)", "stroke-width": 8, "stroke-linecap": "round" })
       ]),
       item("길쭉한 풍선", false, el(792, 120, 34, 50, "#F2C33C"), [
         pt("M 792 170 l -8 11 l 16 0 z", "#D9A81F", { class: "deco" })
@@ -528,7 +531,8 @@ svg.scene{display:block;width:100%;height:100%;touch-action:manipulation}
         pt("M 596 258 l -8 11 l 16 0 z", "#3F8B57", { class: "deco" })
       ]),
       item("아이스크림", true, c(500, 516, 40, PINK), [
-        c(486, 504, 10, "rgba(255,255,255,.6)", { class: "deco" })
+        pt("M 474 512 A 29 29 0 0 1 494 492", "none",
+           { class: "deco", stroke: "rgba(255,255,255,.6)", "stroke-width": 8, "stroke-linecap": "round" })
       ]),
       item("아이스크림 콘", false, pg("464,542 536,542 500,608", "#E0A960"), [
         pt("M 476 556 L 512 592 M 500 550 L 522 570", "none",
@@ -600,13 +604,40 @@ svg.scene{display:block;width:100%;height:100%;touch-action:manipulation}
       item("동전", true, c(628, 562, 22, "#D8C07E"), [c(628, 562, 14, "none", { class: "deco", stroke: "#B7A05E", "stroke-width": 3 })]),
       item("동전", true, c(694, 524, 24, "#E5C64B"), [c(694, 524, 15, "none", { class: "deco", stroke: "#C9A82F", "stroke-width": 3 })]),
       item("단추", true, c(846, 524, 26, "#B98BD6"), [
-        c(838, 516, 5, "#7A5AA8", { class: "deco" }), c(854, 516, 5, "#7A5AA8", { class: "deco" }),
-        c(838, 532, 5, "#7A5AA8", { class: "deco" }), c(854, 532, 5, "#7A5AA8", { class: "deco" })
+        rc(834, 514, 24, 7, "#7A5AA8", { class: "deco", rx: 3 }),
+        rc(834, 528, 24, 7, "#7A5AA8", { class: "deco", rx: 3 })
       ])
     ]
   };
 
   var SCENES = [scene1, scene2, scene3, scene4, scene5, scene6];
+
+  /* ── 원이 아닌 까닭 ─────────────────────────── */
+  var WHY = {
+    "타원": "가운데에서 잰 길이가 방향마다 달라요. 원은 어디를 재도 같아요.",
+    "삼각형": "곧은 변 3개와 뾰족한 꼭짓점 3개로 둘러싸여 있어요.",
+    "사각형": "곧은 변 4개와 뾰족한 꼭짓점 4개로 둘러싸여 있어요.",
+    "직사각형": "곧은 변 4개와 뾰족한 꼭짓점 4개로 둘러싸여 있어요.",
+    "정사각형": "네 변의 길이가 모두 같고, 꼭짓점이 4개 있어요.",
+    "둥근 사각형": "모서리만 둥글 뿐, 곧고 평평한 변이 있어요.",
+    "오각형": "곧은 변 5개로 둘러싸인 다각형이에요.",
+    "육각형": "곧은 변 6개와 꼭짓점 6개로 둘러싸여 있어요.",
+    "다각형": "곧은 변으로 둘러싸인 다각형이에요."
+  };
+  var SIDES = { 3: "삼각형", 4: "사각형", 5: "오각형", 6: "육각형" };
+
+  function shapeKind(spec) {
+    if (spec.t === "ellipse") return "타원";
+    if (spec.t === "rect") {
+      if ((+spec.a.rx || 0) >= 10) return "둥근 사각형";
+      return +spec.a.width === +spec.a.height ? "정사각형" : "직사각형";
+    }
+    if (spec.t === "polygon") {
+      var n = spec.a.points.trim().split(/\s+/).length;
+      return SIDES[n] || "다각형";
+    }
+    return "";
+  }
 
   /* ── 상태 ───────────────────────────────────── */
   var NS = "http://www.w3.org/2000/svg";
@@ -614,6 +645,7 @@ svg.scene{display:block;width:100%;height:100%;touch-action:manipulation}
   var unlocked = 1;
   var found = SCENES.map(function () { return {}; });
   var hinted = SCENES.map(function () { return false; });
+  var opened = SCENES.map(function () { return false; });
 
   var $ = function (id) { return document.getElementById(id); };
   var svg = $("scene"), steps = $("steps"), say = $("say"), cheer = $("cheer");
@@ -711,7 +743,10 @@ svg.scene{display:block;width:100%;height:100%;touch-action:manipulation}
       void g.getBoundingClientRect();
       g.classList.add("nope");
       setTimeout(function () { g.classList.remove("nope"); }, 500);
-      speak(it.name + " — 이건 원이 아니에요. 어디가 다른지 살펴볼까요?", "bad");
+      var kind = shapeKind(it.base);
+      speak(kind
+        ? it.name + " — " + kind + "이에요. " + WHY[kind]
+        : it.name + " — 이건 원이 아니에요. 어디가 다른지 살펴볼까요?", "bad");
       return;
     }
 
@@ -761,7 +796,8 @@ svg.scene{display:block;width:100%;height:100%;touch-action:manipulation}
       steps.appendChild(b);
     });
 
-    var open = isDone(page) || hinted[page];
+    if (isDone(page) || hinted[page]) opened[page] = true;
+    var open = opened[page];
     if (open) unlocked = Math.max(unlocked, Math.min(SCENES.length, page + 2));
     var next = $("btnNext");
     next.disabled = !open || page === SCENES.length - 1;
@@ -777,6 +813,7 @@ svg.scene{display:block;width:100%;height:100%;touch-action:manipulation}
   function restart(i, message) {
     found[i] = {};
     hinted[i] = false;
+    opened[i] = false;
     go(i);
     speak(message || SCENES[i].title + " — 처음부터 다시 찾아보세요");
   }
@@ -804,7 +841,7 @@ svg.scene{display:block;width:100%;height:100%;touch-action:manipulation}
     actions.textContent = "";
     if (last) {
       actions.appendChild(button("처음부터 다시하기", "btn btn-next", function () {
-        SCENES.forEach(function (s, i) { found[i] = {}; hinted[i] = false; });
+        SCENES.forEach(function (s, i) { found[i] = {}; hinted[i] = false; opened[i] = false; });
         unlocked = 1;
         go(0);
       }));
