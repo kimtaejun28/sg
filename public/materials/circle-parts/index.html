@@ -36,25 +36,25 @@ h1,h2,h3,.d{font-family:"Jua","Noto Sans KR",sans-serif;font-weight:400}
 .app{height:100dvh;display:flex;flex-direction:column;gap:10px;padding:12px clamp(10px,2vw,22px) 14px}
 header{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
 .brand{display:flex;align-items:center;gap:11px;margin-right:auto}
-.brand h1{margin:0;font-size:clamp(19px,1.9vw,36px)}
-.brand p{margin:2px 0 0;font-size:clamp(13px,.95vw,19px);color:var(--soft)}
+.brand h1{margin:0;font-size:clamp(19px,3.2vh,60px)}
+.brand p{margin:2px 0 0;font-size:clamp(13px,1.7vh,30px);color:var(--soft)}
 .tabs{display:flex;gap:8px;flex-wrap:wrap}
-.tab{font-family:"Jua","Noto Sans KR",sans-serif;font-size:clamp(15px,1.15vw,24px);
-  padding:clamp(8px,.7vw,15px) clamp(15px,1.1vw,26px);border-radius:12px;
+.tab{font-family:"Jua","Noto Sans KR",sans-serif;font-size:clamp(15px,2.3vh,44px);
+  padding:clamp(8px,1.1vh,20px) clamp(15px,1.8vh,34px);border-radius:12px;
   border:1.6px solid var(--line);background:var(--card);color:var(--soft);cursor:pointer;transition:.18s}
 .tab:hover{transform:translateY(-1px)}
 .tab[aria-selected="true"]{background:var(--brand);border-color:var(--brand);color:#fff}
 .tab:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
 
-main{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) clamp(240px,17vw,380px);gap:clamp(12px,1vw,22px)}
+main{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) clamp(250px,26vw,680px);gap:clamp(12px,1.2vh,26px)}
 .play{display:flex;flex-direction:column;gap:clamp(10px,.8vw,18px);min-height:0}
 /* 안내 띠 — 원 바로 아래, 교실 뒤에서도 읽히도록 크게 */
 .saybar{flex:0 0 auto;display:flex;align-items:center;gap:clamp(12px,1.2vw,24px);
   padding:clamp(12px,1vw,20px) clamp(16px,1.4vw,30px);border-radius:16px;
   background:var(--card);border:1px solid var(--line);box-shadow:var(--shadow);
-  height:clamp(88px,6.2vw,112px);overflow:auto;transition:background .2s}
-.saybar .msg{flex:1;margin:0;font-size:clamp(16px,1.42vw,28px);line-height:1.45;color:var(--ink);font-weight:500}
-.saybar .note{flex:0 0 auto;text-align:right;font-size:clamp(13px,1.05vw,21px);color:var(--soft);line-height:1.7}
+  height:clamp(88px,11vh,210px);overflow:auto;transition:background .2s}
+.saybar .msg{flex:1;margin:0;font-size:clamp(16px,3vh,58px);line-height:1.45;color:var(--ink);font-weight:500}
+.saybar .note{flex:0 0 auto;text-align:right;font-size:clamp(13px,2.1vh,40px);color:var(--soft);line-height:1.7}
 .saybar .note b{color:var(--brand-ink)}
 .saybar.yes{background:var(--brand-wash);border-color:transparent}
 .saybar.yes .msg{color:var(--brand-ink);font-weight:700}
@@ -66,35 +66,35 @@ main{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) clamp(
 svg.board{width:100%;height:100%;touch-action:manipulation}
 .side{display:flex;flex-direction:column;gap:clamp(12px,1vw,20px);min-height:0;overflow:hidden}
 .panel{background:var(--card);border:1px solid var(--line);border-radius:16px;
-  padding:clamp(14px,1.1vw,22px) clamp(15px,1.1vw,24px);box-shadow:var(--shadow)}
+  padding:clamp(14px,1.8vh,34px) clamp(15px,1.8vh,36px);box-shadow:var(--shadow)}
 .panel h2{margin:0 0 6px;font-size:clamp(17px,1.3vw,26px)}
 .panel p{margin:0;color:var(--soft);font-size:clamp(14.5px,1.05vw,21px);line-height:1.7}
 .panel p+p{margin-top:8px}
 /* 조작 패널은 늘 맨 위 같은 자리 — 안내가 길어져도 버튼이 밀리지 않는다 */
 .panel.controls{flex:0 0 auto}
-.step-label{font-size:clamp(12.5px,.95vw,18px);letter-spacing:.08em;color:var(--soft);margin:0 0 clamp(8px,.7vw,14px)}
-.btn{display:block;font-family:"Jua","Noto Sans KR",sans-serif;font-size:clamp(17px,1.45vw,30px);
-  padding:clamp(15px,1.2vw,24px) 16px;border-radius:13px;
+.step-label{font-size:clamp(12.5px,1.9vh,34px);letter-spacing:.08em;color:var(--soft);margin:0 0 clamp(8px,1.2vh,22px)}
+.btn{display:block;font-family:"Jua","Noto Sans KR",sans-serif;font-size:clamp(17px,3.2vh,62px);
+  padding:clamp(15px,2.2vh,42px) 16px;border-radius:clamp(13px,1.4vh,26px);
   border:1.8px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer;transition:.15s;width:100%;
   line-height:1.35}
 .btn:hover:not(:disabled){transform:translateY(-1px)}
 .btn:disabled{opacity:.5;cursor:not-allowed}
 .btn.primary{background:var(--brand);border-color:var(--brand);color:#fff}
 .btn.ghost{background:transparent}
-.btn+.btn{margin-top:clamp(9px,.8vw,16px)}
-.btn.small{font-size:clamp(15px,1.15vw,24px);padding:clamp(11px,.9vw,18px) 14px}
+.btn+.btn{margin-top:clamp(9px,1.3vh,24px)}
+.btn.small{font-size:clamp(15px,2.4vh,46px);padding:clamp(11px,1.6vh,30px) 14px}
 .btn:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
 .readout{display:flex;flex-direction:column;gap:8px;font-size:14.5px}
-.readout div{display:flex;justify-content:space-between;gap:10px;padding:clamp(11px,.9vw,18px) 14px;border-radius:10px;
-  background:var(--brand-wash);color:var(--brand-ink);font-size:clamp(15.5px,1.25vw,26px)}
+.readout div{display:flex;justify-content:space-between;gap:10px;padding:clamp(11px,1.6vh,30px) 14px;border-radius:10px;
+  background:var(--brand-wash);color:var(--brand-ink);font-size:clamp(15.5px,2.7vh,52px)}
 .readout b{font-family:"Jua","Noto Sans KR",sans-serif;font-weight:400;font-variant-numeric:tabular-nums}
 .verdict{margin-top:12px;padding:12px 15px;border-radius:12px;font-size:clamp(14.5px,1.05vw,21px);font-weight:700;
   min-height:clamp(92px,7vw,140px);display:flex;align-items:center;line-height:1.6}
 .verdict.yes{background:var(--brand-wash);color:var(--brand-ink)}
 .verdict.no{background:var(--rose-wash);color:var(--rose)}
 .verdict.idle{background:transparent;color:var(--soft);font-weight:400}
-label.slider{display:block;font-size:clamp(14px,1.05vw,21px);color:var(--soft);margin-top:clamp(8px,.8vw,16px)}
-input[type=range]{width:100%;accent-color:var(--brand);margin-top:8px;height:clamp(18px,1.4vw,30px)}
+label.slider{display:block;font-size:clamp(14px,2.1vh,40px);color:var(--soft);margin-top:clamp(8px,1.4vh,26px)}
+input[type=range]{width:100%;accent-color:var(--brand);margin-top:10px;height:clamp(18px,2.6vh,50px)}
 .tally{font-size:clamp(13.5px,1vw,20px);color:var(--soft);margin-top:12px;line-height:1.7}
 .tally b{color:var(--brand-ink)}
 .count-note{margin-top:10px;font-family:"Jua","Noto Sans KR",sans-serif;font-size:clamp(15px,1.2vw,24px);color:var(--brand-ink);

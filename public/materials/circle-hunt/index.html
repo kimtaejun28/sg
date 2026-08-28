@@ -67,13 +67,13 @@ h1,h2,h3,.display{font-family:"Jua","Noto Sans KR",sans-serif;font-weight:400;le
 .topbar{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
 .brand{display:flex;align-items:center;gap:12px;margin-right:auto}
 .brand-mark{width:42px;height:42px;flex:none}
-.brand h1{margin:0;font-size:clamp(21px,2.4vw,30px);line-height:1}
-.brand p{margin:3px 0 0;font-size:13px;color:var(--ink-soft)}
+.brand h1{margin:0;font-size:clamp(21px,3.1vh,58px);line-height:1}
+.brand p{margin:3px 0 0;font-size:clamp(12px,1.6vh,28px);color:var(--ink-soft)}
 .steps{display:flex;align-items:center;gap:8px}
 .step{
-  width:38px;height:38px;border-radius:50%;border:2px solid var(--line);
+  width:clamp(38px,5vh,92px);height:clamp(38px,5vh,92px);border-radius:50%;border:2px solid var(--line);
   background:var(--card);color:var(--ink-soft);
-  font-family:"Jua","Noto Sans KR",sans-serif;font-size:17px;line-height:1;
+  font-family:"Jua","Noto Sans KR",sans-serif;font-size:clamp(17px,2.4vh,44px);line-height:1;
   display:grid;place-items:center;cursor:pointer;
   transition:transform .15s ease,background .2s,border-color .2s,color .2s;
 }
@@ -82,9 +82,9 @@ h1,h2,h3,.display{font-family:"Jua","Noto Sans KR",sans-serif;font-weight:400;le
 .step.done{border-color:var(--brand);color:var(--brand-ink);background:var(--brand-wash)}
 .step:disabled{cursor:not-allowed;opacity:.45}
 .level{
-  display:inline-flex;align-items:center;gap:8px;padding:7px 15px;border-radius:999px;
+  display:inline-flex;align-items:center;gap:8px;padding:clamp(7px,1vh,18px) clamp(15px,1.8vh,32px);border-radius:999px;
   background:var(--amber-wash);color:var(--amber);border:1.5px solid currentColor;
-  font-family:"Jua","Noto Sans KR",sans-serif;font-size:15px;white-space:nowrap;
+  font-family:"Jua","Noto Sans KR",sans-serif;font-size:clamp(15px,2.2vh,40px);white-space:nowrap;
 }
 .level b{font-weight:400;color:var(--ink)}
 
@@ -94,8 +94,8 @@ h1,h2,h3,.display{font-family:"Jua","Noto Sans KR",sans-serif;font-weight:400;le
   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;
 }
 .scene-head{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;justify-content:center;text-align:center}
-.scene-head h2{margin:0;font-size:clamp(19px,2.1vw,26px)}
-.scene-head p{margin:0;font-size:14px;color:var(--ink-soft)}
+.scene-head h2{margin:0;font-size:clamp(19px,2.9vh,54px)}
+.scene-head p{margin:0;font-size:clamp(14px,1.9vh,34px);color:var(--ink-soft)}
 .frame{
   position:relative;flex:0 0 auto;width:100%;max-width:100%;aspect-ratio:1000/620;
   background:var(--card);
@@ -125,8 +125,9 @@ svg.scene{display:block;width:100%;height:100%;touch-action:manipulation}
 
 /* ── 상태 문구 ────────────────────────── */
 .say{
-  min-height:30px;display:flex;align-items:center;gap:9px;padding:5px 16px;border-radius:999px;
-  font-size:clamp(14px,1.5vw,17px);background:transparent;color:var(--ink-soft);transition:.2s;
+  min-height:clamp(30px,4.6vh,88px);display:flex;align-items:center;gap:9px;
+  padding:clamp(5px,.9vh,16px) clamp(16px,2vh,36px);border-radius:999px;
+  font-size:clamp(14px,2.4vh,46px);background:transparent;color:var(--ink-soft);transition:.2s;
 }
 .say.good{background:var(--brand-wash);color:var(--brand-ink);font-weight:700}
 .say.bad{background:var(--amber-wash);color:var(--amber);font-weight:700}
@@ -134,15 +135,15 @@ svg.scene{display:block;width:100%;height:100%;touch-action:manipulation}
 /* ── 꼬리말 ───────────────────────────── */
 .bottombar{display:flex;align-items:center;gap:clamp(12px,2vw,26px);flex-wrap:wrap}
 .count{display:flex;align-items:center;gap:12px;margin-right:auto}
-.count-num{font-family:"Jua","Noto Sans KR",sans-serif;font-size:clamp(18px,2vw,24px);white-space:nowrap}
+.count-num{font-family:"Jua","Noto Sans KR",sans-serif;font-size:clamp(18px,2.9vh,54px);white-space:nowrap}
 .count-num b{color:var(--brand-ink);font-weight:400;font-size:1.25em}
 .pips{display:flex;gap:7px;flex-wrap:wrap}
-.pip{width:19px;height:19px;border-radius:50%;border:2.5px solid var(--line);background:transparent;transition:.25s}
+.pip{width:clamp(19px,2.4vh,44px);height:clamp(19px,2.4vh,44px);border-radius:50%;border:2.5px solid var(--line);background:transparent;transition:.25s}
 .pip.on{background:var(--brand);border-color:var(--brand);transform:scale(1.08)}
 .pip.hinted{border-color:var(--hint);border-style:dashed}
 .btn{
-  font-family:"Jua","Noto Sans KR",sans-serif;font-size:clamp(15px,1.7vw,19px);
-  padding:12px 22px;border-radius:14px;border:2px solid transparent;cursor:pointer;
+  display:inline-flex;font-family:"Jua","Noto Sans KR",sans-serif;font-size:clamp(15px,2.7vh,50px);
+  padding:clamp(12px,1.9vh,36px) clamp(22px,2.6vh,48px);border-radius:14px;border:2px solid transparent;cursor:pointer;
   display:inline-flex;align-items:center;gap:8px;transition:transform .12s ease,filter .2s,background .2s;
   background:var(--card);color:var(--ink);border-color:var(--line);
 }
@@ -154,7 +155,7 @@ svg.scene{display:block;width:100%;height:100%;touch-action:manipulation}
 .btn-next:disabled{background:var(--card);color:var(--ink-soft);border-color:var(--line);cursor:not-allowed;opacity:.7}
 .btn-next.ready{animation:beat 1.4s ease-in-out infinite}
 @keyframes beat{0%,100%{box-shadow:0 0 0 0 rgba(15,138,128,.5)}60%{box-shadow:0 0 0 14px rgba(15,138,128,0)}}
-.lockmsg{font-size:13px;color:var(--ink-soft)}
+.lockmsg{font-size:clamp(13px,1.8vh,32px);color:var(--ink-soft)}
 
 /* ── 축하 오버레이 ────────────────────── */
 .cheer{
@@ -164,11 +165,11 @@ svg.scene{display:block;width:100%;height:100%;touch-action:manipulation}
 }
 .cheer.show{opacity:1;visibility:visible}
 .cheer-card{
-  background:var(--card);border-radius:22px;padding:clamp(22px,3vw,34px) clamp(26px,4vw,46px);
-  text-align:center;box-shadow:0 30px 60px -30px rgba(0,0,0,.6);position:relative;max-width:min(560px,92%);
+  background:var(--card);border-radius:22px;padding:clamp(22px,3.4vh,60px) clamp(26px,4.4vh,80px);
+  text-align:center;box-shadow:0 30px 60px -30px rgba(0,0,0,.6);position:relative;max-width:min(78%,1100px);
 }
-.cheer-card h3{margin:0 0 8px;font-size:clamp(22px,2.8vw,32px)}
-.cheer-card p{margin:0 0 20px;color:var(--ink-soft);font-size:15px;line-height:1.6}
+.cheer-card h3{margin:0 0 8px;font-size:clamp(22px,3.6vh,66px)}
+.cheer-card p{margin:0 0 20px;color:var(--ink-soft);font-size:clamp(15px,2.1vh,38px);line-height:1.6}
 .cheer-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
 .close-x{
   position:absolute;top:10px;right:12px;width:34px;height:34px;border-radius:50%;
