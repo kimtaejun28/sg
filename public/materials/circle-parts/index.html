@@ -46,7 +46,21 @@ header{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
 .tab[aria-selected="true"]{background:var(--brand);border-color:var(--brand);color:#fff}
 .tab:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
 
-main{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) clamp(286px,22vw,480px);gap:clamp(12px,1vw,22px)}
+main{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) clamp(240px,17vw,380px);gap:clamp(12px,1vw,22px)}
+.play{display:flex;flex-direction:column;gap:clamp(10px,.8vw,18px);min-height:0}
+/* 안내 띠 — 원 바로 아래, 교실 뒤에서도 읽히도록 크게 */
+.saybar{flex:0 0 auto;display:flex;align-items:center;gap:clamp(12px,1.2vw,24px);
+  padding:clamp(12px,1vw,20px) clamp(16px,1.4vw,30px);border-radius:16px;
+  background:var(--card);border:1px solid var(--line);box-shadow:var(--shadow);
+  height:clamp(88px,6.2vw,112px);overflow:auto;transition:background .2s}
+.saybar .msg{flex:1;margin:0;font-size:clamp(16px,1.42vw,28px);line-height:1.45;color:var(--ink);font-weight:500}
+.saybar .note{flex:0 0 auto;text-align:right;font-size:clamp(13px,1.05vw,21px);color:var(--soft);line-height:1.7}
+.saybar .note b{color:var(--brand-ink)}
+.saybar.yes{background:var(--brand-wash);border-color:transparent}
+.saybar.yes .msg{color:var(--brand-ink);font-weight:700}
+.saybar.no{background:var(--rose-wash);border-color:transparent}
+.saybar.no .msg{color:var(--rose);font-weight:700}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 .stage{background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);
   display:grid;place-items:center;overflow:hidden;position:relative;min-height:0;padding:6px}
 svg.board{width:100%;height:100%;touch-action:manipulation}
@@ -56,9 +70,8 @@ svg.board{width:100%;height:100%;touch-action:manipulation}
 .panel h2{margin:0 0 6px;font-size:clamp(17px,1.3vw,26px)}
 .panel p{margin:0;color:var(--soft);font-size:clamp(14.5px,1.05vw,21px);line-height:1.7}
 .panel p+p{margin-top:8px}
-/* 조작 패널은 늘 맨 위 같은 자리 — 설명이 길어져도 버튼이 밀리지 않는다 */
+/* 조작 패널은 늘 맨 위 같은 자리 — 안내가 길어져도 버튼이 밀리지 않는다 */
 .panel.controls{flex:0 0 auto}
-#guide{flex:1 1 auto;min-height:0;overflow:auto}
 .step-label{font-size:clamp(12.5px,.95vw,18px);letter-spacing:.08em;color:var(--soft);margin:0 0 clamp(8px,.7vw,14px)}
 .btn{display:block;font-family:"Jua","Noto Sans KR",sans-serif;font-size:clamp(17px,1.45vw,30px);
   padding:clamp(15px,1.2vw,24px) 16px;border-radius:13px;
@@ -92,6 +105,8 @@ input[type=range]{width:100%;accent-color:var(--brand);margin-top:8px;height:cla
   .side{flex-direction:row;overflow-x:auto}
   .panel{min-width:250px}
   .brand p{display:none}
+  .saybar{flex-direction:column;align-items:flex-start;justify-content:center;gap:4px;height:auto;min-height:76px}
+  .saybar .note{text-align:left}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
@@ -115,18 +130,20 @@ input[type=range]{width:100%;accent-color:var(--brand);margin-top:8px;height:cla
   </header>
 
   <main>
-    <div class="stage">
-      <svg class="board" id="board" viewBox="0 0 620 560" preserveAspectRatio="xMidYMid meet"
-           role="img" aria-label="원 활동 화면"></svg>
+    <div class="play">
+      <div class="stage">
+        <svg class="board" id="board" viewBox="0 0 620 560" preserveAspectRatio="xMidYMid meet"
+             role="img" aria-label="원 활동 화면"></svg>
+      </div>
+      <div class="saybar" id="saybar" role="status" aria-live="polite">
+        <h2 id="guideTitle" class="sr-only">접어서 중심 찾기</h2>
+        <p class="msg" id="guideText"></p>
+        <div class="note" id="extra"></div>
+      </div>
     </div>
 
     <div class="side">
       <div class="panel controls" id="controls"></div>
-      <div class="panel" id="guide">
-        <h2 id="guideTitle">접어서 중심 찾기</h2>
-        <p id="guideText"></p>
-        <div id="extra"></div>
-      </div>
     </div>
   </main>
 </div>
@@ -140,6 +157,7 @@ input[type=range]{width:100%;accent-color:var(--brand);margin-top:8px;height:cla
   var guideText = document.getElementById("guideText");
   var controls = document.getElementById("controls");
   var extra = document.getElementById("extra");
+  var saybar = document.getElementById("saybar");
   var tabs = [document.getElementById("t0"), document.getElementById("t1"), document.getElementById("t2")];
 
   var CX = 310, CY = 250, PX_PER_CM = 40;
@@ -195,8 +213,8 @@ input[type=range]{width:100%;accent-color:var(--brand);margin-top:8px;height:cla
       n("text", { x: CX + 44, y: CY - 18, "font-size": 22, fill: "var(--rose)", "font-family": "Jua, sans-serif" }).textContent = "원의 중심";
       n("text", { x: CX - R + 34, y: CY - 16, "font-size": 21, fill: "var(--brand-ink)", "font-family": "Jua, sans-serif" }).textContent = "지름";
     }
-    guideText.textContent = FOLD_TEXT[foldStep];
-    extra.textContent = (foldStep === 5 ? "다 찾았어요" : foldStep + 1 + " / 6단계");
+    say("", FOLD_TEXT[foldStep]);
+    extra.innerHTML = (foldStep === 5 ? "<b>다 찾았어요</b>" : "<b>" + (foldStep + 1) + "</b> / 6단계");
     var b = el("foldBtn");
     if (b) b.textContent = FOLD_BTN[foldStep];
   }
@@ -208,7 +226,7 @@ input[type=range]{width:100%;accent-color:var(--brand);margin-top:8px;height:cla
       '<p class="step-label">순서대로 눌러 보세요</p>' +
       '<button class="btn primary" id="foldBtn">반으로 접기</button>' +
       '<button class="btn ghost small" id="foldReset">처음으로</button>';
-    extra.className = "count-note";
+    extra.className = "note";
     el("foldBtn").addEventListener("click", function () {
       foldStep = (foldStep + 1) % 6;
       drawFold();
@@ -263,7 +281,7 @@ input[type=range]{width:100%;accent-color:var(--brand);margin-top:8px;height:cla
 
   function tapCircle(ev) {
     var p = pointOnCircle(ev);
-    if (!first) { first = p; setVerdict("idle", "이제 반대쪽 점을 눌러 선을 그으세요."); drawDiameterBoard(); return; }
+    if (!first) { first = p; say("", "이제 반대쪽 점을 눌러 선을 그으세요."); drawDiameterBoard(); return; }
 
     var gap = Math.abs(p.a - first.a) % (2 * Math.PI);
     if (gap > Math.PI) gap = 2 * Math.PI - gap;      /* 두 점 사이의 각도 (0~180°) */
@@ -278,46 +296,44 @@ input[type=range]{width:100%;accent-color:var(--brand);margin-top:8px;height:cla
 
     if (ok) {
       diaCount++;
-      setVerdict("yes", "지름이 맞아요! 중심을 지나갔고, 길이는 " + cm(len) + "cm입니다." +
-        (nudged ? " (중심을 정확히 지나도록 살짝 맞춰 주었어요.)" : ""));
+      say("yes", "지름이 맞아요! 중심을 지나갔고 길이는 " + cm(len) + "cm예요." +
+        (nudged ? " (중심을 지나도록 살짝 맞췄어요.)" : ""));
     } else {
       chordCount++;
-      setVerdict("no", "중심을 지나지 않았어요. 길이도 " + cm(len) + "cm라서 지름 " +
-        cm(2 * R2) + "cm보다 짧아요. 원에서 가장 긴 선이 지름이에요.");
+      say("no", "중심을 지나지 않았어요. 길이 " + cm(len) + "cm로 지름 " + cm(2 * R2) +
+        "cm보다 짧아요. 원에서 가장 긴 선이 지름이에요.");
     }
     drawDiameterBoard();
     updateTally();
   }
 
-  function setVerdict(kind, text) {
-    var v = el("verdict");
-    if (!v) return;
-    v.className = "verdict " + kind;
-    v.textContent = text;
+  function say(kind, text) {
+    saybar.className = "saybar" + (kind === "yes" || kind === "no" ? " " + kind : "");
+    guideText.textContent = text;
   }
+  var setVerdict = say;
   function updateTally() {
     var t = el("tally");
     if (!t) return;
     var lens = lines.filter(function (L) { return L.ok; }).map(function (L) { return L.len; });
     var same = lens.length > 1 && lens.every(function (v) { return v === lens[0]; });
-    t.innerHTML = "지름 <b>" + diaCount + "개</b> · 지름이 아닌 선 " + chordCount + "개" +
-      (lens.length ? "<br>" + (same ? "그은 지름은 <b>모두 " + lens[0] + "cm</b>예요." : "지름 길이 : " + lens.join("cm, ") + "cm") : "");
+    t.innerHTML = "지름 <b>" + diaCount + "개</b> · 아닌 선 " + chordCount + "개" +
+      (same ? "<br>모두 <b>" + lens[0] + "cm</b>예요" : "");
   }
 
   function renderDiameter() {
     setBoard(468, 234);
     guideTitle.textContent = "지름 그어 보기";
-    guideText.textContent = "원 위의 점 두 개를 눌러 선을 그어 보세요. 중심을 지나면 지름, 지나지 않으면 지름이 아닙니다. 거의 반대편을 누르면 중심을 정확히 지나도록 맞춰 주고, 그보다 벗어나면 길이가 지름보다 짧게 나옵니다.";
     controls.innerHTML =
       '<p class="step-label">원 위의 점 두 개를 누르세요</p>' +
       '<button class="btn ghost" id="clearLines">모두 지우기</button>';
-    extra.className = "";
-    extra.innerHTML =
-      '<div class="verdict idle" id="verdict">원 위의 점을 눌러 시작하세요.</div>' +
-      '<p class="tally" id="tally"></p>';
+    extra.className = "note";
+    extra.innerHTML = '<span id="tally"></span>';
+    say("", "원 위의 점 두 개를 눌러 선을 그어 보세요. 중심을 지나면 지름, 지나지 않으면 지름이 아니에요.");
     el("clearLines").addEventListener("click", function () {
       lines = []; first = null; diaCount = 0; chordCount = 0;
-      setVerdict("idle", "원 위의 점을 눌러 시작하세요."); updateTally(); drawDiameterBoard();
+      say("", "원 위의 점 두 개를 눌러 선을 그어 보세요. 중심을 지나면 지름, 지나지 않으면 지름이 아니에요.");
+      updateTally(); drawDiameterBoard();
     });
     lines = []; first = null; diaCount = 0; chordCount = 0;
     updateTally();
@@ -371,13 +387,13 @@ input[type=range]{width:100%;accent-color:var(--brand);margin-top:8px;height:cla
   function renderRadius() {
     setBoard(566, 252);
     guideTitle.textContent = "반지름과 지름";
-    guideText.textContent = "파란 점을 잡고 돌려 보세요. 어느 방향으로 옮겨도 반지름의 길이는 그대로입니다. 원의 크기를 바꾸면 지름은 어떻게 될까요?";
+    say("", "파란 점을 잡고 돌려 보세요. 어느 방향으로 옮겨도 반지름의 길이는 그대로입니다. 원의 크기를 바꾸면 지름은 어떻게 될까요?");
     controls.innerHTML =
       '<p class="step-label">길이 재기</p>' +
       '<div class="readout"><div>반지름 <b id="rVal">4.0cm</b></div><div>지름 <b id="dVal">8.0cm</b></div></div>' +
       '<label class="slider">원의 크기 바꾸기<input type="range" id="rRange" min="2" max="6" step="0.5" value="4"></label>' +
       '<button class="btn primary" id="diaToggle" style="margin-top:11px">지름 만들기</button>';
-    extra.className = "";
+    extra.className = "note";
     extra.innerHTML = "";
     el("rRange").addEventListener("input", function (e) { rCm = parseFloat(e.target.value); drawRadius(); });
     el("diaToggle").addEventListener("click", function () {
