@@ -82,7 +82,8 @@ svg.board{width:100%;height:100%;touch-action:manipulation}
 .verdict.idle{background:transparent;color:var(--soft);font-weight:400}
 label.slider{display:block;font-size:clamp(14px,1.05vw,21px);color:var(--soft);margin-top:clamp(8px,.8vw,16px)}
 input[type=range]{width:100%;accent-color:var(--brand);margin-top:8px;height:clamp(18px,1.4vw,30px)}
-.tally{font-size:clamp(13.5px,1vw,20px);color:var(--soft);margin-top:10px}
+.tally{font-size:clamp(13.5px,1vw,20px);color:var(--soft);margin-top:12px;line-height:1.7}
+.tally b{color:var(--brand-ink)}
 .count-note{margin-top:10px;font-family:"Jua","Noto Sans KR",sans-serif;font-size:clamp(15px,1.2vw,24px);color:var(--brand-ink);
   background:var(--brand-wash);border-radius:9px;padding:7px 12px;display:inline-block}
 .hide{display:none!important}
@@ -231,14 +232,26 @@ input[type=range]{width:100%;accent-color:var(--brand);margin-top:8px;height:cla
   function drawDiameterBoard() {
     clear();
     n("circle", { cx: CX, cy: CY, r: R2, fill: "var(--brand-wash)", stroke: "var(--mark)", "stroke-width": 3, id: "hit", style: "cursor:crosshair" });
-    n("circle", { cx: CX, cy: CY, r: 9, fill: "var(--rose)", "pointer-events": "none" });
-    n("text", { x: CX + 16, y: CY - 14, "font-size": 19, fill: "var(--rose)", "font-family": "Jua, sans-serif", "pointer-events": "none" }).textContent = "중심";
-    lines.forEach(function (L) {
+    lines.forEach(function (L, i) {
+      var last = i === lines.length - 1;
       n("line", { x1: L.x1, y1: L.y1, x2: L.x2, y2: L.y2, stroke: L.ok ? "var(--brand)" : "var(--soft)",
-        "stroke-width": L.ok ? 6 : 3, "stroke-linecap": "round", "stroke-dasharray": L.ok ? "" : "9 7", "pointer-events": "none" });
-      n("text", { x: (L.x1 + L.x2) / 2, y: (L.y1 + L.y2) / 2 - 12, "text-anchor": "middle", "font-size": 19,
-        fill: L.ok ? "var(--brand-ink)" : "var(--soft)", "font-family": "Jua, sans-serif", "pointer-events": "none" }).textContent = L.len + "cm";
+        "stroke-width": L.ok ? (last ? 7 : 4) : 3, "stroke-linecap": "round",
+        "stroke-dasharray": L.ok ? "" : "9 7", opacity: last ? 1 : 0.45, "pointer-events": "none" });
+      if (!last) return;
+      /* 방금 그은 선에만 길이를 적는다. 중심에서 벗어난 자리에 두고, 선 위로 겹치지 않게 살짝 밀어 둔다 */
+      var t = 0.74, dx = L.x2 - L.x1, dy = L.y2 - L.y1, len = Math.sqrt(dx * dx + dy * dy) || 1;
+      var lx = L.x1 + dx * t + (-dy / len) * 26, ly = L.y1 + dy * t + (dx / len) * 26;
+      var label = n("text", { x: lx, y: ly, "text-anchor": "middle", "dominant-baseline": "middle", "font-size": 22,
+        fill: L.ok ? "var(--brand-ink)" : "var(--soft)", "font-family": "Jua, sans-serif", "pointer-events": "none",
+        stroke: "var(--card)", "stroke-width": 7, "paint-order": "stroke", "stroke-linejoin": "round" });
+      label.textContent = L.len + "cm";
     });
+    /* 중심 표시는 선 위에 올려 항상 보이게 한다 */
+    n("circle", { cx: CX, cy: CY, r: 11, fill: "var(--card)", "pointer-events": "none" });
+    n("circle", { cx: CX, cy: CY, r: 8, fill: "var(--rose)", "pointer-events": "none" });
+    n("text", { x: CX + 18, y: CY - 16, "font-size": 20, fill: "var(--rose)", "font-family": "Jua, sans-serif",
+      "pointer-events": "none", stroke: "var(--card)", "stroke-width": 6, "paint-order": "stroke",
+      "stroke-linejoin": "round" }).textContent = "중심";
     if (first) n("circle", { cx: first.x, cy: first.y, r: 12, fill: "var(--amber)", "pointer-events": "none" });
     board.querySelector("#hit").addEventListener("pointerdown", tapCircle);
   }
@@ -266,13 +279,17 @@ input[type=range]{width:100%;accent-color:var(--brand);margin-top:8px;height:cla
   }
   function updateTally() {
     var t = el("tally");
-    if (t) t.textContent = "지름 " + diaCount + "개 · 지름이 아닌 선 " + chordCount + "개를 그었습니다.";
+    if (!t) return;
+    var lens = lines.filter(function (L) { return L.ok; }).map(function (L) { return L.len; });
+    var same = lens.length > 1 && lens.every(function (v) { return v === lens[0]; });
+    t.innerHTML = "지름 <b>" + diaCount + "개</b> · 지름이 아닌 선 " + chordCount + "개" +
+      (lens.length ? "<br>" + (same ? "그은 지름은 <b>모두 " + lens[0] + "cm</b>예요." : "지름 길이 : " + lens.join("cm, ") + "cm") : "");
   }
 
   function renderDiameter() {
     setBoard(468, 234);
     guideTitle.textContent = "지름 그어 보기";
-    guideText.textContent = "원 위의 점 두 개를 눌러 선을 그어 보세요. 중심을 지나면 지름, 지나지 않으면 지름이 아닙니다. 지름은 몇 개나 그을 수 있을까요?";
+    guideText.textContent = "원 위의 점 두 개를 눌러 선을 그어 보세요. 중심을 지나면 지름, 지나지 않으면 지름이 아닙니다. 길이는 방금 그은 선에만 적히고, 지금까지 그은 지름의 길이는 아래에 모아 둡니다.";
     controls.innerHTML =
       '<p class="step-label">원 위의 점 두 개를 누르세요</p>' +
       '<button class="btn ghost" id="clearLines">모두 지우기</button>';
