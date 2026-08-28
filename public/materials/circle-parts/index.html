@@ -256,17 +256,35 @@ input[type=range]{width:100%;accent-color:var(--brand);margin-top:8px;height:cla
     board.querySelector("#hit").addEventListener("pointerdown", tapCircle);
   }
 
+  /* 손으로 그으면 중심을 정확히 지나기 어렵다.
+     거의 반대편을 눌렀다면 중심을 지나도록 맞춰 주고(그래야 길이도 정확히 지름),
+     그보다 벗어나면 지름이 아닌 선으로 두어 길이가 지름보다 짧게 나오도록 한다. */
+  var SNAP = 13 * Math.PI / 180;
+
   function tapCircle(ev) {
     var p = pointOnCircle(ev);
     if (!first) { first = p; setVerdict("idle", "이제 반대쪽 점을 눌러 선을 그으세요."); drawDiameterBoard(); return; }
-    var dx = p.x - first.x, dy = p.y - first.y;
-    var len = Math.sqrt(dx * dx + dy * dy);
-    var dist = Math.abs((p.x - first.x) * (CY - first.y) - (CX - first.x) * (p.y - first.y)) / (len || 1);
-    var ok = dist < 12 && len > 40;
-    lines.push({ x1: first.x, y1: first.y, x2: p.x, y2: p.y, ok: ok, len: cm(len) });
+
+    var gap = Math.abs(p.a - first.a) % (2 * Math.PI);
+    if (gap > Math.PI) gap = 2 * Math.PI - gap;      /* 두 점 사이의 각도 (0~180°) */
+    var offBy = Math.abs(Math.PI - gap);             /* 정반대에서 벗어난 정도 */
+    var ok = offBy <= SNAP;
+    var end = ok ? { x: 2 * CX - first.x, y: 2 * CY - first.y } : p;   /* 지름이면 정확히 반대편으로 */
+    var nudged = ok && offBy > 2 * Math.PI / 180;
+
+    var len = Math.sqrt((end.x - first.x) * (end.x - first.x) + (end.y - first.y) * (end.y - first.y));
+    lines.push({ x1: first.x, y1: first.y, x2: end.x, y2: end.y, ok: ok, len: cm(len) });
     first = null;
-    if (ok) { diaCount++; setVerdict("yes", "지름이 맞아요! 중심을 지나갔고, 길이는 " + cm(len) + "cm입니다."); }
-    else { chordCount++; setVerdict("no", "중심을 지나지 않았어요. 원을 가로질러도 중심을 지나지 않으면 지름이 아닙니다. (길이 " + cm(len) + "cm)"); }
+
+    if (ok) {
+      diaCount++;
+      setVerdict("yes", "지름이 맞아요! 중심을 지나갔고, 길이는 " + cm(len) + "cm입니다." +
+        (nudged ? " (중심을 정확히 지나도록 살짝 맞춰 주었어요.)" : ""));
+    } else {
+      chordCount++;
+      setVerdict("no", "중심을 지나지 않았어요. 길이도 " + cm(len) + "cm라서 지름 " +
+        cm(2 * R2) + "cm보다 짧아요. 원에서 가장 긴 선이 지름이에요.");
+    }
     drawDiameterBoard();
     updateTally();
   }
@@ -289,7 +307,7 @@ input[type=range]{width:100%;accent-color:var(--brand);margin-top:8px;height:cla
   function renderDiameter() {
     setBoard(468, 234);
     guideTitle.textContent = "지름 그어 보기";
-    guideText.textContent = "원 위의 점 두 개를 눌러 선을 그어 보세요. 중심을 지나면 지름, 지나지 않으면 지름이 아닙니다. 길이는 방금 그은 선에만 적히고, 지금까지 그은 지름의 길이는 아래에 모아 둡니다.";
+    guideText.textContent = "원 위의 점 두 개를 눌러 선을 그어 보세요. 중심을 지나면 지름, 지나지 않으면 지름이 아닙니다. 거의 반대편을 누르면 중심을 정확히 지나도록 맞춰 주고, 그보다 벗어나면 길이가 지름보다 짧게 나옵니다.";
     controls.innerHTML =
       '<p class="step-label">원 위의 점 두 개를 누르세요</p>' +
       '<button class="btn ghost" id="clearLines">모두 지우기</button>';
