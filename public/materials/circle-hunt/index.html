@@ -1,0 +1,1050 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>동그라미 탐험대</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Jua&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet" />
+<style>
+:root{
+  --paper:#E9EEF2;
+  --card:#FFFFFF;
+  --ink:#14293B;
+  --ink-soft:#4A6478;
+  --line:#CFDBE3;
+  --brand:#0F8A80;
+  --brand-ink:#0B615A;
+  --brand-wash:#DDF0ED;
+  --amber:#D9821C;
+  --amber-wash:#FBEBD5;
+  --shadow:0 18px 44px -26px rgba(20,41,59,.6);
+  --mark:#12293C;
+  --hint:#E08A16;
+  --radius:18px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#0E1A22;
+    --card:#17252E;
+    --ink:#E7EFF3;
+    --ink-soft:#9DB3C0;
+    --line:#2B3F4B;
+    --brand:#2EC0B4;
+    --brand-ink:#8FE6DD;
+    --brand-wash:#123A38;
+    --amber:#F0A94E;
+    --amber-wash:#3B2A15;
+    --shadow:0 18px 44px -26px rgba(0,0,0,.8);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0E1A22; --card:#17252E; --ink:#E7EFF3; --ink-soft:#9DB3C0; --line:#2B3F4B;
+  --brand:#2EC0B4; --brand-ink:#8FE6DD; --brand-wash:#123A38; --amber:#F0A94E; --amber-wash:#3B2A15;
+  --shadow:0 18px 44px -26px rgba(0,0,0,.8);
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  background:var(--paper);
+  color:var(--ink);
+  font-family:"Noto Sans KR","Apple SD Gothic Neo",system-ui,sans-serif;
+  -webkit-text-size-adjust:100%;
+}
+.app{
+  height:100dvh;
+  min-height:100dvh;
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+  padding:16px clamp(14px,3vw,34px) 18px;
+}
+h1,h2,h3,.display{font-family:"Jua","Noto Sans KR",sans-serif;font-weight:400;letter-spacing:.01em}
+
+/* ── 머리말 ───────────────────────────── */
+.topbar{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:12px;margin-right:auto}
+.brand-mark{width:42px;height:42px;flex:none}
+.brand h1{margin:0;font-size:clamp(21px,3.1vh,58px);line-height:1}
+.brand p{margin:3px 0 0;font-size:clamp(12px,1.6vh,28px);color:var(--ink-soft)}
+.steps{display:flex;align-items:center;gap:8px}
+.step{
+  width:clamp(38px,5vh,92px);height:clamp(38px,5vh,92px);border-radius:50%;border:2px solid var(--line);
+  background:var(--card);color:var(--ink-soft);
+  font-family:"Jua","Noto Sans KR",sans-serif;font-size:clamp(17px,2.4vh,44px);line-height:1;
+  display:grid;place-items:center;cursor:pointer;
+  transition:transform .15s ease,background .2s,border-color .2s,color .2s;
+}
+.step:hover:not(:disabled){transform:translateY(-2px)}
+.step[aria-current="true"]{background:var(--brand);border-color:var(--brand);color:#fff}
+.step.done{border-color:var(--brand);color:var(--brand-ink);background:var(--brand-wash)}
+.step:disabled{cursor:not-allowed;opacity:.45}
+.level{
+  display:inline-flex;align-items:center;gap:8px;padding:clamp(7px,1vh,18px) clamp(15px,1.8vh,32px);border-radius:999px;
+  background:var(--amber-wash);color:var(--amber);border:1.5px solid currentColor;
+  font-family:"Jua","Noto Sans KR",sans-serif;font-size:clamp(15px,2.2vh,40px);white-space:nowrap;
+}
+.level b{font-weight:400;color:var(--ink)}
+
+/* ── 무대 ─────────────────────────────── */
+.stage{
+  flex:1;min-height:0;position:relative;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;
+}
+.scene-head{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;justify-content:center;text-align:center}
+.scene-head h2{margin:0;font-size:clamp(19px,2.9vh,54px)}
+.scene-head p{margin:0;font-size:clamp(14px,1.9vh,34px);color:var(--ink-soft)}
+.frame{
+  position:relative;flex:0 0 auto;width:100%;max-width:100%;aspect-ratio:1000/620;
+  background:var(--card);
+  border-radius:var(--radius);border:1px solid var(--line);box-shadow:var(--shadow);
+  overflow:hidden;
+}
+svg.scene{display:block;width:100%;height:100%;touch-action:manipulation}
+
+.target{
+  stroke:rgba(18,41,60,.3);stroke-width:2;paint-order:stroke;cursor:pointer;
+  transition:stroke .2s ease,stroke-width .2s ease;
+}
+.item:hover .target{stroke:rgba(18,41,60,.6);stroke-width:5}
+.target:focus-visible{outline:none;stroke:var(--hint);stroke-width:6}
+.target.found{stroke:var(--mark);stroke-width:10}
+.target.hint{stroke:var(--hint);stroke-width:9;stroke-dasharray:16 11;animation:march 1.6s linear infinite}
+@keyframes march{to{stroke-dashoffset:-54}}
+.item .deco{pointer-events:none}
+.item.pop{animation:pop .45s cubic-bezier(.34,1.56,.64,1);transform-box:fill-box;transform-origin:center}
+@keyframes pop{0%{transform:scale(1)}45%{transform:scale(1.09)}100%{transform:scale(1)}}
+.item.nope{animation:nope .45s ease;transform-box:fill-box;transform-origin:center}
+@keyframes nope{0%,100%{transform:translateX(0)}20%{transform:translateX(-7px) rotate(-2deg)}50%{transform:translateX(7px) rotate(2deg)}80%{transform:translateX(-4px)}}
+.ripple{fill:none;stroke:var(--mark);stroke-width:6;transform-box:fill-box;transform-origin:center;animation:ripple .75s ease-out forwards;pointer-events:none}
+@keyframes ripple{0%{transform:scale(.94);opacity:.85}100%{transform:scale(1.55);opacity:0}}
+.badge{pointer-events:none;transform-box:fill-box;transform-origin:center;animation:badge .4s cubic-bezier(.34,1.56,.64,1)}
+@keyframes badge{from{transform:scale(0)}to{transform:scale(1)}}
+
+/* ── 상태 문구 ────────────────────────── */
+.say{
+  min-height:clamp(30px,4.6vh,88px);display:flex;align-items:center;gap:9px;
+  padding:clamp(5px,.9vh,16px) clamp(16px,2vh,36px);border-radius:999px;
+  font-size:clamp(14px,2.4vh,46px);background:transparent;color:var(--ink-soft);transition:.2s;
+}
+.say.good{background:var(--brand-wash);color:var(--brand-ink);font-weight:700}
+.say.bad{background:var(--amber-wash);color:var(--amber);font-weight:700}
+
+/* ── 꼬리말 ───────────────────────────── */
+.bottombar{display:flex;align-items:center;gap:clamp(12px,2vw,26px);flex-wrap:wrap}
+.count{display:flex;align-items:center;gap:12px;margin-right:auto}
+.count-num{font-family:"Jua","Noto Sans KR",sans-serif;font-size:clamp(18px,2.9vh,54px);white-space:nowrap}
+.count-num b{color:var(--brand-ink);font-weight:400;font-size:1.25em}
+.pips{display:flex;gap:7px;flex-wrap:wrap}
+.pip{width:clamp(19px,2.4vh,44px);height:clamp(19px,2.4vh,44px);border-radius:50%;border:2.5px solid var(--line);background:transparent;transition:.25s}
+.pip.on{background:var(--brand);border-color:var(--brand);transform:scale(1.08)}
+.pip.hinted{border-color:var(--hint);border-style:dashed}
+.btn{
+  display:inline-flex;font-family:"Jua","Noto Sans KR",sans-serif;font-size:clamp(15px,2.7vh,50px);
+  padding:clamp(12px,1.9vh,36px) clamp(22px,2.6vh,48px);border-radius:14px;border:2px solid transparent;cursor:pointer;
+  display:inline-flex;align-items:center;gap:8px;transition:transform .12s ease,filter .2s,background .2s;
+  background:var(--card);color:var(--ink);border-color:var(--line);
+}
+.btn:hover:not(:disabled){transform:translateY(-2px)}
+.btn:active:not(:disabled){transform:translateY(0)}
+.btn:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+.btn-hint{background:var(--amber-wash);color:var(--amber);border-color:currentColor}
+.btn-next{background:var(--brand);color:#fff;border-color:var(--brand);padding-inline:26px}
+.btn-next:disabled{background:var(--card);color:var(--ink-soft);border-color:var(--line);cursor:not-allowed;opacity:.7}
+.btn-next.ready{animation:beat 1.4s ease-in-out infinite}
+@keyframes beat{0%,100%{box-shadow:0 0 0 0 rgba(15,138,128,.5)}60%{box-shadow:0 0 0 14px rgba(15,138,128,0)}}
+.lockmsg{font-size:clamp(13px,1.8vh,32px);color:var(--ink-soft)}
+
+/* ── 축하 오버레이 ────────────────────── */
+.cheer{
+  position:absolute;inset:0;display:grid;place-items:center;padding:20px;
+  background:rgba(12,26,36,.42);backdrop-filter:blur(2px);
+  opacity:0;visibility:hidden;transition:opacity .3s;
+}
+.cheer.show{opacity:1;visibility:visible}
+.cheer-card{
+  background:var(--card);border-radius:22px;padding:clamp(22px,3.4vh,60px) clamp(26px,4.4vh,80px);
+  text-align:center;box-shadow:0 30px 60px -30px rgba(0,0,0,.6);position:relative;max-width:min(78%,1100px);
+}
+.cheer-card h3{margin:0 0 8px;font-size:clamp(22px,3.6vh,66px)}
+.cheer-card p{margin:0 0 20px;color:var(--ink-soft);font-size:clamp(15px,2.1vh,38px);line-height:1.6}
+.cheer-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.close-x{
+  position:absolute;top:10px;right:12px;width:34px;height:34px;border-radius:50%;
+  border:none;background:transparent;color:var(--ink-soft);font-size:20px;cursor:pointer;line-height:1;
+}
+.close-x:hover{background:var(--paper)}
+.confetti{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+.confetti i{position:absolute;top:-24px;border-radius:50%;animation:fall linear forwards}
+@keyframes fall{to{transform:translateY(115vh) rotate(360deg);opacity:.15}}
+
+.hidden{display:none !important}
+@media (prefers-reduced-motion: reduce){
+  *{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.05ms !important}
+}
+@media (max-width:1200px){
+  .lockmsg{display:none}
+  .btn{padding:11px 16px}
+  .bottombar{gap:10px}
+}
+@media (max-width:820px){
+  .brand p,.scene-head p{display:none}
+  .app{gap:8px;padding:10px}
+  .btn{padding:9px 13px;border-radius:12px}
+  .step{width:32px;height:32px;font-size:15px}
+  .count{width:100%}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <div class="brand">
+      <svg class="brand-mark" viewBox="0 0 44 44" aria-hidden="true">
+        <circle cx="22" cy="22" r="19" fill="none" stroke="var(--brand)" stroke-width="4"/>
+        <circle cx="22" cy="22" r="6" fill="var(--amber)"/>
+      </svg>
+      <div>
+        <h1>동그라미 탐험대</h1>
+        <p>그림 속에서 <b>원</b>을 찾아 눌러 보세요</p>
+      </div>
+    </div>
+    <nav class="steps" id="steps" aria-label="단계 이동"></nav>
+    <span class="level">난이도 <b id="levelName">아주 쉬움</b></span>
+  </header>
+
+  <main class="stage">
+    <div class="scene-head">
+      <h2 id="sceneTitle">1단계 · 우리 교실</h2>
+      <p id="sceneHint"></p>
+    </div>
+
+    <div class="frame">
+      <svg class="scene" id="scene" viewBox="0 0 1000 620" preserveAspectRatio="xMidYMid meet"
+           role="group" aria-label="원을 찾을 그림"></svg>
+      <div class="cheer" id="cheer" role="dialog" aria-modal="false" aria-labelledby="cheerTitle">
+        <div class="confetti" id="confetti" aria-hidden="true"></div>
+        <div class="cheer-card">
+          <button class="close-x" id="cheerClose" aria-label="닫고 그림 다시 보기">✕</button>
+          <h3 id="cheerTitle">원을 모두 찾았어요!</h3>
+          <p id="cheerText"></p>
+          <div class="cheer-actions" id="cheerActions"></div>
+        </div>
+      </div>
+    </div>
+
+    <p class="say" id="say" role="status" aria-live="polite"></p>
+  </main>
+
+  <footer class="bottombar">
+    <div class="count">
+      <span class="count-num">원 <b id="foundNum">0</b> / <span id="totalNum">3</span> 개</span>
+      <span class="pips" id="pips" aria-hidden="true"></span>
+    </div>
+    <span class="lockmsg" id="lockmsg">원을 모두 찾으면 다음 페이지가 열려요</span>
+    <button class="btn btn-hint" id="btnHint">정답 보기</button>
+    <button class="btn" id="btnReset">다시하기</button>
+    <button class="btn" id="btnPrev" title="이전 페이지를 처음부터 다시 풉니다">← 이전</button>
+    <button class="btn btn-next" id="btnNext">다음 페이지 →</button>
+  </footer>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  /* ── SVG 도형 헬퍼 ───────────────────────────── */
+  var c  = function (cx, cy, r, fill, a) { return { t: "circle", a: Object.assign({ cx: cx, cy: cy, r: r, fill: fill }, a || {}) }; };
+  var el = function (cx, cy, rx, ry, fill, a) { return { t: "ellipse", a: Object.assign({ cx: cx, cy: cy, rx: rx, ry: ry, fill: fill }, a || {}) }; };
+  var rc = function (x, y, w, h, fill, a) { return { t: "rect", a: Object.assign({ x: x, y: y, width: w, height: h, fill: fill }, a || {}) }; };
+  var pg = function (points, fill, a) { return { t: "polygon", a: Object.assign({ points: points, fill: fill }, a || {}) }; };
+  var pt = function (d, fill, a) { return { t: "path", a: Object.assign({ d: d, fill: fill }, a || {}) }; };
+  var ln = function (x1, y1, x2, y2, stroke, w) {
+    return { t: "line", a: { x1: x1, y1: y1, x2: x2, y2: y2, stroke: stroke, "stroke-width": w || 6, "stroke-linecap": "round" } };
+  };
+  var item = function (name, isCircle, base, over, kind) {
+    return { name: name, ans: !!isCircle, base: base, over: over || [], kind: kind || "" };
+  };
+  var onRim = function (cx, cy, r, deg) {
+    var t = (deg * Math.PI) / 180;
+    return [cx + r * Math.cos(t), cy - r * Math.sin(t)];
+  };
+
+  /* 종이 콜라주 팔레트 */
+  var SKY = "#CCE7F5", SKY2 = "#B7DDF0", GRASS = "#A9D287", DIRT = "#C9A06D",
+      WOOD = "#C99055", WOOD2 = "#B27C46", WALL = "#F1E5D0", FLOOR = "#CD9E6B",
+      ROAD = "#8D949B", WHITE = "#FFFFFF", CREAM = "#FBF3E2", RED = "#E0604F",
+      YELLOW = "#F6C445", ORANGE = "#F08F3C", GREEN = "#57A86B", BLUE = "#4C86D6",
+      PINK = "#F09EBB", PURPLE = "#9B7BD4", STEEL = "#B6C0C8", DARK = "#3B4A56";
+
+  /* ── 1단계 · 우리 교실 ───────────────────────── */
+  var scene1 = {
+    title: "우리 교실",
+    level: "아주 쉬움",
+    hint: "동그란 모양을 3개 찾아보세요",
+    bg: [
+      rc(0, 0, 1000, 470, WALL),
+      rc(0, 470, 1000, 150, FLOOR),
+      rc(0, 462, 1000, 12, "#B98B5C"),
+      rc(560, 424, 18, 106, WOOD2), rc(842, 424, 18, 106, WOOD2)
+    ],
+    items: [
+      item("칠판", false, rc(330, 60, 420, 200, "#2F6B57", { rx: 8 }), [
+        rc(360, 100, 200, 9, "rgba(255,255,255,.75)", { rx: 4, class: "deco" }),
+        rc(360, 135, 300, 9, "rgba(255,255,255,.55)", { rx: 4, class: "deco" }),
+        rc(360, 170, 150, 9, "rgba(255,255,255,.55)", { rx: 4, class: "deco" })
+      ]),
+      item("창문", false, rc(818, 84, 152, 168, SKY, { rx: 6 }), [
+        rc(888, 84, 10, 168, WALL, { class: "deco" }),
+        rc(818, 160, 152, 10, WALL, { class: "deco" })
+      ]),
+      item("훌라후프", true, c(200, 360, 80, PINK), [
+        c(200, 360, 54, WALL, { class: "deco" }),
+        pt("M 200 292 A 68 68 0 0 1 262 336", "none", { class: "deco", stroke: "rgba(255,255,255,.8)", "stroke-width": 7, "stroke-linecap": "round" })
+      ]),
+      item("벽시계", true, c(140, 140, 66, WHITE), [
+        c(140, 140, 52, "none", { class: "deco", stroke: "#DCE3E8", "stroke-width": 4 }),
+        ln(140, 140, 140, 102, "#2F3E4C", 7), ln(140, 140, 172, 152, "#E0604F", 6),
+        c(140, 140, 6, "#2F3E4C", { class: "deco" })
+      ]),
+      item("책상", false, rc(540, 400, 340, 30, WOOD, { rx: 6 }), []),
+      item("삼각자", false, pg("620,396 748,396 748,318", YELLOW), [
+        pg("648,388 726,388 726,342", WALL, { class: "deco" })
+      ]),
+      item("공책", false, rc(788, 356, 96, 42, "#EDE6D6", { rx: 3 }), [
+        rc(788, 356, 12, 42, BLUE, { class: "deco" })
+      ]),
+      item("축구공", true, c(420, 530, 56, WHITE), [
+        pg("420,494 448,514 437,547 403,547 392,514", "#2F3E4C", { class: "deco" }),
+        pt("M 420 474 L 420 494 M 468 508 L 448 514 M 372 508 L 392 514", "none",
+           { class: "deco", stroke: "#2F3E4C", "stroke-width": 5 })
+      ])
+    ]
+  };
+
+  /* ── 2단계 · 놀이터 ─────────────────────────── */
+  var scene2 = {
+    title: "놀이터",
+    level: "쉬움",
+    hint: "구름은 옆으로 길쭉해요. 원일까요?",
+    bg: [
+      rc(0, 0, 1000, 430, SKY),
+      rc(0, 400, 1000, 220, GRASS),
+      pt("M 0 412 Q 250 386 500 406 T 1000 400 L 1000 430 L 0 430 Z", "#96C476"),
+      /* 자전거 뼈대 */
+      pt("M 620 480 L 690 388 L 790 480 M 690 388 L 620 480 L 790 480", "none",
+         { stroke: "#2F5D8C", "stroke-width": 12, "stroke-linejoin": "round", "stroke-linecap": "round" }),
+      pt("M 664 372 L 716 372 M 690 372 L 690 396", "none",
+         { stroke: "#2F5D8C", "stroke-width": 11, "stroke-linecap": "round" }),
+      /* 나무 줄기 */
+      rc(432, 330, 30, 108, WOOD2),
+      /* 벤치 다리 */
+      rc(196, 496, 14, 42, WOOD2), rc(330, 496, 14, 42, WOOD2)
+    ],
+    items: [
+      item("해", true, c(880, 108, 68, YELLOW), [
+        pt("M 880 30 L 880 12 M 962 108 L 982 108 M 938 50 L 952 36 M 938 166 L 952 180 M 822 50 L 808 36 M 798 108 L 778 108 M 822 166 L 808 180", "none",
+           { class: "deco", stroke: "#F1B01F", "stroke-width": 9, "stroke-linecap": "round" }),
+        c(880, 108, 50, "#FFDA6B", { class: "deco" })
+      ]),
+      item("구름", false, el(238, 116, 112, 58, WHITE), [
+        el(300, 100, 52, 34, WHITE, { class: "deco" })
+      ]),
+      item("미끄럼틀", false, pg("108,432 108,244 214,244 330,432", "#E9765F"), [
+        pt("M 128 250 L 128 424 M 158 250 L 158 424", "none",
+           { class: "deco", stroke: "rgba(255,255,255,.55)", "stroke-width": 6 })
+      ]),
+      item("나무", false, pg("447,196 552,344 342,344", "#3F8B57"), [
+        pg("447,262 530,392 364,392", "#4C9E63", { class: "deco" })
+      ]),
+      item("벤치", false, rc(178, 464, 184, 30, WOOD, { rx: 5 }), []),
+      item("앞바퀴", true, c(620, 480, 54, "#33414D"), [
+        c(620, 480, 38, "#EDE3D0", { class: "deco" }),
+        c(620, 480, 9, "#33414D", { class: "deco" })
+      ]),
+      item("뒷바퀴", true, c(790, 480, 54, "#33414D"), [
+        c(790, 480, 38, "#EDE3D0", { class: "deco" }),
+        c(790, 480, 9, "#33414D", { class: "deco" })
+      ]),
+      item("축구공", true, c(430, 540, 46, WHITE), [
+        pg("430,510 453,527 444,554 416,554 407,527", "#2F3E4C", { class: "deco" })
+      ])
+    ]
+  };
+
+  /* ── 3단계 · 식탁 위 ────────────────────────── */
+  var scene3 = {
+    title: "식탁 위",
+    level: "보통",
+    hint: "위에서 본 접시 중에 길쭉한 것도 있어요",
+    bg: [
+      rc(0, 0, 1000, 620, "#E7DBC4"),
+      rc(0, 150, 1000, 10, "rgba(180,140,90,.22)"),
+      rc(0, 336, 1000, 10, "rgba(180,140,90,.22)"),
+      rc(0, 522, 1000, 10, "rgba(180,140,90,.22)"),
+      rc(190, 0, 10, 620, "rgba(180,140,90,.22)"),
+      rc(560, 0, 10, 620, "rgba(180,140,90,.22)"),
+      rc(880, 0, 10, 620, "rgba(180,140,90,.22)"),
+      /* 냄비 뚜껑 손잡이 받침 */
+      rc(786, 118, 28, 26, "#7E8A94", { rx: 6 })
+    ],
+    items: [
+      item("도마", false, rc(58, 74, 232, 132, "#BE8347", { rx: 26 }), [
+        rc(246, 88, 36, 14, "#E7DBC4", { class: "deco", rx: 7 }),
+        pt("M 92 140 L 250 140", "none", { class: "deco", stroke: "rgba(90,60,30,.25)", "stroke-width": 5 })
+      ]),
+      item("타원 접시", false, el(486, 148, 124, 74, CREAM), [
+        el(486, 148, 92, 50, "none", { class: "deco", stroke: "#E4D6BC", "stroke-width": 5 })
+      ]),
+      item("냄비 뚜껑", true, c(800, 168, 92, STEEL), [
+        c(800, 168, 66, "#CBD3D9", { class: "deco" }),
+        rc(778, 148, 44, 20, "#5C6975", { class: "deco", rx: 9 })
+      ]),
+      item("접시", true, c(176, 358, 104, WHITE), [
+        c(176, 358, 74, "#F3F6F8", { class: "deco" }),
+        c(176, 358, 74, "none", { class: "deco", stroke: "#DFE7EC", "stroke-width": 4 })
+      ]),
+      item("냅킨", false, rc(370, 288, 148, 148, "#EFD3DE", { rx: 5 }), [
+        pt("M 370 362 L 518 362", "none", { class: "deco", stroke: "rgba(255,255,255,.8)", "stroke-width": 6 })
+      ]),
+      item("컵", true, c(690, 362, 64, "#D7E8F7"), [
+        c(690, 362, 46, "#B6D6EF", { class: "deco" })
+      ]),
+      item("동전", true, c(886, 366, 32, "#E5C64B"), [
+        c(886, 366, 22, "none", { class: "deco", stroke: "#C9A82F", "stroke-width": 4 })
+      ]),
+      item("오렌지", true, c(172, 542, 52, ORANGE), [
+        pt("M 172 496 q 26 -18 40 -4 q -14 20 -40 4 z", "#4C9E63", { class: "deco" })
+      ]),
+      item("달걀 프라이", false, el(408, 540, 92, 62, WHITE), [
+        el(420, 536, 32, 21, "#F5C542", { class: "deco" })
+      ]),
+      item("샌드위치", false, pg("598,586 726,586 662,466", "#F0D9A8"), [
+        pg("614,566 710,566 662,476", "#7FB56A", { class: "deco" })
+      ])
+    ]
+  };
+
+  /* ── 4단계 · 우리 동네 길 ───────────────────── */
+  var scene4 = {
+    title: "우리 동네 길",
+    level: "조금 어려움",
+    hint: "표지판 모양을 잘 살펴보세요",
+    bg: [
+      rc(0, 0, 1000, 396, SKY2),
+      rc(0, 396, 1000, 224, ROAD),
+      rc(0, 388, 1000, 14, "#C3CBD1"),
+      /* 건물 */
+      rc(430, 176, 180, 220, "#D8C6AE"), rc(618, 210, 140, 186, "#C9B69C"),
+      rc(452, 214, 42, 42, SKY), rc(516, 214, 42, 42, SKY), rc(452, 288, 42, 42, SKY), rc(516, 288, 42, 42, SKY),
+      /* 표지판 기둥 */
+      rc(102, 250, 14, 146, "#6E7A85"), rc(262, 250, 14, 146, "#6E7A85"), rc(382, 250, 14, 146, "#6E7A85"),
+      rc(792, 330, 16, 66, "#4A5560"),
+      /* 차선 */
+      rc(60, 566, 90, 12, "#E8EDF0", { rx: 6 }), rc(240, 566, 90, 12, "#E8EDF0", { rx: 6 }),
+      rc(420, 566, 90, 12, "#E8EDF0", { rx: 6 }), rc(600, 566, 90, 12, "#E8EDF0", { rx: 6 }),
+      rc(780, 566, 90, 12, "#E8EDF0", { rx: 6 })
+    ],
+    items: [
+      item("동그란 표지판", true, c(109, 196, 58, BLUE), [
+        c(109, 196, 40, WHITE, { class: "deco" }),
+        rc(84, 186, 50, 20, BLUE, { class: "deco", rx: 4 })
+      ]),
+      item("삼각형 표지판", false, pg("269,142 331,250 207,250", YELLOW), [
+        pg("269,172 313,240 225,240", WHITE, { class: "deco" })
+      ]),
+      item("육각형 표지판", false, pg("389,142 434,168 434,220 389,246 344,220 344,168", RED), [
+        rc(356, 182, 66, 12, WHITE, { class: "deco", rx: 6 })
+      ]),
+      item("가게 간판", false, rc(548, 116, 196, 72, "#E0705E", { rx: 10 }), [
+        rc(572, 142, 148, 12, "rgba(255,255,255,.85)", { class: "deco", rx: 6 })
+      ]),
+      item("신호등 몸체", false, rc(760, 122, 80, 210, "#3A4750", { rx: 18 }), []),
+      item("빨간 불", true, c(800, 168, 26, "#E4574C"), []),
+      item("노란 불", true, c(800, 228, 26, "#F2C33C"), []),
+      item("초록 불", true, c(800, 288, 26, "#57B871"), []),
+      item("자동차 몸체", false, rc(196, 398, 366, 92, "#D9584E", { rx: 30 }), [
+        rc(236, 418, 92, 44, "#CFE6F5", { class: "deco", rx: 8 }),
+        rc(348, 418, 92, 44, "#CFE6F5", { class: "deco", rx: 8 })
+      ]),
+      item("앞바퀴", true, c(272, 500, 44, "#2F3A44"), [c(272, 500, 20, STEEL, { class: "deco" })]),
+      item("뒷바퀴", true, c(478, 500, 44, "#2F3A44"), [c(478, 500, 20, STEEL, { class: "deco" })]),
+      item("화단", false, el(890, 402, 104, 46, "#7FB56A"), [
+        pg("846,398 856,374 866,398", PINK, { class: "deco" }),
+        pg("910,392 920,368 930,392", "#F2C33C", { class: "deco" })
+      ])
+    ]
+  };
+
+  /* ── 5단계 · 놀이공원 ───────────────────────── */
+  var scene5 = {
+    title: "놀이공원",
+    level: "어려움",
+    hint: "관람차 칸과 풍선 모양이 서로 달라요",
+    bg: [
+      rc(0, 0, 1000, 470, SKY),
+      rc(0, 460, 1000, 160, GRASS),
+      /* 관람차 기둥 */
+      pg("276,300 304,300 372,468 332,468", "#6E7A85"),
+      pg("276,300 304,300 248,468 208,468", "#6E7A85"),
+      /* 관람차 살 */
+      pt("M 290 300 L 290 135 M 290 300 L 147 218 M 290 300 L 433 218 M 290 300 L 147 382 M 290 300 L 433 382 M 290 300 L 290 465",
+         "none", { stroke: "#E7A23C", "stroke-width": 8, "stroke-linecap": "round" }),
+      /* 풍선 줄 */
+      pt("M 700 194 L 690 330 M 880 252 L 892 372 M 792 170 L 800 300 M 596 258 L 588 342",
+         "none", { stroke: "rgba(60,80,96,.55)", "stroke-width": 3 }),
+      /* 매표소 지붕과 깃발 */
+      pg("580,340 800,340 690,286", "#C8564C"),
+      pt("M 690 286 L 690 236", "none", { stroke: "#6E7A85", "stroke-width": 7 }),
+      pg("690,236 690,272 744,254", "#4C86D6")
+    ],
+    items: [
+      item("관람차 바퀴", true, c(290, 300, 165, "rgba(255,255,255,.55)"), [
+        c(290, 300, 165, "none", { class: "deco", stroke: "#E7A23C", "stroke-width": 12 }),
+        c(290, 300, 22, "#E7A23C", { class: "deco" })
+      ]),
+      item("네모난 관람차 칸", false, rc(119, 190, 56, 56, "#57B871", { rx: 5 }), []),
+      item("네모난 관람차 칸", false, rc(405, 190, 56, 56, "#F2C33C", { rx: 5 }), []),
+      item("동그란 관람차 칸", true, c(290, 135, 30, "#E4574C"), [c(290, 135, 16, CREAM, { class: "deco" })]),
+      item("동그란 관람차 칸", true, c(147, 382, 30, "#4C86D6"), [c(147, 382, 16, CREAM, { class: "deco" })]),
+      item("동그란 관람차 칸", true, c(433, 382, 30, PURPLE), [c(433, 382, 16, CREAM, { class: "deco" })]),
+      item("매표소", false, rc(600, 340, 180, 130, "#EBC176", { rx: 6 }), [
+        rc(628, 380, 124, 54, "#5C6975", { class: "deco", rx: 4 }),
+        rc(640, 392, 100, 30, "#CFE6F5", { class: "deco", rx: 3 })
+      ]),
+      item("텐트", false, pg("820,470 960,470 890,348", RED), [
+        pg("866,470 914,470 890,348", CREAM, { class: "deco" })
+      ]),
+      item("빨간 풍선", true, c(700, 150, 44, "#E4574C"), [
+        pt("M 700 194 l -9 12 l 18 0 z", "#C8564C", { class: "deco" }),
+        pt("M 672 140 A 32 32 0 0 1 694 118", "none",
+           { class: "deco", stroke: "rgba(255,255,255,.65)", "stroke-width": 9, "stroke-linecap": "round" })
+      ]),
+      item("파란 풍선", true, c(880, 214, 38, "#4C86D6"), [
+        pt("M 880 252 l -8 11 l 16 0 z", "#3B6BB5", { class: "deco" }),
+        pt("M 856 208 A 27 27 0 0 1 874 190", "none",
+           { class: "deco", stroke: "rgba(255,255,255,.6)", "stroke-width": 8, "stroke-linecap": "round" })
+      ]),
+      item("길쭉한 풍선", false, el(792, 120, 34, 50, "#F2C33C"), [
+        pt("M 792 170 l -8 11 l 16 0 z", "#D9A81F", { class: "deco" })
+      ]),
+      item("길쭉한 풍선", false, el(596, 214, 30, 44, "#57B871"), [
+        pt("M 596 258 l -8 11 l 16 0 z", "#3F8B57", { class: "deco" })
+      ]),
+      item("아이스크림", true, c(500, 516, 40, PINK), [
+        pt("M 474 512 A 29 29 0 0 1 494 492", "none",
+           { class: "deco", stroke: "rgba(255,255,255,.6)", "stroke-width": 8, "stroke-linecap": "round" })
+      ]),
+      item("아이스크림 콘", false, pg("464,542 536,542 500,608", "#E0A960"), [
+        pt("M 476 556 L 512 592 M 500 550 L 522 570", "none",
+           { class: "deco", stroke: "rgba(120,80,40,.45)", "stroke-width": 4 })
+      ])
+    ]
+  };
+
+  /* ── 6단계 · 내 책상 위 ─────────────────────── */
+  var scene6 = {
+    title: "내 책상 위",
+    level: "도전!",
+    hint: "작은 원도 숨어 있어요. 천천히 살펴보세요",
+    bg: [
+      rc(0, 0, 1000, 620, WOOD),
+      rc(40, 40, 920, 540, "#EADFC8", { rx: 18 }),
+      /* 탁상시계 받침 */
+      rc(112, 208, 20, 30, "#8C6A4A"), rc(168, 208, 20, 30, "#8C6A4A"),
+      /* 지구본 받침 */
+      pt("M 870 252 L 870 276 M 836 276 L 904 276", "none", { stroke: "#8C6A4A", "stroke-width": 12, "stroke-linecap": "round" }),
+      pt("M 796 180 A 74 74 0 0 0 944 180", "none", { stroke: "#B08A5E", "stroke-width": 9, fill: "none" }),
+      /* 연필꽂이 속 연필 */
+      rc(716, 250, 14, 90, "#4C86D6"), rc(742, 236, 14, 104, "#E4574C"), rc(766, 258, 14, 82, "#57B871"),
+      pt("M 648 276 L 692 320", "none", { stroke: "#8C6A4A", "stroke-width": 22, "stroke-linecap": "round" })
+    ],
+    items: [
+      item("탁상시계", true, c(150, 160, 62, WHITE), [
+        c(150, 160, 48, "none", { class: "deco", stroke: "#DCE3E8", "stroke-width": 4 }),
+        ln(150, 160, 150, 124, "#2F3E4C", 6), ln(150, 160, 178, 172, "#E4574C", 5),
+        c(150, 160, 6, "#2F3E4C", { class: "deco" })
+      ]),
+      item("비스듬히 놓인 컵", false, el(340, 150, 72, 44, "#D7E8F7"), [
+        el(340, 150, 54, 30, "#A9CBE8", { class: "deco" })
+      ]),
+      item("돋보기", true, c(600, 220, 80, "#8C6A4A"), [
+        c(600, 220, 64, "#DCEDF5", { class: "deco" }),
+        pt("M 566 180 A 46 46 0 0 0 552 214", "none",
+           { class: "deco", stroke: "rgba(255,255,255,.85)", "stroke-width": 10, "stroke-linecap": "round" })
+      ]),
+      item("지구본", true, c(870, 180, 72, "#79BEE6"), [
+        pt("M 826 142 q 30 -14 52 4 q -10 26 -46 22 z", "#7FB56A", { class: "deco" }),
+        pt("M 872 198 q 34 -6 48 14 q -22 22 -52 6 z", "#7FB56A", { class: "deco" })
+      ]),
+      item("동그란 스티커", true, c(360, 300, 30, "#F0688E"), [
+        pg("360,282 366,296 381,296 369,305 374,320 360,311 346,320 351,305 339,296 354,296", WHITE, { class: "deco" })
+      ]),
+      item("공책", false, rc(70, 300, 220, 180, "#F7F2E4", { rx: 14 }), [
+        pt("M 104 340 L 256 340 M 104 376 L 256 376 M 104 412 L 200 412", "none",
+           { class: "deco", stroke: "#C9D6DE", "stroke-width": 5 }),
+        rc(70, 300, 16, 180, "#E4574C", { class: "deco", rx: 8 })
+      ]),
+      item("삼각자", false, pg("430,330 562,330 562,432", "#F2C33C"), [
+        pg("456,346 546,346 546,414", "#EADFC8", { class: "deco" })
+      ]),
+      item("연필꽂이", false, el(748, 330, 68, 40, "#9FAEB8"), [
+        el(748, 330, 48, 24, "#6E7A85", { class: "deco" })
+      ]),
+      item("육각 연필", false, pg("620,388 642,372 780,372 802,388 780,404 642,404", ORANGE), [
+        pg("620,388 642,372 660,372 660,404 642,404", "#E8C79A", { class: "deco" }),
+        pt("M 620 388 l 22 -8 l 0 16 z", "#4A3B2F", { class: "deco" })
+      ]),
+      item("지우개", false, rc(430, 470, 74, 74, "#F0918F", { rx: 4 }), [
+        rc(430, 508, 74, 16, "#E8EDF0", { class: "deco" })
+      ]),
+      item("메모지", false, rc(80, 510, 116, 68, "#F5E27C", { rx: 3 }), [
+        pt("M 100 534 L 176 534 M 100 554 L 152 554", "none",
+           { class: "deco", stroke: "rgba(120,100,40,.4)", "stroke-width": 4 })
+      ]),
+      item("동전", true, c(560, 542, 26, "#E5C64B"), [c(560, 542, 17, "none", { class: "deco", stroke: "#C9A82F", "stroke-width": 3 })]),
+      item("바둑돌", true, c(628, 562, 22, "#3C4650"), [c(628, 562, 13, "none", { class: "deco", stroke: "rgba(255,255,255,.35)", "stroke-width": 3 })]),
+      item("탁구공", true, c(694, 524, 24, "#F3A94D"), [c(694, 524, 15, "none", { class: "deco", stroke: "#D98C2E", "stroke-width": 3 })]),
+      item("단추", true, c(846, 524, 26, "#B98BD6"), [
+        rc(834, 514, 24, 7, "#7A5AA8", { class: "deco", rx: 3 }),
+        rc(834, 528, 24, 7, "#7A5AA8", { class: "deco", rx: 3 })
+      ])
+    ]
+  };
+
+  /* ── 7단계 · 문구점 진열대 ─────────────────── */
+  var scene7 = {
+    title: "문구점 진열대",
+    level: "최고 도전!",
+    hint: "원과 아주 비슷한 다각형이 숨어 있어요. 가장자리에 곧은 곳이 있는지 살펴보세요",
+    bg: [
+      rc(0, 0, 1000, 620, "#EFE3CC"),
+      rc(0, 163, 1000, 13, "#B5793F"), rc(0, 298, 1000, 13, "#B5793F"),
+      rc(0, 433, 1000, 13, "#B5793F"), rc(0, 568, 1000, 13, "#B5793F"),
+      rc(0, 176, 1000, 6, "rgba(0,0,0,.08)"), rc(0, 311, 1000, 6, "rgba(0,0,0,.08)"),
+      rc(0, 446, 1000, 6, "rgba(0,0,0,.08)"), rc(0, 581, 1000, 6, "rgba(0,0,0,.08)"),
+      /* 손거울 손잡이 */
+      rc(322, 140, 16, 30, "#8C6A4A"), rc(457, 138, 16, 28, "#7E8A94"),
+      /* 시계 받침 */
+      rc(66, 150, 12, 18, "#8C6A4A"), rc(98, 150, 12, 18, "#8C6A4A"),
+      /* 도장 손잡이 */
+      rc(257, 348, 16, 26, "#4C86D6"),
+      /* 색연필 */
+      rc(430, 330, 11, 52, "#E4574C"), rc(446, 320, 11, 62, "#4C86D6"), rc(462, 336, 11, 46, "#57B871")
+    ],
+    items: [
+      /* 첫째 칸 */
+      item("미니 탁상시계", true, c(88, 118, 36, WHITE), [
+        c(88, 118, 27, "none", { class: "deco", stroke: "#DCE3E8", "stroke-width": 3 }),
+        ln(88, 118, 88, 96, "#2F3E4C", 4), ln(88, 118, 104, 126, "#E4574C", 3.5),
+        c(88, 118, 4, "#2F3E4C", { class: "deco" })
+      ]),
+      item("십이각형 컵받침", false,
+        pg("205,82 224,87 238,101 243,120 238,139 224,153 205,158 186,153 172,139 167,120 172,101 186,87", "#E8A0A8"),
+        [pg("205,98 216,101 224,109 227,120 224,131 216,139 205,142 194,139 186,131 183,120 186,109 194,101",
+            "#F6D3D6", { class: "deco" })], "십이각형"),
+      item("동그란 손거울", true, c(330, 116, 38, "#B08A5E"), [
+        c(330, 116, 29, "#D7E8F7", { class: "deco" }),
+        pt("M 312 100 A 22 22 0 0 0 306 116", "none",
+           { class: "deco", stroke: "rgba(255,255,255,.9)", "stroke-width": 6, "stroke-linecap": "round" })
+      ]),
+      item("타원 손거울", false, el(465, 116, 44, 29, "#9FAEB8"), [
+        el(465, 116, 33, 19, "#D7E8F7", { class: "deco" })
+      ]),
+      item("공책", false, rc(560, 62, 116, 100, "#F7F2E4", { rx: 4 }), [
+        rc(560, 62, 11, 100, "#57B871", { class: "deco" }),
+        pt("M 588 92 L 660 92 M 588 112 L 660 112 M 588 132 L 636 132", "none",
+           { class: "deco", stroke: "#C9D6DE", "stroke-width": 3.5 })
+      ]),
+      item("팔각형 스티커", false, pg("752,88 770,106 770,130 752,148 728,148 710,130 710,106 728,88", "#F2C33C"), [
+        pg("740,100 752,112 740,124 728,112", WHITE, { class: "deco" })
+      ]),
+      item("동그란 배지", true, c(890, 118, 24, "#E4574C"), [
+        c(890, 118, 15, "none", { class: "deco", stroke: "rgba(255,255,255,.85)", "stroke-width": 4 })
+      ]),
+
+      /* 둘째 칸 */
+      item("열쇠고리 링", true, c(80, 253, 30, "#B6C0C8"), [
+        c(80, 253, 18, "#EFE3CC", { class: "deco" })
+      ]),
+      item("병뚜껑", true, c(168, 257, 17, "#4C86D6"), [
+        c(168, 257, 10, "none", { class: "deco", stroke: "rgba(255,255,255,.7)", "stroke-width": 3 })
+      ]),
+      item("구슬", true, c(225, 262, 12, "#9B7BD4"), []),
+      item("동그란 자석", true, c(285, 257, 16, "#E4574C"), [
+        c(285, 257, 7, "#EFE3CC", { class: "deco" })
+      ]),
+      item("반원 자석", false, pt("M 338 285 A 34 34 0 0 1 406 285 Z", "#57B871"), [
+        pt("M 350 285 A 22 22 0 0 1 394 285 Z", "#8ED0A0", { class: "deco" })
+      ], "반원"),
+      item("지우개", false, rc(440, 225, 78, 64, "#F0918F", { rx: 18 }), [
+        rc(440, 250, 78, 14, "#E8EDF0", { class: "deco" })
+      ]),
+      item("스마일 스티커", true, c(580, 253, 19, "#F5D547"), [
+        ln(574, 245, 574, 250, "#2F3E4C", 3), ln(587, 245, 587, 250, "#2F3E4C", 3),
+        pt("M 571 257 A 11 11 0 0 0 589 257", "none",
+           { class: "deco", stroke: "#2F3E4C", "stroke-width": 2.5, "stroke-linecap": "round" })
+      ]),
+      item("타원 스티커", false, el(645, 253, 28, 18, "#7FB56A"), [
+        el(645, 253, 17, 9, "#B8DFA8", { class: "deco" })
+      ]),
+      item("풀", false, rc(720, 214, 54, 84, "#E7A9D2", { rx: 6 }), [
+        rc(720, 214, 54, 18, "#B97BB0", { class: "deco", rx: 6 })
+      ]),
+      item("팔각 연필깎이", false, pg("880,232 900,252 900,280 880,300 852,300 832,280 832,252 852,232", "#5C6975"), [
+        rc(854, 260, 24, 12, "#2F3E4C", { class: "deco", rx: 3 })
+      ]),
+
+      /* 셋째 칸 */
+      item("탁구공", true, c(85, 390, 21, "#F3A94D"), [
+        c(85, 390, 13, "none", { class: "deco", stroke: "#D98C2E", "stroke-width": 2.5 })
+      ]),
+      item("메모지", false, rc(140, 352, 72, 72, "#F5E27C", { rx: 3 }), [
+        pt("M 156 376 L 196 376 M 156 394 L 182 394", "none",
+           { class: "deco", stroke: "rgba(120,100,40,.45)", "stroke-width": 3 })
+      ]),
+      item("동그란 도장", true, c(265, 386, 23, "#E08A16"), [
+        c(265, 386, 13, "#FBEBD5", { class: "deco" })
+      ]),
+      item("길쭉한 스티커", false, el(345, 386, 36, 21, "#4C86D6"), []),
+      item("색연필 통", false, el(450, 370, 46, 26, "#9FAEB8"), [
+        el(450, 370, 32, 15, "#6E7A85", { class: "deco" })
+      ]),
+      item("필통", false, rc(540, 352, 150, 66, "#57A8B8", { rx: 8 }), [
+        rc(540, 380, 150, 10, "#3E8595", { class: "deco" }),
+        rc(650, 379, 22, 12, "#2F3E4C", { class: "deco", rx: 4 })
+      ]),
+      item("오각형 배지", false, pg("780,358 809,379 798,412 762,412 751,379", "#9B7BD4"), []),
+      item("삼각자", false, pg("870,424 980,424 980,344", "#F2C33C"), [
+        pg("892,414 962,414 962,364", "#EFE3CC", { class: "deco" })
+      ]),
+
+      /* 넷째 칸 */
+      item("육각 연필", false, pg("80,523 102,507 260,507 282,523 260,539 102,539", ORANGE), [
+        pt("M 80 523 l 22 -8 l 0 16 z", "#4A3B2F", { class: "deco" })
+      ]),
+      item("삼각 깃발", false, pg("330,556 460,556 460,470", "#E4574C"), []),
+      item("자", false, rc(520, 505, 300, 36, "#8ED0A0", { rx: 3 }), [
+        pt("M 550 505 L 550 523 M 580 505 L 580 517 M 610 505 L 610 523 M 640 505 L 640 517 M 670 505 L 670 523 M 700 505 L 700 517 M 730 505 L 730 523 M 760 505 L 760 517 M 790 505 L 790 523",
+           "none", { class: "deco", stroke: "#3F8B57", "stroke-width": 2.5 })
+      ]),
+      item("타원 클립통", false, el(890, 523, 52, 32, "#B6C0C8"), [
+        el(890, 523, 36, 19, "#7E8A94", { class: "deco" })
+      ])
+    ]
+  };
+
+  var SCENES = [scene1, scene2, scene3, scene4, scene5, scene6, scene7];
+
+  /* ── 원이 아닌 까닭 ─────────────────────────── */
+  var WHY = {
+    "타원": "가운데에서 잰 길이가 방향마다 달라요. 원은 어디를 재도 같아요.",
+    "삼각형": "곧은 변 3개와 뾰족한 꼭짓점 3개로 둘러싸여 있어요.",
+    "사각형": "곧은 변 4개와 뾰족한 꼭짓점 4개로 둘러싸여 있어요.",
+    "직사각형": "곧은 변 4개와 뾰족한 꼭짓점 4개로 둘러싸여 있어요.",
+    "정사각형": "네 변의 길이가 모두 같고, 꼭짓점이 4개 있어요.",
+    "둥근 사각형": "모서리만 둥글 뿐, 곧고 평평한 변이 있어요.",
+    "오각형": "곧은 변 5개로 둘러싸인 다각형이에요.",
+    "육각형": "곧은 변 6개와 꼭짓점 6개로 둘러싸여 있어요.",
+    "팔각형": "곧은 변이 여덟 개예요. 가장자리에 곧은 곳이 보이나요?",
+    "다각형": "곧은 변으로 둘러싸인 다각형이에요. 가장자리를 따라가면 꺾이는 곳이 있어요.",
+    "십이각형": "곧은 변이 열두 개예요. 원처럼 보여도 가장자리가 조금씩 꺾여요.",
+    "반원": "원을 반으로 자른 모양이라 한쪽에 곧은 변이 있어요."
+  };
+  var SIDES = { 3: "삼각형", 4: "사각형", 5: "오각형", 6: "육각형", 8: "팔각형", 12: "십이각형" };
+
+  function shapeKind(spec) {
+    if (spec.t === "ellipse") return "타원";
+    if (spec.t === "rect") {
+      if ((+spec.a.rx || 0) >= 10) return "둥근 사각형";
+      return +spec.a.width === +spec.a.height ? "정사각형" : "직사각형";
+    }
+    if (spec.t === "polygon") {
+      var n = spec.a.points.trim().split(/\s+/).length;
+      return SIDES[n] || "다각형";
+    }
+    return "";
+  }
+
+  /* ── 상태 ───────────────────────────────────── */
+  var NS = "http://www.w3.org/2000/svg";
+  var page = 0;
+  var unlocked = 1;
+  var found = SCENES.map(function () { return {}; });
+  var hinted = SCENES.map(function () { return false; });
+  var opened = SCENES.map(function () { return false; });
+
+  var $ = function (id) { return document.getElementById(id); };
+  var svg = $("scene"), steps = $("steps"), say = $("say"), cheer = $("cheer");
+  var sayTimer = null;
+
+  var circleCount = function (s) {
+    return s.items.filter(function (it) { return it.ans; }).length;
+  };
+  var foundCount = function (i) { return Object.keys(found[i]).length; };
+  var isDone = function (i) { return foundCount(i) === circleCount(SCENES[i]); };
+
+  function make(spec) {
+    var node = document.createElementNS(NS, spec.t);
+    for (var k in spec.a) if (Object.prototype.hasOwnProperty.call(spec.a, k)) node.setAttribute(k, spec.a[k]);
+    return node;
+  }
+
+  function speak(text, kind) {
+    say.textContent = text;
+    say.className = "say" + (kind ? " " + kind : "");
+    if (sayTimer) clearTimeout(sayTimer);
+    if (kind) sayTimer = setTimeout(function () { say.className = "say"; }, 2600);
+  }
+
+  /* ── 그림 그리기 ────────────────────────────── */
+  function draw() {
+    var scene = SCENES[page];
+    svg.textContent = "";
+    scene.bg.forEach(function (spec) {
+      var node = make(spec);
+      node.setAttribute("pointer-events", "none");
+      svg.appendChild(node);
+    });
+
+    scene.items.forEach(function (it, idx) {
+      var g = document.createElementNS(NS, "g");
+      g.setAttribute("class", "item");
+      var base = make(it.base);
+      base.setAttribute("class", "target");
+      base.setAttribute("tabindex", "0");
+      base.setAttribute("role", "button");
+      base.setAttribute("aria-label", it.name);
+      g.appendChild(base);
+      it.over.forEach(function (spec) {
+        var node = make(spec);
+        node.setAttribute("class", (spec.a.class ? spec.a.class + " " : "") + "deco");
+        g.appendChild(node);
+      });
+      svg.appendChild(g);
+
+      if (found[page][idx]) {
+        base.classList.add("found");
+        base.setAttribute("aria-label", it.name + " · 찾은 원");
+        addBadge(base);
+      } else if (hinted[page] && it.ans) {
+        base.classList.add("hint");
+      }
+
+      var pick = function (ev) { ev.preventDefault(); choose(idx, g, base); };
+      base.addEventListener("click", pick);
+      base.addEventListener("keydown", function (ev) {
+        if (ev.key === "Enter" || ev.key === " " || ev.key === "Spacebar") pick(ev);
+      });
+    });
+  }
+
+  function addBadge(base) {
+    var box = base.getBBox();
+    var x = Math.min(976, Math.max(24, box.x + box.width - 6));
+    var y = Math.min(596, Math.max(24, box.y + 8));
+    var g = document.createElementNS(NS, "g");
+    g.setAttribute("class", "badge");
+    g.setAttribute("transform", "translate(" + x + "," + y + ")");
+    g.appendChild(make(c(0, 0, 17, "var(--mark)")));
+    g.appendChild(make(pt("M -7 0 L -2 6 L 8 -7", "none",
+      { stroke: "#FFFFFF", "stroke-width": 4, "stroke-linecap": "round", "stroke-linejoin": "round" })));
+    svg.appendChild(g);
+  }
+
+  function ripple(base) {
+    var box = base.getBBox();
+    var node = make(el(box.x + box.width / 2, box.y + box.height / 2, box.width / 2 + 6, box.height / 2 + 6, "none"));
+    node.setAttribute("class", "ripple");
+    svg.appendChild(node);
+    setTimeout(function () { if (node.parentNode) node.parentNode.removeChild(node); }, 800);
+  }
+
+  /* ── 클릭 판정 ──────────────────────────────── */
+  function choose(idx, g, base) {
+    var it = SCENES[page].items[idx];
+    if (found[page][idx]) { speak("이 원은 벌써 찾았어요!", "good"); return; }
+
+    if (!it.ans) {
+      g.classList.remove("nope");
+      void g.getBoundingClientRect();
+      g.classList.add("nope");
+      setTimeout(function () { g.classList.remove("nope"); }, 500);
+      var kind = it.kind || shapeKind(it.base);
+      speak(kind
+        ? it.name + " — " + kind + "이에요. " + WHY[kind]
+        : it.name + " — 이건 원이 아니에요. 어디가 다른지 살펴볼까요?", "bad");
+      return;
+    }
+
+    found[page][idx] = true;
+    base.classList.add("found");
+    base.classList.remove("hint");
+    base.setAttribute("aria-label", it.name + " · 찾은 원");
+    g.classList.add("pop");
+    setTimeout(function () { g.classList.remove("pop"); }, 500);
+    ripple(base);
+    addBadge(base);
+
+    var left = circleCount(SCENES[page]) - foundCount(page);
+    speak(left > 0 ? it.name + "에서 원을 찾았어요! " + left + "개 남았어요" : it.name + "까지 찾았어요!", "good");
+    refresh();
+    if (isDone(page)) setTimeout(celebrate, 620);
+  }
+
+  /* ── 화면 갱신 ──────────────────────────────── */
+  function refresh() {
+    var scene = SCENES[page], total = circleCount(scene), got = foundCount(page);
+
+    $("sceneTitle").textContent = (page + 1) + "단계 · " + scene.title;
+    $("sceneHint").textContent = scene.hint;
+    $("levelName").textContent = scene.level;
+    $("foundNum").textContent = got;
+    $("totalNum").textContent = total;
+
+    var pips = $("pips");
+    pips.textContent = "";
+    for (var i = 0; i < total; i++) {
+      var pip = document.createElement("span");
+      pip.className = "pip" + (i < got ? " on" : hinted[page] ? " hinted" : "");
+      pips.appendChild(pip);
+    }
+
+    steps.textContent = "";
+    SCENES.forEach(function (s, i) {
+      var b = document.createElement("button");
+      b.className = "step" + (isDone(i) ? " done" : "");
+      b.textContent = isDone(i) ? "✓" : String(i + 1);
+      b.title = (i + 1) + "단계 · " + s.title;
+      b.setAttribute("aria-label", (i + 1) + "단계 " + s.title);
+      if (i === page) b.setAttribute("aria-current", "true");
+      b.disabled = i + 1 > unlocked;
+      b.addEventListener("click", function () { (i < page ? restart : go)(i); });
+      steps.appendChild(b);
+    });
+
+    if (isDone(page) || hinted[page]) opened[page] = true;
+    var open = opened[page];
+    if (open) unlocked = Math.max(unlocked, Math.min(SCENES.length, page + 2));
+    var next = $("btnNext");
+    next.disabled = !open || page === SCENES.length - 1;
+    next.classList.toggle("ready", open && page < SCENES.length - 1);
+    next.textContent = page === SCENES.length - 1 ? "마지막 페이지" : "다음 페이지 →";
+    $("btnPrev").disabled = page === 0;
+    $("btnHint").textContent = hinted[page] ? "정답 숨기기" : "정답 보기";
+    $("lockmsg").textContent = isDone(page)
+      ? "잘했어요! 다음 페이지로 넘어가 보세요"
+      : "원을 모두 찾으면 다음 페이지가 열려요";
+  }
+
+  function restart(i, message) {
+    found[i] = {};
+    hinted[i] = false;
+    opened[i] = false;
+    go(i);
+    speak(message || SCENES[i].title + " — 처음부터 다시 찾아보세요");
+  }
+
+  function go(i) {
+    page = Math.min(SCENES.length - 1, Math.max(0, i));
+    cheer.classList.remove("show");
+    speak("");
+    draw();
+    refresh();
+    fit();
+  }
+
+  /* ── 축하 ──────────────────────────────────── */
+  function celebrate() {
+    var last = page === SCENES.length - 1;
+    var total = circleCount(SCENES[page]);
+    $("cheerTitle").textContent = last ? SCENES.length + "단계를 모두 마쳤어요!" : "원을 모두 찾았어요!";
+    $("cheerText").textContent = last
+      ? "우리 주변에는 이렇게 많은 원이 숨어 있어요. 교실에서도 원을 찾아볼까요?"
+      : SCENES[page].title + "에서 원 " + total + "개를 찾았어요." +
+        (hinted[page] ? " 다음 페이지는 정답 없이 도전해 볼까요?" : " 다음 페이지는 조금 더 어려워요!");
+
+    var actions = $("cheerActions");
+    actions.textContent = "";
+    if (last) {
+      actions.appendChild(button("처음부터 다시하기", "btn btn-next", function () {
+        SCENES.forEach(function (s, i) { found[i] = {}; hinted[i] = false; opened[i] = false; });
+        unlocked = 1;
+        go(0);
+      }));
+    } else {
+      actions.appendChild(button("다음 페이지 →", "btn btn-next", function () { go(page + 1); }));
+    }
+    actions.appendChild(button("그림 더 보기", "btn", function () { cheer.classList.remove("show"); }));
+
+    confetti();
+    cheer.classList.add("show");
+    var first = actions.querySelector("button");
+    if (first) first.focus();
+  }
+
+  function button(label, cls, fn) {
+    var b = document.createElement("button");
+    b.className = cls;
+    b.textContent = label;
+    b.addEventListener("click", fn);
+    return b;
+  }
+
+  function confetti() {
+    var box = $("confetti");
+    box.textContent = "";
+    if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    var colors = ["#0F8A80", "#F2C33C", "#E4574C", "#4C86D6", "#F0688E", "#57B871"];
+    for (var i = 0; i < 28; i++) {
+      var dot = document.createElement("i");
+      var size = 10 + Math.random() * 14;
+      dot.style.left = Math.random() * 100 + "%";
+      dot.style.width = size + "px";
+      dot.style.height = size + "px";
+      dot.style.background = colors[i % colors.length];
+      dot.style.animationDuration = 2.2 + Math.random() * 1.6 + "s";
+      dot.style.animationDelay = Math.random() * 0.7 + "s";
+      box.appendChild(dot);
+    }
+    setTimeout(function () { box.textContent = ""; }, 4200);
+  }
+
+  /* ── 화면에 꼭 맞추기 ───────────────────────── */
+  var stageEl = document.querySelector(".stage");
+  var frameEl = document.querySelector(".frame");
+  var lastW = 0;
+  function fit() {
+    var head = document.querySelector(".scene-head");
+    var room = stageEl.clientHeight - head.offsetHeight - say.offsetHeight - 24;
+    var w = Math.max(260, Math.round(Math.min(stageEl.clientWidth, room * (1000 / 620))));
+    if (w !== lastW) { lastW = w; frameEl.style.width = w + "px"; }
+  }
+  window.addEventListener("resize", fit);
+  if (window.ResizeObserver) new ResizeObserver(fit).observe(stageEl);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit)["catch"](function () {});
+
+  /* ── 버튼 ──────────────────────────────────── */
+  $("btnNext").addEventListener("click", function () { if (page < SCENES.length - 1) go(page + 1); });
+  $("btnPrev").addEventListener("click", function () { if (page > 0) restart(page - 1); });
+  $("btnReset").addEventListener("click", function () { restart(page, "이 페이지를 처음부터 다시 찾아보세요"); });
+  $("btnHint").addEventListener("click", function () {
+    hinted[page] = !hinted[page];
+    draw();
+    refresh();
+    speak(hinted[page]
+      ? "주황색 점선이 아직 찾지 못한 원이에요"
+      : "정답을 숨겼어요. 다시 찾아볼까요?");
+  });
+  $("cheerClose").addEventListener("click", function () { cheer.classList.remove("show"); });
+  document.addEventListener("keydown", function (ev) {
+    if (ev.key === "Escape") cheer.classList.remove("show");
+  });
+
+  go(0);
+})();
+</script>
+</body>
+</html>

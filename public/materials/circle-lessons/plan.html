@@ -1,0 +1,821 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>원 5차시 수업 대본</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Jua&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet" />
+<style>
+:root{
+  --paper:#EFF2F3; --card:#FFFFFF; --ink:#16283A; --soft:#57708A; --line:#D6DFE5;
+  --teal:#0F8A80; --teal-ink:#0A5F59; --teal-wash:#E0F1EF;
+  --amber:#B9741A; --amber-wash:#FAEEDC;
+  --rose:#B8453C; --rose-wash:#FAE7E4;
+  --shadow:0 16px 40px -30px rgba(18,40,58,.7);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#0D1720; --card:#16232D; --ink:#E6EDF2; --soft:#9CB2C0; --line:#294050;
+    --teal:#2FBFB3; --teal-ink:#8CE4DB; --teal-wash:#0F3B38;
+    --amber:#E7A857; --amber-wash:#3A2B14;
+    --rose:#E88A80; --rose-wash:#3A211E;
+    --shadow:0 16px 40px -30px rgba(0,0,0,.85);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0D1720; --card:#16232D; --ink:#E6EDF2; --soft:#9CB2C0; --line:#294050;
+  --teal:#2FBFB3; --teal-ink:#8CE4DB; --teal-wash:#0F3B38;
+  --amber:#E7A857; --amber-wash:#3A2B14; --rose:#E88A80; --rose-wash:#3A211E;
+  --shadow:0 16px 40px -30px rgba(0,0,0,.85);
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--paper);color:var(--ink);
+  font-family:"Noto Sans KR","Apple SD Gothic Neo",system-ui,sans-serif;
+  font-size:16px;line-height:1.72;
+}
+h1,h2,h3,h4,.display{font-family:"Jua","Noto Sans KR",sans-serif;font-weight:400;text-wrap:balance;letter-spacing:.01em}
+.wrap{max-width:1000px;margin:0 auto;padding:0 clamp(16px,4vw,40px) 80px}
+
+/* 표지 */
+.cover{padding:clamp(36px,7vw,72px) 0 28px;border-bottom:2px solid var(--line)}
+.eyebrow{display:inline-block;font-size:13px;letter-spacing:.14em;color:var(--teal-ink);background:var(--teal-wash);
+  padding:6px 14px;border-radius:999px;margin-bottom:16px}
+.cover h1{margin:0 0 10px;font-size:clamp(30px,5vw,46px);line-height:1.15}
+.cover .lead{margin:0;color:var(--soft);max-width:62ch;font-size:17px}
+.cover-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px;margin-top:26px}
+.fact{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px;box-shadow:var(--shadow)}
+.fact dt{font-size:12.5px;color:var(--soft);letter-spacing:.06em;margin-bottom:4px}
+.fact dd{margin:0;font-family:"Jua","Noto Sans KR",sans-serif;font-size:17px}
+
+/* 차시 이동 */
+nav.jump{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--paper) 88%,transparent);
+  backdrop-filter:blur(8px);border-bottom:1px solid var(--line);margin-bottom:8px}
+nav.jump ul{display:flex;gap:8px;list-style:none;margin:0;padding:10px 0;overflow-x:auto}
+nav.jump a{display:block;white-space:nowrap;text-decoration:none;color:var(--soft);border:1.5px solid var(--line);
+  background:var(--card);border-radius:11px;padding:7px 14px;font-family:"Jua","Noto Sans KR",sans-serif;font-size:15px}
+nav.jump a:hover{border-color:var(--teal);color:var(--teal-ink)}
+nav.jump a.on{background:var(--teal);border-color:var(--teal);color:#fff}
+
+/* 차시 */
+.lesson{padding-top:44px;scroll-margin-top:64px}
+.lesson-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:12px}
+.chip{background:var(--teal);color:#fff;font-family:"Jua","Noto Sans KR",sans-serif;
+  padding:4px 13px;border-radius:999px;font-size:15px}
+.lesson-head h2{margin:0;font-size:clamp(23px,3.2vw,31px)}
+.goal{margin:10px 0 0;padding:12px 16px;background:var(--teal-wash);border-left:4px solid var(--teal);
+  border-radius:0 10px 10px 0;color:var(--teal-ink);font-weight:700}
+.meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px;margin:18px 0 6px}
+.meta div{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 15px;font-size:14.5px}
+.meta b{display:block;font-family:"Jua","Noto Sans KR",sans-serif;font-size:14px;color:var(--soft);margin-bottom:3px;font-weight:400}
+
+/* 흐름 */
+.flow{list-style:none;margin:26px 0 0;padding:0;display:flex;flex-direction:column;gap:14px}
+.step{display:grid;grid-template-columns:96px 1fr;gap:16px;background:var(--card);border:1px solid var(--line);
+  border-radius:16px;padding:18px;box-shadow:var(--shadow);break-inside:avoid}
+.step .clock{font-family:"Jua","Noto Sans KR",sans-serif;color:var(--teal-ink);background:var(--teal-wash);
+  border-radius:10px;text-align:center;padding:8px 4px;height:fit-content;font-size:15px}
+.step h3{margin:0 0 8px;font-size:19px}
+.step .what{margin:0 0 12px;color:var(--soft);font-size:14.5px}
+
+/* 대본 */
+.script{display:flex;flex-direction:column;gap:9px;border-left:3px dashed var(--line);padding-left:15px;margin:0}
+.line{display:grid;grid-template-columns:74px 1fr;gap:11px;align-items:start;margin:0}
+.who{font-family:"Jua","Noto Sans KR",sans-serif;font-size:13px;padding:3px 0;text-align:center;border-radius:8px;line-height:1.4}
+.t .who{background:var(--teal);color:#fff}
+.s .who{background:var(--line);color:var(--ink)}
+.t p,.s p{margin:0}
+.t p{font-weight:500}
+.s p{color:var(--soft);font-size:15px}
+.do{margin:2px 0 2px 85px;font-size:14.5px;color:var(--soft);border-left:3px solid var(--amber);padding-left:11px}
+.do b{color:var(--amber);font-weight:700}
+
+/* 카드 */
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;margin-top:18px}
+.card{border-radius:16px;padding:16px 18px;border:1px solid var(--line);background:var(--card);break-inside:avoid}
+.card h4{margin:0 0 9px;font-size:16px;display:flex;align-items:center;gap:8px}
+.card ul{margin:0;padding-left:18px;font-size:14.5px}
+.card li+li{margin-top:5px}
+.card.warn{background:var(--rose-wash);border-color:transparent}
+.card.warn h4{color:var(--rose)}
+.card.extra{background:var(--amber-wash);border-color:transparent}
+.card.extra h4{color:var(--amber)}
+.card.board{background:var(--card)}
+.board-sketch{font-family:"Jua","Noto Sans KR",sans-serif;background:#22443C;color:#EAF6F0;border-radius:10px;
+  padding:14px 16px;font-size:14.5px;line-height:1.9;white-space:pre-line}
+.talk{font-size:14.5px}
+.talk b{display:block;font-family:"Jua","Noto Sans KR",sans-serif;font-weight:400;font-size:15px;margin-top:10px}
+.talk b:first-child{margin-top:0}
+
+table{width:100%;border-collapse:collapse;font-size:14.5px;margin-top:10px}
+th,td{border-bottom:1px solid var(--line);padding:9px 8px;text-align:left;vertical-align:top}
+th{font-family:"Jua","Noto Sans KR",sans-serif;font-weight:400;color:var(--soft);font-size:14px}
+td.num{font-variant-numeric:tabular-nums;white-space:nowrap}
+.scroll{overflow-x:auto}
+a.mat{color:var(--teal-ink);font-weight:700}
+footer{margin-top:56px;padding-top:20px;border-top:2px solid var(--line);color:var(--soft);font-size:14px}
+
+@media (max-width:640px){
+  .step{grid-template-columns:1fr}
+  .line{grid-template-columns:62px 1fr}
+  .do{margin-left:0}
+}
+@media print{
+  body{background:#fff;font-size:11pt}
+  nav.jump{display:none}
+  .step,.card{box-shadow:none}
+  .lesson{page-break-before:always;padding-top:0}
+  .lesson:first-of-type{page-break-before:auto}
+  .wrap{max-width:none;padding:0}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="cover">
+  <span class="eyebrow">초등 수학 · 도형</span>
+  <h1>원, 다섯 시간 수업 대본</h1>
+  <p class="lead">원을 알아보는 것에서 시작해 지름과 반지름을 찾고, 컴퍼스로 그리고, 무늬로 꾸미고, 우리 주변에서 원을 쓰는 까닭까지.
+  차시마다 그대로 읽어도 되는 대본과, 활동이 일찍 끝났을 때 꺼낼 이야깃거리를 함께 담았습니다.</p>
+  <dl class="cover-grid">
+    <div class="fact"><dt>차시 구성</dt><dd>5차시 · 각 40분</dd></div>
+    <div class="fact"><dt>준비물</dt><dd>종이 · 자 · 색연필 · 컴퍼스 · 실</dd></div>
+    <div class="fact"><dt>함께 쓰는 자료</dt><dd>화면 자료 3가지 · 학습지 5장 · 정답 모음</dd></div>
+  </dl>
+</header>
+
+<nav class="jump" aria-label="차시 이동">
+  <ul>
+    <li><a href="#l1">1차시 원 찾기와 본뜨기</a></li>
+    <li><a href="#l2">2차시 중심·지름·반지름</a></li>
+    <li><a href="#l3">3차시 컴퍼스로 그리기</a></li>
+    <li><a href="#l4">4차시 원으로 꾸미기</a></li>
+    <li><a href="#l5">5차시 동그란 까닭</a></li>
+    <li><a href="#prep">준비물 총괄</a></li>
+  </ul>
+</nav>
+
+<section class="lesson" id="l1">
+  <div class="lesson-head"><span class="chip">1차시</span><h2>원 찾기와 본뜨기</h2></div>
+  <p class="goal">배움 목표 · 주변에서 원 모양을 찾아 다른 도형과 구별하고, 물건을 본떠 원을 그릴 수 있다.</p>
+  <div class="meta">
+    <div><b>학생 준비물</b>종이, 연필, 색연필, 가위, 동그란 스티커 몇 장</div>
+    <div><b>교사 준비물</b>종이띠(4cm) 인원수만큼, 칠판 자석 8~10개, 동그란 물건 바구니, <b class="mat">동그라미 탐험대</b> 띄우기</div>
+    <div><b>학습지</b>1-1번 · 보물에서 같은 거리 &nbsp;/&nbsp; 1번 · 원 찾기와 본뜨기 기록지</div>
+  </div>
+
+  <ol class="flow">
+    <li class="step">
+      <div class="clock">0~8분<br>도입</div>
+      <div>
+        <h3>책상 위 보물 지키기 — 자리에 앉아서 원을 만듭니다</h3>
+        <p class="what">정의를 말로 주지 않고, 손으로 만든 결과에서 끌어냅니다. 교실을 돌아다니지 않아도 모두 참여할 수 있습니다.</p>
+        <div class="script">
+          <p class="line t"><span class="who">선생님</span><span>"오늘은 보물 지키기부터 할 거예요. 종이 한가운데에 스티커를 하나 붙이세요. 이게 <b>보물</b>이에요."</span></p>
+          <p class="line t"><span class="who">선생님</span><span>"보물을 지키러 친구들이 왔어요. 그런데 <b>아무도 손해 보지 않게, 보물에서 모두 똑같이 떨어져</b> 서야 해요. 어디에 세우면 될까요?"</span></p>
+          <p class="line s"><span class="who">아이들</span><span>"위요!" "옆이요!" (제각각 점을 찍습니다)</span></p>
+          <p class="line t"><span class="who">선생님</span><span>"그럼 이 종이띠를 쓰세요. 모두 길이가 같아요. 한쪽 끝을 보물에 대고, 반대쪽 끝에 <b>점을 하나</b> 찍어 보세요. 이번엔 방향을 바꿔서 또 하나. 여덟 군데쯤 찍어 볼까요?"</span></p>
+          <p class="do"><b>동작</b> 종이띠는 실보다 뻣뻣해서 잡기 쉽습니다. 연필로 점 찍기가 어려운 학생은 <b>동그란 스티커를 붙여</b> 표시하게 하세요. 손 조작이 어려우면 짝이 띠를 잡아 주고 학생이 방향을 말하는 역할을 맡습니다.</p>
+          <p class="line t"><span class="who">선생님</span><span>"이제 찍은 점들을 눈으로 쭉 이어 보세요. 무슨 모양이 보이나요?"</span></p>
+          <p class="line s"><span class="who">아이들</span><span>"동그라미요!" "원이요!"</span></p>
+          <p class="line t"><span class="who">선생님</span><span>"우리가 만든 원에는 규칙이 하나 있었죠. 뭐였나요?"</span></p>
+          <p class="line s"><span class="who">아이들</span><span>"보물에서 다 똑같이 떨어졌어요."</span></p>
+          <p class="line t"><span class="who">선생님</span><span>"바로 그거예요. 원은 <b>가운데 한 점에서 어디를 재도 길이가 같은</b> 동그란 모양이에요. 오늘 이 문장이 우리 반 판단 기준이에요."</span></p>
+          <p class="do"><b>다 함께 보기</b> 칠판에 자석을 하나 붙여 보물로 삼고, 아이들이 "3시 방향이요!" 하고 말하면 교사가 같은 길이 끈으로 재어 자석을 붙여 줍니다. 자석 여덟 개가 원을 이루는 것을 학급 전체가 함께 확인합니다. <b>말로만 참여해도 되는 방식</b>이라 손을 쓰기 어려운 학생도 주인공이 될 수 있습니다.</p>
+        </div>
+      </div>
+    </li>
+
+    <li class="step">
+      <div class="clock">8~18분<br>활동 1</div>
+      <div>
+        <h3>동그라미 탐험대로 원과 원이 아닌 것 가려내기</h3>
+        <p class="what">1~2단계는 다 같이, 3~4단계는 짝과 상의해 대표가 클릭, 5~6단계는 모둠 대결로 운영합니다. 7단계는 원과 아주 비슷한 십이각형·팔각형이 나오는 도전 단계라, 시간이 남을 때만 함께 도전해 보세요.</p>
+        <div class="script">
+          <p class="line t"><span class="who">선생님</span><span>"화면에 그림이 나와요. 그림 속에서 <b>원을 찾아 누르면</b> 돼요. 몇 개를 찾아야 하는지는 아래에 나와 있어요. 누르기 전에 먼저 손을 들고 말해 볼까요?"</span></p>
+          <p class="line t"><span class="who">선생님</span><span>(3단계 접시 두 개를 가리키며) "접시가 두 개인데 하나만 원이래요. 무엇이 다를까요?"</span></p>
+          <p class="line s"><span class="who">아이들</span><span>"하나는 길쭉해요." "옆으로 늘어났어요."</span></p>
+          <p class="line t"><span class="who">선생님</span><span>"맞아요. 길쭉한 동그라미는 <b>타원</b>이라고 해요. 가운데에서 재 보면 어떤 쪽은 길고 어떤 쪽은 짧아요. 원은 어디를 재도 같아야 하죠."</span></p>
+          <p class="do"><b>요령</b> 원이 아닌 것을 <b>일부러 눌러 보게</b> 하세요. 무슨 도형인지, 왜 원이 아닌지 설명이 뜹니다. 설명이 뜨기 전에 "왜 아니라고 나올까?"를 먼저 물어보면 훨씬 좋은 발문이 됩니다.</p>
+          <p class="line t"><span class="who">선생님</span><span>"다 찾은 모둠은 손을 드세요. 다음 그림은 조금 더 어려워요."</span></p>
+        </div>
+      </div>
+    </li>
+
+    <li class="step">
+      <div class="clock">18~28분<br>활동 2</div>
+      <div>
+        <h3>물건을 본떠 원 그리기</h3>
+        <p class="what">화면에서 찾은 원을 손으로 직접 만들어 보는 단계입니다.</p>
+        <div class="script">
+          <p class="line t"><span class="who">선생님</span><span>"이제 진짜 원을 우리 손으로 만들 거예요. 동그란 물건을 <b>두 개만</b> 고르세요. 바구니를 돌릴 테니 마음에 드는 걸 골라도 되고, 필통이나 사물함에 있는 걸 써도 좋아요."</span></p>
+          <p class="do"><b>동작</b> 교사가 동그란 물건 바구니(풀 뚜껑·테이프·컵·동전·병뚜껑)를 들고 자리마다 돌면, 아무도 자리를 뜨지 않고 고를 수 있습니다. 물건을 누르고 있기 어려운 학생은 짝이 눌러 주고 본인이 선을 그리게 하세요.</p>
+          <p class="line s"><span class="who">아이들</span><span>풀 뚜껑, 테이프, 컵, 동전, 지우개 통…</span></p>
+          <p class="line t"><span class="who">선생님</span><span>"종이 위에 물건을 대고 연필로 빙 둘러 그려 보세요. 이렇게 물건 모양을 따라 그리는 걸 <b>본뜬다</b>고 해요. 물건이 움직이지 않게 한 손으로 꼭 눌러야 해요."</span></p>
+          <p class="line t"><span class="who">선생님</span><span>"그런데 내가 그린 게 진짜 원인지 어떻게 확인할까요?"</span></p>
+          <p class="line s"><span class="who">아이들</span><span>"자로 재요!" "가운데에서 재 봐요."</span></p>
+          <p class="line t"><span class="who">선생님</span><span>"좋아요. 더 쉬운 방법도 있어요. 오려서 <b>반으로 접어</b> 보세요. 딱 겹치면 원이고, 삐져나오면 그리다가 손이 흔들린 거예요."</span></p>
+          <p class="do"><b>동작</b> 오려 낸 원 뒷면에 이름을 쓰게 하고 걷어 두세요. <b>2차시 준비물이 됩니다.</b></p>
+        </div>
+      </div>
+    </li>
+
+    <li class="step">
+      <div class="clock">28~37분<br>활동 3</div>
+      <div>
+        <h3>동그란 얼굴 표정 만들기</h3>
+        <div class="script">
+          <p class="line t"><span class="who">선생님</span><span>"본뜬 원에 표정을 그려 볼 거예요. 기쁜 얼굴, 화난 얼굴, 놀란 얼굴. 크기가 다른 물건으로 본떠도 괜찮아요."</span></p>
+          <p class="line t"><span class="who">선생님</span><span>"큰 원도 원이고 작은 원도 원이에요. <b>크기가 달라도 원은 원</b>이니까요."</span></p>
+          <p class="line t"><span class="who">선생님</span><span>"다 그린 친구는 칠판에 붙여 주세요. 우리 반 표정판을 만들 거예요."</span></p>
+          <p class="do"><b>요령</b> 표정 하나는 남겨 두고 2차시에 쓰면 준비물이 줄어듭니다. 표정을 그리지 않은 깨끗한 원 한 장을 따로 챙기게 하세요.</p>
+        </div>
+      </div>
+    </li>
+
+    <li class="step">
+      <div class="clock">37~40분<br>정리</div>
+      <div>
+        <h3>오늘의 판단 기준 말하기</h3>
+        <div class="script">
+          <p class="line t"><span class="who">선생님</span><span>"오늘 원인지 아닌지 어떻게 확인했죠?"</span></p>
+          <p class="line s"><span class="who">아이들</span><span>"가운데에서 재 봐요." "반으로 접어서 겹쳐 봐요."</span></p>
+          <p class="line t"><span class="who">선생님</span><span>"다음 시간에는 이 원의 <b>한가운데를 정확하게 찾는 방법</b>을 배울 거예요. 오늘 오려 둔 원, 잃어버리지 마세요."</span></p>
+        </div>
+      </div>
+    </li>
+  </ol>
+
+  <div class="cards">
+    <div class="card board">
+      <h4>판서 계획</h4>
+      <div class="board-sketch">＜원＞
+원 = 가운데 한 점에서 어디를 재도 길이가 같은 동그란 모양
+원이 아닌 것 : 타원(길쭉) · 삼각형 · 사각형
+확인법 ① 가운데에서 재기  ② 반으로 접어 겹치기</div>
+    </div>
+    <div class="card warn">
+      <h4>오개념 주의</h4>
+      <ul>
+        <li>"동그랗게 생기면 다 원" → 달걀·럭비공을 보여 주며 타원과 구분합니다.</li>
+        <li>"큰 건 원이 아니다" → 크기는 원과 상관없다는 점을 표정 만들기에서 짚습니다.</li>
+        <li>본뜨다 찌그러진 그림을 원이라고 우기는 경우 → 접어서 확인하게 합니다.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4>모두가 참여하는 방법</h4>
+      <ul>
+        <li><b>자리에서 그대로</b> — 도입·본뜨기·표정 만들기 모두 책상 위에서 끝납니다. 이동이 필요한 순간이 없습니다.</li>
+        <li><b>손 조작이 어려울 때</b> — 점 찍기는 동그란 스티커 붙이기로, 종이띠 잡기는 짝과 역할 나누기로 바꿉니다. 학습지 <b>1-1번</b>은 점이 이미 찍혀 있어 색칠만 하면 됩니다.</li>
+        <li><b>말로 참여하기</b> — 칠판 자석 시범에서 방향을 말하는 역할("2시 방향이요!")을 맡깁니다. 화면 활동에서도 누를 곳을 말로 지시하고 교사가 대신 눌러 줍니다.</li>
+        <li><b>가위질이 어려울 때</b> — 본뜬 원을 미리 오려 둔 것으로 바꾸거나, 접어서 확인하는 대신 자로 재어 확인합니다.</li>
+      </ul>
+    </div>
+    <div class="card extra">
+      <h4>⏱ 시간이 남으면</h4>
+      <div class="talk">
+        <b>맨홀 뚜껑은 왜 동그랄까?</b>
+        네모난 뚜껑은 비스듬히 세우면 대각선이 더 길어서 구멍으로 쏙 빠져요. 그런데 원은 어느 방향으로 돌려도 폭이 똑같아서 절대 빠지지 않아요. 원의 성질이 사람을 지켜 주는 셈이에요.
+        <b>비눗방울은 왜 동그랄까?</b>
+        같은 양으로 가장 넓게 감싸는 모양이 원(공)이라서, 비눗물이 저절로 가장 편한 모양을 찾아가면 동그래져요.
+        <b>미니 활동 · 거꾸로 찾기</b>
+        이번엔 <b>원이 아닌 동그란 것</b>을 찾아 말해 보게 하세요. 달걀, 비스듬히 놓인 컵, 럭비공… 자리에 앉아 교실을 둘러보며 손으로 가리키기만 해도 됩니다. 왜 원이 아닌지 말하게 하면 타원 개념이 단단해집니다.
+        <b>미니 활동 · 스무고개</b>
+        "내가 생각한 동그란 물건은 무엇일까요?" 질문 다섯 개로 맞히기. 답이 나오면 "그건 원일까, 타원일까?"로 이어 갑니다.
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="lesson" id="l2">
+  <div class="lesson-head"><span class="chip">2차시</span><h2>원의 중심 · 지름 · 반지름</h2></div>
+  <p class="goal">배움 목표 · 원의 중심을 찾고, 지름과 반지름의 뜻과 관계를 설명할 수 있다.</p>
+  <div class="meta">
+    <div><b>학생 준비물</b>1차시에 오려 둔 종이 원 2~3개, 자, 연필, 색연필</div>
+    <div><b>교사 준비물</b>큰 종이 원 1개(시범용), <b class="mat">원의 한가운데</b> 띄우기</div>
+    <div><b>학습지</b>2번 · 중심과 지름·반지름 기록표</div>
+  </div>
+
+  <ol class="flow">
+    <li class="step">
+      <div class="clock">0~5분<br>도입</div>
+      <div>
+        <h3>눈대중으로는 한가운데를 못 찾습니다</h3>
+        <div class="script">
+          <p class="line t"><span class="who">선생님</span><span>"지난 시간에 오려 둔 원을 꺼내세요. 이 원의 <b>한가운데</b>에 연필로 점을 찍어 보세요. 자는 쓰지 말고 눈으로만요."</span></p>
+          <p class="line t"><span class="who">선생님</span><span>"짝과 원을 바꿔서 볼까요? 점이 같은 자리에 있나요?"</span></p>
+          <p class="line s"><span class="who">아이들</span><span>"달라요!" "제 게 더 가운데예요!"</span></p>
+          <p class="line t"><span class="who">선생님</span><span>"눈으로는 알 수가 없죠. 오늘은 <b>누가 해도 똑같은 자리가 나오는 방법</b>을 배울 거예요."</span></p>
+        </div>
+      </div>
+    </li>
+
+    <li class="step">
+      <div class="clock">5~15분<br>활동 1</div>
+      <div>
+        <h3>두 번 접어 중심 찾기</h3>
+        <p class="what">종이 원 하나만 있으면 되는 활동입니다. 중심과 지름이 한 번에 나옵니다.</p>
+        <div class="script">
+          <p class="line t"><span class="who">선생님</span><span>"원을 반으로 접어 보세요. 가장자리가 딱 겹치게요. 겹치나요? 그럼 진짜 원이에요."</span></p>
+          <p class="line t"><span class="who">선생님</span><span>"펴세요. 접힌 자국이 보이죠? 이번엔 <b>다른 쪽으로 한 번 더</b> 반으로 접었다 펴세요."</span></p>
+          <p class="line t"><span class="who">선생님</span><span>"자국이 두 개 생겼어요. 두 자국이 <b>만나는 곳</b>에 진하게 점을 찍어 보세요. 여기가 바로 원의 <b>중심</b>이에요."</span></p>
+          <p class="line s"><span class="who">아이들</span><span>"다 같은 자리에 찍혔어요!"</span></p>
+          <p class="line t"><span class="who">선생님</span><span>"그리고 이 접힌 자국처럼 <b>중심을 지나면서 원을 끝에서 끝까지 가로지르는 선</b>, 이걸 <b>지름</b>이라고 해요. 색연필로 진하게 덧그려 보세요."</span></p>
+          <p class="do"><b>동작</b> 중심에는 ●, 지름에는 색을 입히게 하면 다음 활동에서 눈에 잘 들어옵니다. 접기가 어려운 아이는 짝이 잡아 주게 하세요.</p>
+        </div>
+      </div>
+    </li>
+
+    <li class="step">
+      <div class="clock">15~25분<br>활동 2</div>
+      <div>
+        <h3>지름은 몇 개나 그을 수 있고, 길이는 어떨까</h3>
+        <div class="script">
+          <p class="line t"><span class="who">선생님</span><span>"자를 대고 <b>중심을 지나는 선</b>을 세 개만 더 그어 보세요. 방향은 마음대로요."</span></p>
+          <p class="line t"><span class="who">선생님</span><span>"지름은 몇 개까지 그을 수 있을까요?"</span></p>
+          <p class="line s"><span class="who">아이들</span><span>"엄청 많아요!" "셀 수 없어요!"</span></p>
+          <p class="line t"><span class="who">선생님</span><span>"맞아요. 셀 수 없이 많이 그을 수 있어요. 그럼 이제 그은 지름을 하나씩 자로 재서 학습지에 적어 볼까요?"</span></p>
+          <p class="line s"><span class="who">아이들</span><span>"어? 다 똑같아요!"</span></p>
+          <p class="line t"><span class="who">선생님</span><span>"그게 오늘의 두 번째 발견이에요. <b>한 원에서 지름의 길이는 언제나 같아요.</b>"</span></p>
+          <p class="do"><b>꼭 짚기</b> 칠판에 중심을 <b>비껴가는</b> 선을 하나 그리고 "이것도 지름일까요?" 하고 물으세요. 원을 가로질러도 <b>중심을 지나지 않으면 지름이 아닙니다.</b> 이 오개념은 여기서 잡지 않으면 3차시까지 갑니다.</p>
+        </div>
+      </div>
+    </li>
+
+    <li class="step">
+      <div class="clock">25~34분<br>활동 3</div>
+      <div>
+        <h3>반지름 재기, 그리고 지름과의 관계 발견</h3>
+        <div class="script">
+          <p class="line t"><span class="who">선생님</span><span>"이번에는 <b>중심에서 가장자리까지만</b> 재 보세요. 이 길이를 <b>반지름</b>이라고 해요."</span></p>
+          <p class="line t"><span class="who">선생님</span><span>"내 원은 지름이 8cm였어요. 그럼 반지름은 몇 cm일까요?"</span></p>
+          <p class="line s"><span class="who">아이들</span><span>"4cm요!"</span></p>
+          <p class="line t"><span class="who">선생님</span><span>"어떻게 알았어요?"</span></p>
+          <p class="line s"><span class="who">아이들</span><span>"반이니까요." "지름은 반지름 두 개예요."</span></p>
+          <p class="line t"><span class="who">선생님</span><span>"정확해요. <b>지름 = 반지름 + 반지름.</b> 크기가 다른 원으로도 한 번 더 확인해 볼까요? 표정 원 중에 작은 걸로 해 보세요."</span></p>
+          <p class="do"><b>요령</b> 표에 두세 개 원의 지름과 반지름을 나란히 적게 하면, 규칙을 교사가 말해 주지 않아도 아이들이 먼저 발견합니다.</p>
+        </div>
+      </div>
+    </li>
+
+    <li class="step">
+      <div class="clock">34~40분<br>정리</div>
+      <div>
+        <h3>친구에게 설명하고 화면으로 확인하기</h3>
+        <div class="script">
+          <p class="line t"><span class="who">선생님</span><span>"짝과 원을 바꾸세요. 친구 원에서 <b>중심, 지름, 반지름</b>을 손가락으로 짚어 가며 설명해 주세요."</span></p>
+          <p class="line t"><span class="who">선생님</span><span>(화면 자료를 띄우고) "화면에서도 확인해 볼까요? 여기 선을 그어 보면 지름인지 아닌지 바로 알려 줘요."</span></p>
+          <p class="line t"><span class="who">선생님</span><span>"다음 시간에는 물건을 본뜨지 않고 <b>우리 힘으로 원을 그리는 방법</b>을 배웁니다."</span></p>
+        </div>
+      </div>
+    </li>
+  </ol>
+
+  <div class="cards">
+    <div class="card board">
+      <h4>판서 계획</h4>
+      <div class="board-sketch">＜원의 이름표＞
+원의 중심 ● : 원의 한가운데 → 두 번 접어 찾기
+지름 ──── : 중심을 지나 원을 가로지른 선
+             셀 수 없이 많다 / 한 원에서 길이가 모두 같다
+반지름 ── : 중심에서 원 위의 한 점까지
+지름 = 반지름 + 반지름</div>
+    </div>
+    <div class="card warn">
+      <h4>오개념 주의</h4>
+      <ul>
+        <li>중심을 지나지 않는 선을 지름이라고 함 → 반드시 중심 통과.</li>
+        <li>반지름을 '반쪽 원'으로 이해 → 길이라는 점을 강조합니다.</li>
+        <li>"지름은 8cm로 정해져 있다" → 원마다 다르고, <b>한 원 안에서만</b> 같습니다.</li>
+        <li><b>학습지 2번 · 4번 문제 정답</b> — 가 ○, 나 ○, 다 ×, 라 ×. 다·라는 원을 가로지르지만 중심을 지나지 않습니다. (전체 정답은 학습지 <b>6~7쪽 교사용 정답 모음</b>에 있습니다.)</li>
+      </ul>
+    </div>
+    <div class="card extra">
+      <h4>⏱ 시간이 남으면</h4>
+      <div class="talk">
+        <b>피자를 공평하게 나누려면</b>
+        피자를 자를 때 왜 가운데를 지나게 자를까요? 중심을 비껴 자르면 한 조각은 크고 한 조각은 작아져요. <b>중심을 지나는 지름으로 잘라야 공평</b>합니다. 케이크도 마찬가지예요.
+        <b>관람차·시계 바늘·선풍기의 공통점</b>
+        모두 <b>중심에 축이 달려</b> 있어요. 중심에서 거리가 어디나 같으니 빙글빙글 돌아도 덜컹거리지 않아요. 축이 중심에서 벗어나면 어떻게 될까요? (세탁기가 덜덜 떠는 이유)
+        <b>미니 활동 · 세 번 접으면?</b>
+        원을 세 번 접었다 펴면 자국이 몇 개일까요? 접기 전에 예상해 보고 세어 봅니다. 자국은 모두 중심에서 만납니다.
+        <b>나무의 나이테</b>
+        나무를 자르면 중심에서 바깥으로 퍼지는 원들이 보여요. 한가운데가 가장 어릴 때고 바깥이 가장 최근이에요.
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="lesson" id="l3">
+  <div class="lesson-head"><span class="chip">3차시</span><h2>컴퍼스로 원 그리기</h2></div>
+  <p class="goal">배움 목표 · 중심과 반지름을 정해 원을 그리고, 컴퍼스를 바르게 사용할 수 있다.</p>
+  <div class="meta">
+    <div><b>학생 준비물</b>컴퍼스, 자, 연필, 실 20cm(한 뼘), 종이</div>
+    <div><b>교사 준비물</b>큰 실(1m)과 분필 또는 자석, 시범용 대형 컴퍼스(없으면 실로 대체)</div>
+    <div><b>학습지</b>3번 · 컴퍼스 미션지</div>
+  </div>
+
+  <ol class="flow">
+    <li class="step">
+      <div class="clock">0~5분<br>도입</div>
+      <div>
+        <h3>딱 맞는 물건이 없을 때는 어떻게 그릴까</h3>
+        <div class="script">
+          <p class="line t"><span class="who">선생님</span><span>"1차시에 원을 어떻게 그렸죠?"</span></p>
+          <p class="line s"><span class="who">아이들</span><span>"물건을 본떴어요!"</span></p>
+          <p class="line t"><span class="who">선생님</span><span>"그럼 선생님이 <b>반지름이 딱 3cm인 원</b>을 그려 오라고 하면요? 교실에서 그런 물건을 찾을 수 있을까요?"</span></p>
+          <p class="line s"><span class="who">아이들</span><span>"어려워요…" "찾아봐야 알아요."</span></p>
+          <p class="line t"><span class="who">선생님</span><span>"오늘은 물건 없이, <b>원하는 크기의 원을 우리 손으로</b> 그리는 방법을 배웁니다."</span></p>
+        </div>
+      </div>
+    </li>
+
+    <li class="step">
+      <div class="clock">5~14분<br>활동 1</div>
+      <div>
+        <h3>실로 원 그리기 — 컴퍼스의 원리 먼저</h3>
+        <p class="what">컴퍼스를 도구가 아니라 '실을 대신하는 것'으로 이해시키는 단계입니다.</p>
+        <div class="script">
+          <p class="line t"><span class="who">선생님</span><span>"짝과 함께 할 거예요. 실 한쪽 끝을 짝이 종이 위에 <b>손가락으로 꾹 눌러</b> 주세요. 반대쪽 끝에는 연필을 걸고, <b>팽팽하게 당긴 채로</b> 한 바퀴 돌려 보세요."</span></p>
+          <p class="line s"><span class="who">아이들</span><span>"원이 그려졌어요!" "손이 흔들려서 삐뚤어졌어요."</span></p>
+          <p class="line t"><span class="who">선생님</span><span>"짝이 누르고 있던 그 자리를 뭐라고 부르죠?"</span></p>
+          <p class="line s"><span class="who">아이들</span><span>"중심이요!"</span></p>
+          <p class="line t"><span class="who">선생님</span><span>"그럼 실의 길이는요?"</span></p>
+          <p class="line s"><span class="who">아이들</span><span>"반지름이요!"</span></p>
+          <p class="line t"><span class="who">선생님</span><span>"실이 느슨해지면 어떻게 될까요? 한번 일부러 느슨하게 해 보세요."</span></p>
+          <p class="line s"><span class="who">아이들</span><span>"찌그러져요!"</span></p>
+          <p class="line t"><span class="who">선생님</span><span>"그래서 원을 그릴 때는 <b>중심이 움직이지 않고, 길이가 변하지 않아야</b> 해요. 이 두 가지를 지켜 주는 도구가 바로 컴퍼스예요."</span></p>
+        </div>
+      </div>
+    </li>
+
+    <li class="step">
+      <div class="clock">14~26분<br>활동 2</div>
+      <div>
+        <h3>컴퍼스 바르게 쓰기</h3>
+        <div class="script">
+          <p class="line t"><span class="who">선생님</span><span>"컴퍼스는 실과 연필을 하나로 합친 도구예요. <b>뾰족한 침이 짝의 손가락</b>이고, <b>연필심이 우리 연필</b>이에요."</span></p>
+          <p class="line t"><span class="who">선생님</span><span>"먼저 자에 대고 <b>3cm로 벌려</b> 보세요. 침 끝에서 연필심 끝까지가 3cm예요. 이 벌린 길이가 바로 반지름이에요."</span></p>
+          <p class="line t"><span class="who">선생님</span><span>"종이에 중심이 될 점을 찍고 침을 꽂으세요. 그리고 <b>위쪽 손잡이만 잡고</b> 한 번에 돌려요. 연필 쪽을 잡으면 벌린 길이가 변해요."</span></p>
+          <p class="do"><b>안전</b> 침이 뾰족합니다. 돌릴 때 얼굴을 가까이 대지 않기, 다 쓰면 바로 필통에 넣기를 먼저 약속하세요.</p>
+          <p class="do"><b>자주 나오는 실수</b> ① 컴퍼스를 기울여 잡아 선이 끊긴다 → 세워서 잡기 ② 침이 미끄러진다 → 종이 밑에 한 장 더 깔기 ③ 한 번에 안 그려진다 → 종이를 돌려도 됩니다 ④ 나사가 헐거워 길이가 변한다 → 그리기 전에 조이기</p>
+          <p class="line t"><span class="who">선생님</span><span>"다 그린 사람은 자로 여러 방향을 재 보세요. 중심에서 어디를 재도 3cm면 성공이에요."</span></p>
+        </div>
+      </div>
+    </li>
+
+    <li class="step">
+      <div class="clock">26~35분<br>활동 3</div>
+      <div>
+        <h3>미션 세 가지</h3>
+        <div class="script">
+          <p class="line t"><span class="who">선생님</span><span>"미션 1. 반지름이 <b>2cm, 3cm</b>인 원을 나란히 그리세요. 다 그린 사람은 옆에 반지름 4cm 원도 그려 보세요."</span></p>
+          <p class="line t"><span class="who">선생님</span><span>"미션 2. 같은 자리에 침을 꽂고 반지름 1cm, 2cm, 3cm로 세 번 그리세요. <b>중심이 같은 원 세 개</b>가 되면 무엇이 만들어지나요?"</span></p>
+          <p class="line s"><span class="who">아이들</span><span>"과녁이요!" "도넛 같아요."</span></p>
+          <p class="line t"><span class="who">선생님</span><span>"미션 3. 이번엔 어려워요. <b>지름이 6cm인 원</b>을 그리세요. 컴퍼스는 몇 cm로 벌려야 할까요?"</span></p>
+          <p class="line s"><span class="who">아이들</span><span>"6cm요!" … "아니다, 3cm요!"</span></p>
+          <p class="line t"><span class="who">선생님</span><span>"왜 3cm일까요?"</span></p>
+          <p class="line s"><span class="who">아이들</span><span>"컴퍼스는 반지름만큼 벌리니까요. 지름의 반이요."</span></p>
+          <p class="do"><b>평가</b> 미션 3이 곧 2차시 개념 평가입니다. 6cm로 벌린 아이에게는 그린 원의 지름을 직접 재 보게 하세요.</p>
+        </div>
+      </div>
+    </li>
+
+    <li class="step">
+      <div class="clock">35~40분<br>정리</div>
+      <div>
+        <h3>짝의 원 검사하기</h3>
+        <div class="script">
+          <p class="line t"><span class="who">선생님</span><span>"짝과 학습지를 바꾸세요. 친구 원의 <b>중심에서 여러 방향으로 재 보고</b>, 길이가 같으면 옆에 동그라미를 그려 주세요."</span></p>
+          <p class="line t"><span class="who">선생님</span><span>"다음 시간에는 오늘 배운 컴퍼스로 <b>무늬</b>를 만들 거예요. 컴퍼스 꼭 챙겨 오세요."</span></p>
+        </div>
+      </div>
+    </li>
+  </ol>
+
+  <div class="cards">
+    <div class="card board">
+      <h4>판서 계획</h4>
+      <div class="board-sketch">＜원 그리기＞
+실 원 : 누르는 곳 = 중심 , 실 길이 = 반지름
+컴퍼스 : 침 = 중심 , 벌린 길이 = 반지름
+   ※ 지름 6cm 원 → 컴퍼스는 3cm !
+잘 그리려면 ① 중심이 안 움직이게 ② 길이가 안 변하게</div>
+    </div>
+    <div class="card warn">
+      <h4>오개념 주의</h4>
+      <ul>
+        <li>지름 6cm를 컴퍼스 6cm로 벌림 → 반지름만큼 벌린다는 점을 반복해 확인합니다.</li>
+        <li>그리다가 침을 옮김 → 중심이 바뀌면 원이 아니라 나선이 됩니다.</li>
+        <li>연필심이 침보다 짧거나 길다 → 두 끝을 나란히 맞춰야 합니다.</li>
+      </ul>
+    </div>
+    <div class="card extra">
+      <h4>⏱ 시간이 남으면</h4>
+      <div class="talk">
+        <b>운동장에 큰 원 그리기</b>
+        말뚝에 줄을 묶고 반대쪽을 잡고 돌면 사람이 컴퍼스가 됩니다. 축구장 가운데 동그라미도 이렇게 그려요. 교실에서는 줄자와 분필로 복도나 운동장에 지름 2m 원을 그려 볼 수 있습니다.
+        <b>컴퍼스는 아주 오래된 도구</b>
+        정확한 원을 그리려는 마음은 아주 옛날부터 있었어요. 지금 컴퍼스와 생김새가 비슷한 도구가 오래전 유물에서도 발견됩니다. 사람은 왜 그렇게 정확한 원을 그리고 싶었을까요? (바퀴, 그릇, 건물 기둥…)
+        <b>미니 활동 · 반지름 알아맞히기</b>
+        짝이 그린 원을 보고 컴퍼스를 벌려 <b>같은 크기</b>로 그려 맞히기. 겹쳐 보고 딱 맞으면 성공. 자를 쓰지 않고 눈대중으로 하면 더 재밌습니다.
+        <b>침을 옮기면 무엇이 될까</b>
+        중심을 조금씩 옮기며 계속 그리면 달팽이 껍데기 같은 <b>나선</b>이 됩니다. 원과 나선의 차이를 눈으로 보여 줄 수 있어요.
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="lesson" id="l4">
+  <div class="lesson-head"><span class="chip">4차시</span><h2>원으로 무늬 만들기</h2></div>
+  <p class="goal">배움 목표 · 컴퍼스로 규칙 있는 무늬를 만들고, 원 안을 선으로 채워 꾸밀 수 있다.</p>
+  <div class="meta">
+    <div><b>학생 준비물</b>컴퍼스, 자, 연필, 색연필</div>
+    <div><b>교사 준비물</b>무늬 예시(올림픽기·태극 문양·전통 문살 사진), 완성 작품 예시 1점</div>
+    <div><b>학습지</b>4번 · 무늬 도안(점 12개 원)</div>
+  </div>
+
+  <ol class="flow">
+    <li class="step">
+      <div class="clock">0~5분<br>도입</div>
+      <div>
+        <h3>우리 주변의 원 무늬 보기</h3>
+        <div class="script">
+          <p class="line t"><span class="who">선생님</span><span>"올림픽 깃발에는 원이 몇 개 있죠? 태극 문양은 무슨 모양으로 되어 있나요? 옛날 건물 문살이나 단청에도 원이 아주 많아요."</span></p>
+          <p class="line t"><span class="who">선생님</span><span>"오늘은 우리도 컴퍼스로 이런 무늬를 만들 거예요. 준비물은 컴퍼스 하나면 충분해요."</span></p>
+        </div>
+      </div>
+    </li>
+
+    <li class="step">
+      <div class="clock">5~17분<br>활동 1</div>
+      <div>
+        <h3>꽃무늬 만들기 — 반지름을 바꾸지 않는 것이 비결</h3>
+        <div class="script">
+          <p class="line t"><span class="who">선생님</span><span>"컴퍼스를 <b>3cm</b>로 벌리고 원을 하나 그리세요. 여기서 아주 중요한 약속. <b>지금부터 벌린 길이를 절대 바꾸지 마세요.</b>"</span></p>
+          <p class="line t"><span class="who">선생님</span><span>"이제 침을 <b>방금 그린 원 위의 아무 점</b>에 꽂고 또 그리세요. 두 원이 만난 자리에 다시 침을 꽂고 또 그리고… 계속 돌아가며 그려 보세요."</span></p>
+          <p class="line s"><span class="who">아이들</span><span>"어? 꽃이 됐어요!" "여섯 장이에요!"</span></p>
+          <p class="line t"><span class="who">선생님</span><span>"신기하죠? <b>여섯 번이면 정확히 제자리로 돌아와요.</b> 모든 원의 반지름이 같기 때문이에요. 우연이 아니라 규칙이에요."</span></p>
+          <p class="do"><b>요령</b> 벌린 길이가 바뀐 아이는 꽃잎이 안 맞습니다. "왜 안 맞을까?"를 그 자리에서 물어보면 반지름의 뜻을 다시 확인하는 좋은 순간이 됩니다.</p>
+          <p class="line t"><span class="who">선생님</span><span>"꽃잎마다 다른 색으로 칠하면 훨씬 예뻐요. 겹친 부분만 진하게 칠해도 좋아요."</span></p>
+        </div>
+      </div>
+    </li>
+
+    <li class="step">
+      <div class="clock">17~29분<br>활동 2</div>
+      <div>
+        <h3>선을 그어 원의 안을 채우기</h3>
+        <div class="script">
+          <p class="line t"><span class="who">선생님</span><span>"학습지에 점 열두 개가 시계 숫자처럼 찍힌 원이 있어요. 여기에 <b>곧은 선만</b> 그어서 안을 채울 거예요."</span></p>
+          <p class="line t"><span class="who">선생님</span><span>"규칙을 정할게요. <b>1번에서 5번, 2번에서 6번, 3번에서 7번…</b> 네 칸씩 건너뛰며 이어 보세요. 12번까지 다 하면 멈춥니다."</span></p>
+          <p class="line t"><span class="who">선생님</span><span>"다 그은 사람, 원 안쪽을 보세요. 무엇이 보이나요?"</span></p>
+          <p class="line s"><span class="who">아이들</span><span>"동그란 게 생겼어요!" "곡선처럼 보여요."</span></p>
+          <p class="line t"><span class="who">선생님</span><span>"우리는 <b>곧은 선만</b> 그었는데 곡선이 나타났어요. 선이 촘촘히 모이면 곡선처럼 보이는 거예요."</span></p>
+          <p class="do"><b>변형</b> 건너뛰는 칸 수를 3칸, 5칸으로 바꾸면 무늬가 완전히 달라집니다. 빨리 끝낸 아이에게 "다른 규칙으로 한 장 더"를 주세요.</p>
+        </div>
+      </div>
+    </li>
+
+    <li class="step">
+      <div class="clock">29~35분<br>활동 3</div>
+      <div>
+        <h3>색칠하고 제목 붙이기</h3>
+        <div class="script">
+          <p class="line t"><span class="who">선생님</span><span>"색을 칠하고 작품에 이름을 붙여 주세요. '무지개 꽃', '우주 과녁' 같은 제목이요."</span></p>
+          <p class="line t"><span class="who">선생님</span><span>"작품 아래에 한 문장만 써 주세요. <b>'내 무늬에서 원의 중심은 ○○에 있습니다.'</b>"</span></p>
+        </div>
+      </div>
+    </li>
+
+    <li class="step">
+      <div class="clock">35~40분<br>정리</div>
+      <div>
+        <h3>전시하고 네 시간 되돌아보기</h3>
+        <div class="script">
+          <p class="line t"><span class="who">선생님</span><span>"칠판에 붙이고 친구 작품을 둘러보세요. 마음에 드는 무늬를 하나 골라 왜 좋은지 말해 볼까요?"</span></p>
+          <p class="line t"><span class="who">선생님</span><span>"네 시간 동안 원에 대해 무엇을 배웠죠? 원이 무엇인지, 중심과 지름과 반지름, 컴퍼스로 그리기, 그리고 무늬까지."</span></p>
+          <p class="line t"><span class="who">선생님</span><span>"집에 가는 길에 원을 몇 개나 볼 수 있는지 세어 보세요. 아마 스무 개도 넘을 거예요."</span></p>
+        </div>
+      </div>
+    </li>
+  </ol>
+
+  <div class="cards">
+    <div class="card board">
+      <h4>판서 계획</h4>
+      <div class="board-sketch">＜원으로 꾸미기＞
+꽃무늬 : 반지름 그대로 → 원 위의 점을 새 중심으로 → 6번이면 제자리
+선무늬 : 둘레에 점 12개 → 규칙대로 잇기(4칸씩)
+        곧은 선인데 곡선처럼 보인다</div>
+    </div>
+    <div class="card warn">
+      <h4>진행 주의</h4>
+      <ul>
+        <li>컴퍼스 벌린 길이가 바뀌면 꽃잎이 맞지 않습니다. 시작 전에 나사를 조이게 하세요.</li>
+        <li>점 간격이 고르지 않으면 선무늬가 삐뚤어집니다. 학습지의 점을 그대로 쓰게 하세요.</li>
+        <li>빨리 끝나는 아이 편차가 큰 차시입니다. 아래 미니 활동을 미리 준비해 두세요.</li>
+      </ul>
+    </div>
+    <div class="card extra">
+      <h4>⏱ 시간이 남으면</h4>
+      <div class="talk">
+        <b>왜 꽃잎이 딱 여섯 장일까</b>
+        원의 둘레를 반지름과 같은 길이로 재어 나가면 정확히 여섯 번 만에 제자리로 옵니다. 그래서 점 여섯 개를 이으면 정육각형이 되지요. 벌집이 육각형인 것과도 이어지는 이야기입니다.
+        <b>세계의 원 무늬</b>
+        올림픽기의 다섯 원, 태극 문양, 전통 건물의 둥근 문살, 이슬람 사원의 기하 무늬까지 — 나라와 시대가 달라도 사람들은 원으로 무늬를 만들어 왔어요. 왜 하필 원이었을까요?
+        <b>미니 활동 · 원 세 개로 캐릭터</b>
+        크기가 다른 원 세 개만으로 눈사람, 곰, 자동차를 만들어 보기. 다 만든 뒤 "가장 큰 원의 반지름은?"을 재게 하면 개념 복습이 됩니다.
+        <b>미니 활동 · 무지개 그리기</b>
+        중심이 같은 원을 반지름 1cm씩 늘려 가며 일곱 개 그리고 위쪽 반만 남기면 무지개가 됩니다. 중심이 같은 원(동심원)을 자연스럽게 익힐 수 있어요.
+        <b>자전거 바퀴살 이야기</b>
+        바퀴살은 모두 중심에서 뻗어 나가요. 길이가 다 같은 반지름이라서 어느 쪽으로 힘이 실려도 바퀴가 찌그러지지 않습니다.
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="lesson" id="l5">
+  <div class="lesson-head"><span class="chip">5차시</span><h2>우리 주변의 원 — 동그란 까닭</h2></div>
+  <p class="goal">배움 목표 · 생활 속에서 원이 쓰이는 곳을 찾고, 왜 원을 쓰는지 까닭을 말할 수 있다.</p>
+  <div class="meta">
+    <div><b>학생 준비물</b>연필 (교실 물건을 눈으로 찾으므로 따로 필요 없음)</div>
+    <div><b>교사 준비물</b><b class="mat">동그란 까닭</b> 띄우기(까닭마다 실험 하나씩), 둥근 연필과 육각 연필, A4 종이 몇 장</div>
+    <div><b>설명 자료</b>왜 하필 원일까 (교사용 해설 · 사례 25가지)</div>
+  </div>
+
+  <ol class="flow">
+    <li class="step">
+      <div class="clock">0~5분<br>도입</div>
+      <div>
+        <h3>질문을 세웁니다</h3>
+        <div class="script">
+          <p class="line t"><span class="who">선생님</span><span>"자리에 앉은 채로 교실을 둘러보세요. 동그란 물건이 몇 개나 보이나요?"</span></p>
+          <p class="line s"><span class="who">아이들</span><span>"시계요!" "쓰레기통이요!" "문고리요!"</span></p>
+          <p class="line t"><span class="who">선생님</span><span>"이렇게 많네요. 그런데 오늘은 <b>왜 동그랗게 만들었을까</b>를 알아볼 거예요. 네모로 만들면 안 되는 걸까요?"</span></p>
+          <p class="do"><b>요령</b> 아이들이 말한 물건을 칠판에 적어 두었다가, 마지막 정리에서 까닭을 붙여 보게 하면 수업이 하나로 묶입니다.</p>
+        </div>
+      </div>
+    </li>
+
+    <li class="step">
+      <div class="clock">5~25분<br>활동 1</div>
+      <div>
+        <h3>여섯 가지 까닭을 하나씩 — 사례 먼저, 까닭은 나중에</h3>
+        <p class="what">화면 오른쪽에서 까닭을 하나 고르면 사례 네 가지가 나옵니다. <b>[까닭 보기]를 바로 누르지 마세요.</b></p>
+        <div class="script">
+          <p class="line t"><span class="who">선생님</span><span>(잘 굴러가요 · 사례 화면) "자전거 바퀴, 자동차 바퀴, 가방 바퀴, 인라인 스케이트. 무엇이 같나요?"</span></p>
+          <p class="line s"><span class="who">아이들</span><span>"다 굴러가요!" "다 동그래요!"</span></p>
+          <p class="line t"><span class="who">선생님</span><span>"그럼 아래 질문을 같이 읽어 볼까요. <b>바퀴는 왜 네모가 아니라 동그랄까요?</b> 짝과 이야기해 보세요."</span></p>
+          <p class="do"><b>동작</b> 아이들이 충분히 말한 뒤에 [까닭 보기]를 누릅니다. 화면 아래 띠가 초록으로 바뀌며 까닭이 큰 글씨로 나옵니다.</p>
+          <p class="line t"><span class="who">선생님</span><span>"우리가 말한 것과 같나요? <b>가운데에서 가장자리까지 길이가 모두 같아서</b> 굴러가도 높이가 변하지 않는대요. 2차시에 배운 게 여기 나오네요."</span></p>
+          <p class="line t"><span class="who">선생님</span><span>(다음 까닭으로 넘어가며) "이번엔 뚜껑이에요. 맨홀 뚜껑은 왜 동그랄까요?"</span></p>
+          <p class="do"><b>배분</b> 여섯 까닭에 각 3분 남짓입니다. 시간이 모자라면 <b>잘 굴러가요 · 돌려도 딱 맞아요 · 공평해요</b> 세 가지만 하고, 나머지는 다음 시간 도입으로 넘기세요.</p>
+        </div>
+      </div>
+    </li>
+
+    <li class="step">
+      <div class="clock">25~33분<br>활동 2</div>
+      <div>
+        <h3>실험 — 까닭마다 하나씩</h3>
+        <div class="script">
+          <p class="do"><b>동작</b> 까닭마다 실험이 하나씩 있습니다. [실험 보기]를 누르면 <b>준비 화면만 나오고 아직 움직이지 않습니다.</b> 무엇을 볼지 설명하고 아이들의 예상을 들은 뒤 [실험 시작]을 누르세요. 다시 보고 싶으면 [처음부터 다시]를 누릅니다.</p>
+          <p class="line t"><span class="who">선생님</span><span>"직접 확인해 볼까요? 동그란 바퀴와 네모난 바퀴가 나란히 굴러갈 거예요. 어느 쪽이 덜컹거릴까요? 먼저 예상해 봅시다."</span></p>
+          <p class="line s"><span class="who">아이들</span><span>"네모는 덜컹거려요!" "위로 올라갔다 내려와요."</span></p>
+          <p class="line t"><span class="who">선생님</span><span>"바퀴 위에 남는 <b>점선 자국</b>을 보세요. 동그란 바퀴는 곧은 선, 네모난 바퀴는 오르내리는 선이죠."</span></p>
+          <p class="do"><b>교실 재현</b> 둥근 연필 두 자루 위에 책을 얹어 밀어 보고, 육각 연필로도 해 봅니다. 손끝으로 덜컹거림이 느껴집니다.</p>
+          <p class="line t"><span class="who">선생님</span><span>(맨홀 실험) "동그란 뚜껑과 네모난 뚜껑을 구멍에 넣어 볼게요. 어떻게 될까요?"</span></p>
+          <p class="line s"><span class="who">아이들</span><span>"네모가 빠졌어요!"</span></p>
+          <p class="line t"><span class="who">선생님</span><span>"왜 네모만 빠졌을까요? 구멍의 <b>대각선</b>이 더 길기 때문이에요. 원은 어느 쪽으로 재도 폭이 같아서 걸립니다."</span></p>
+          <p class="do"><b>배분</b> 실험 여섯 가지를 다 하기에는 시간이 모자랍니다. <b>바퀴·맨홀</b> 두 가지를 기본으로 하고, 학급 반응을 보아 <b>종이 기둥</b>이나 <b>둥글게 앉기</b>를 더하세요. 나머지는 다음 시간 도입이나 쉬는 시간 자료로 좋습니다.</p>
+        </div>
+      </div>
+    </li>
+
+    <li class="step">
+      <div class="clock">33~40분<br>정리</div>
+      <div>
+        <h3>우리 반 '동그란 까닭' 만들기</h3>
+        <div class="script">
+          <p class="line t"><span class="who">선생님</span><span>(도입 때 칠판에 적어 둔 물건들을 가리키며) "아까 우리가 찾은 물건들이에요. 하나를 골라 <b>까닭을 한 문장</b>으로 말해 볼까요?"</span></p>
+          <p class="line s"><span class="who">아이들</span><span>"쓰레기통은 어느 쪽에서든 넣기 좋으니까요." "문고리는 돌리려고요."</span></p>
+          <p class="line t"><span class="who">선생님</span><span>"까닭이 여러 가지여도 좋아요. 그런데 오늘 나온 까닭에는 공통점이 하나 있었어요. 무엇일까요?"</span></p>
+          <p class="line s"><span class="who">아이들</span><span>"가운데에서 거리가 다 같아요!"</span></p>
+          <p class="line t"><span class="who">선생님</span><span>"맞아요. 다섯 시간 동안 배운 원의 뜻이 우리 주변에서 이렇게 쓰이고 있었어요. 집에 가는 길에도 동그란 것을 찾아보고, 왜 동그란지 생각해 보세요."</span></p>
+        </div>
+      </div>
+    </li>
+  </ol>
+
+  <div class="cards">
+    <div class="card board">
+      <h4>판서 계획</h4>
+      <div class="board-sketch">＜동그란 까닭＞
+잘 굴러가요   : 높이가 변하지 않아서
+돌려도 딱 맞아요 : 어느 쪽으로 재도 폭이 같아서
+사방으로 퍼져요 : 같은 빠르기로 퍼져서
+잘 돌아요     : 축에서 거리가 같아서
+튼튼해요      : 모서리가 없어 힘이 고르게
+공평해요      : 모두 같은 거리에 있어서
+   ↓ 모두 한 가지로 모인다
+원 = 가운데 한 점에서 어디를 재도 길이가 같은 모양</div>
+    </div>
+    <div class="card warn">
+      <h4>오개념 주의</h4>
+      <ul>
+        <li>공·구슬·지구본은 <b>입체(구)</b>입니다. "종이에 그릴 수 있는 납작한 모양이 원"으로 구분해 주세요.</li>
+        <li>바퀴·캔·수도관은 정확히는 원기둥이지만, 자른 면이 원이라 원의 성질이 그대로 쓰입니다.</li>
+        <li>맨홀 뚜껑이 원인 까닭은 한 가지가 아닙니다(빠지지 않음, 굴려 옮김, 방향 맞출 필요 없음). 정답 하나를 강요하지 마세요.</li>
+      </ul>
+    </div>
+    <div class="card extra">
+      <h4>⏱ 시간이 남으면</h4>
+      <div class="talk">
+        <b>종이 기둥 실험</b>
+        A4 종이를 둥글게 말아 세우면 책을 여러 권 올려도 버티지만, 네모로 접어 세우면 모서리부터 접힙니다. '튼튼해요'를 손으로 확인하는 가장 빠른 실험입니다.
+        <b>왜 접시는 동그랄까</b>
+        가운데를 잡고 돌리며 만들면 저절로 원이 되고, 같은 재료로 가장 넓게 담을 수 있어요. 도자기 물레 사례와 이어집니다.
+        <b>동그랗지 않으면 더 좋은 것도 있어요</b>
+        책, 공책, 창문, 문은 왜 네모일까요? 벽에 딱 맞게 붙이고, 쌓아 두기 좋기 때문입니다. 모양마다 알맞은 쓰임이 있다는 이야기로 마무리하면 좋습니다.
+        <b>우리 반 '동그란 까닭' 게시판</b>
+        아이들이 찾아온 물건과 까닭을 카드에 적어 붙여 두면, 다음 단원까지 이어지는 학급 자료가 됩니다.
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="lesson" id="prep">
+  <div class="lesson-head"><span class="chip">부록</span><h2>준비물과 평가 한눈에</h2></div>
+
+  <div class="scroll">
+  <table>
+    <thead><tr><th>차시</th><th>학생 준비물</th><th>교사 준비물</th><th>학습지 · 디지털 자료</th></tr></thead>
+    <tbody>
+      <tr><td class="num">1차시</td><td>종이, 연필, 색연필, 가위, 동그란 스티커</td><td>종이띠(4cm) 인원수만큼, 칠판 자석 8~10개, 동그란 물건 바구니</td><td>학습지 1-1번·1번 · 동그라미 탐험대</td></tr>
+      <tr><td class="num">2차시</td><td>1차시에 오려 둔 종이 원, 자, 색연필</td><td>시범용 큰 종이 원</td><td>학습지 2번 · 원의 한가운데</td></tr>
+      <tr><td class="num">3차시</td><td>컴퍼스, 자, 실 20cm</td><td>긴 실 1m, 분필</td><td>학습지 3번</td></tr>
+      <tr><td class="num">4차시</td><td>컴퍼스, 자, 색연필</td><td>무늬 예시 사진, 작품 예시 1점</td><td>학습지 4번</td></tr>
+      <tr><td class="num">5차시</td><td>연필 (교실 물건은 눈으로 찾음)</td><td>둥근 연필·육각 연필, A4 종이</td><td>동그란 까닭 · 왜 하필 원일까(해설)</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="cards" style="margin-top:22px">
+    <div class="card">
+      <h4>평가 관점</h4>
+      <ul>
+        <li><b>1차시</b> 원과 원이 아닌 도형을 구분하고 그 까닭을 말하는가</li>
+        <li><b>2차시</b> 중심·지름·반지름을 짚어 설명하고, 지름이 반지름의 두 배임을 아는가</li>
+        <li><b>3차시</b> 반지름을 정해 컴퍼스로 원을 그리는가 (미션 3으로 확인)</li>
+        <li><b>4차시</b> 규칙을 지켜 무늬를 만들고, 자기 무늬의 중심을 설명하는가</li>
+        <li><b>5차시</b> 생활 속에서 원이 쓰인 곳을 찾고, 그 까닭을 원의 성질과 연결해 말하는가</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4>화면 자료 세 가지</h4>
+      <ul>
+        <li><b>동그라미 탐험대</b> — 그림 속 원 찾기 7단계. 1차시 주 활동, 4차시 도입 복습용. 7단계는 도전 과제입니다.</li>
+        <li><b>원의 한가운데</b> — 원을 접어 중심을 찾고, 지름을 그어 판정받고, 반지름과 비교하는 활동. 2차시용.</li>
+        <li><b>동그란 까닭</b> — 원을 쓰는 여섯 가지 까닭과 사례 25가지, 까닭마다 실험 하나씩. 5차시용.</li>
+        <li>세 자료 모두 설치 없이 브라우저로 열리고, 교실 TV 크기에 맞춰 글씨가 커집니다. 인터넷이 불안하면 파일을 USB에 담아 가세요.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4>시간이 모자랄 때 줄이는 순서</h4>
+      <ul>
+        <li>1차시 — 동그라미 탐험대를 4단계까지만 진행합니다(7단계는 도전 과제이므로 언제든 건너뜁니다).</li>
+        <li>2차시 — 활동 3의 '크기가 다른 원으로 다시 확인'을 생략합니다.</li>
+        <li>3차시 — 실 원 그리기를 교사 시범으로 대체합니다.</li>
+        <li>4차시 — 선무늬를 다음 미술 시간으로 넘깁니다.</li>
+        <li>5차시 — 여섯 까닭 중 잘 굴러가요·돌려도 딱 맞아요·공평해요 세 가지만 다룹니다.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<footer>
+  다섯 차시 모두 40분 기준입니다. 학급 상황에 맞게 활동 시간을 5분 단위로 조정하세요.
+  대본의 아이들 반응은 실제로 자주 나오는 답을 적어 둔 것이라, 다른 답이 나오면 그 답을 살려 이어 가시면 됩니다.
+</footer>
+
+</div>
+<script>
+(function () {
+  var links = Array.prototype.slice.call(document.querySelectorAll("nav.jump a"));
+  var sections = links.map(function (a) { return document.querySelector(a.getAttribute("href")); });
+  function mark() {
+    var y = window.scrollY + 120, current = 0;
+    sections.forEach(function (s, i) { if (s && s.offsetTop <= y) current = i; });
+    links.forEach(function (a, i) { a.classList.toggle("on", i === current); });
+  }
+  window.addEventListener("scroll", mark, { passive: true });
+  mark();
+})();
+</script>
+</body>
+</html>

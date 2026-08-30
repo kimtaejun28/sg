@@ -1,0 +1,421 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>원의 한가운데</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Jua&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet" />
+<style>
+:root{
+  --paper:#EDF1F4; --card:#FFFFFF; --ink:#14293B; --soft:#4A6478; --line:#CFDBE3;
+  --brand:#0F8A80; --brand-ink:#0B615A; --brand-wash:#DDF0ED;
+  --amber:#D9821C; --amber-wash:#FBEBD5; --rose:#C0483F; --rose-wash:#FAE7E4;
+  --mark:#12293C; --shadow:0 18px 44px -26px rgba(20,41,59,.6);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#0E1A22; --card:#17252E; --ink:#E7EFF3; --soft:#9DB3C0; --line:#2B3F4B;
+    --brand:#2EC0B4; --brand-ink:#8FE6DD; --brand-wash:#123A38;
+    --amber:#F0A94E; --amber-wash:#3B2A15; --rose:#E88A80; --rose-wash:#3A211E;
+    --shadow:0 18px 44px -26px rgba(0,0,0,.8);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0E1A22; --card:#17252E; --ink:#E7EFF3; --soft:#9DB3C0; --line:#2B3F4B;
+  --brand:#2EC0B4; --brand-ink:#8FE6DD; --brand-wash:#123A38;
+  --amber:#F0A94E; --amber-wash:#3B2A15; --rose:#E88A80; --rose-wash:#3A211E;
+  --shadow:0 18px 44px -26px rgba(0,0,0,.8);
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--paper);color:var(--ink);
+  font-family:"Noto Sans KR","Apple SD Gothic Neo",system-ui,sans-serif}
+h1,h2,h3,.d{font-family:"Jua","Noto Sans KR",sans-serif;font-weight:400}
+.app{height:100dvh;display:flex;flex-direction:column;gap:10px;padding:12px clamp(10px,2vw,22px) 14px}
+header{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:11px;margin-right:auto}
+.brand h1{margin:0;font-size:clamp(19px,3.2vh,60px)}
+.brand p{margin:2px 0 0;font-size:clamp(13px,1.7vh,30px);color:var(--soft)}
+.tabs{display:flex;gap:8px;flex-wrap:wrap}
+.tab{font-family:"Jua","Noto Sans KR",sans-serif;font-size:clamp(15px,2.3vh,44px);
+  padding:clamp(8px,1.1vh,20px) clamp(15px,1.8vh,34px);border-radius:12px;
+  border:1.6px solid var(--line);background:var(--card);color:var(--soft);cursor:pointer;transition:.18s}
+.tab:hover{transform:translateY(-1px)}
+.tab[aria-selected="true"]{background:var(--brand);border-color:var(--brand);color:#fff}
+.tab:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+
+main{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) clamp(250px,26vw,680px);gap:clamp(12px,1.2vh,26px)}
+.play{display:flex;flex-direction:column;gap:clamp(10px,.8vw,18px);min-height:0}
+/* 안내 띠 — 원 바로 아래, 교실 뒤에서도 읽히도록 크게 */
+.saybar{flex:0 0 auto;display:flex;align-items:center;gap:clamp(12px,1.2vw,24px);
+  padding:clamp(12px,1vw,20px) clamp(16px,1.4vw,30px);border-radius:16px;
+  background:var(--card);border:1px solid var(--line);box-shadow:var(--shadow);
+  height:clamp(88px,11vh,210px);overflow:auto;transition:background .2s}
+.saybar .msg{flex:1;margin:0;font-size:clamp(16px,3vh,58px);line-height:1.45;color:var(--ink);font-weight:500}
+.saybar .note{flex:0 0 auto;text-align:right;font-size:clamp(13px,2.1vh,40px);color:var(--soft);line-height:1.7}
+.saybar .note b{color:var(--brand-ink)}
+.saybar.yes{background:var(--brand-wash);border-color:transparent}
+.saybar.yes .msg{color:var(--brand-ink);font-weight:700}
+.saybar.no{background:var(--rose-wash);border-color:transparent}
+.saybar.no .msg{color:var(--rose);font-weight:700}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.stage{background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);
+  display:grid;place-items:center;overflow:hidden;position:relative;min-height:0;padding:6px}
+svg.board{width:100%;height:100%;touch-action:manipulation}
+.side{display:flex;flex-direction:column;gap:clamp(12px,1vw,20px);min-height:0;overflow:hidden}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:16px;
+  padding:clamp(14px,1.8vh,34px) clamp(15px,1.8vh,36px);box-shadow:var(--shadow)}
+.panel h2{margin:0 0 6px;font-size:clamp(17px,1.3vw,26px)}
+.panel p{margin:0;color:var(--soft);font-size:clamp(14.5px,1.05vw,21px);line-height:1.7}
+.panel p+p{margin-top:8px}
+/* 조작 패널은 늘 맨 위 같은 자리 — 안내가 길어져도 버튼이 밀리지 않는다 */
+.panel.controls{flex:0 0 auto}
+.step-label{font-size:clamp(12.5px,1.9vh,34px);letter-spacing:.08em;color:var(--soft);margin:0 0 clamp(8px,1.2vh,22px)}
+.btn{display:block;font-family:"Jua","Noto Sans KR",sans-serif;font-size:clamp(17px,3.2vh,62px);
+  padding:clamp(15px,2.2vh,42px) 16px;border-radius:clamp(13px,1.4vh,26px);
+  border:1.8px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer;transition:.15s;width:100%;
+  line-height:1.35}
+.btn:hover:not(:disabled){transform:translateY(-1px)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn.primary{background:var(--brand);border-color:var(--brand);color:#fff}
+.btn.ghost{background:transparent}
+.btn+.btn{margin-top:clamp(9px,1.3vh,24px)}
+.btn.small{font-size:clamp(15px,2.4vh,46px);padding:clamp(11px,1.6vh,30px) 14px}
+.btn:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+.readout{display:flex;flex-direction:column;gap:8px;font-size:14.5px}
+.readout div{display:flex;justify-content:space-between;gap:10px;padding:clamp(11px,1.6vh,30px) 14px;border-radius:10px;
+  background:var(--brand-wash);color:var(--brand-ink);font-size:clamp(15.5px,2.7vh,52px)}
+.readout b{font-family:"Jua","Noto Sans KR",sans-serif;font-weight:400;font-variant-numeric:tabular-nums}
+.verdict{margin-top:12px;padding:12px 15px;border-radius:12px;font-size:clamp(14.5px,1.05vw,21px);font-weight:700;
+  min-height:clamp(92px,7vw,140px);display:flex;align-items:center;line-height:1.6}
+.verdict.yes{background:var(--brand-wash);color:var(--brand-ink)}
+.verdict.no{background:var(--rose-wash);color:var(--rose)}
+.verdict.idle{background:transparent;color:var(--soft);font-weight:400}
+label.slider{display:block;font-size:clamp(14px,2.1vh,40px);color:var(--soft);margin-top:clamp(8px,1.4vh,26px)}
+input[type=range]{width:100%;accent-color:var(--brand);margin-top:10px;height:clamp(18px,2.6vh,50px)}
+.tally{font-size:clamp(13.5px,1vw,20px);color:var(--soft);margin-top:12px;line-height:1.7}
+.tally b{color:var(--brand-ink)}
+.count-note{margin-top:10px;font-family:"Jua","Noto Sans KR",sans-serif;font-size:clamp(15px,1.2vw,24px);color:var(--brand-ink);
+  background:var(--brand-wash);border-radius:9px;padding:7px 12px;display:inline-block}
+.hide{display:none!important}
+@media (max-width:860px){
+  main{grid-template-columns:1fr;grid-template-rows:minmax(0,1fr) auto}
+  .side{flex-direction:row;overflow-x:auto}
+  .panel{min-width:250px}
+  .brand p{display:none}
+  .saybar{flex-direction:column;align-items:flex-start;justify-content:center;gap:4px;height:auto;min-height:76px}
+  .saybar .note{text-align:left}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="brand">
+      <svg width="40" height="40" viewBox="0 0 44 44" aria-hidden="true">
+        <circle cx="22" cy="22" r="19" fill="none" stroke="var(--brand)" stroke-width="4"/>
+        <path d="M 3 22 H 41" stroke="var(--amber)" stroke-width="3"/>
+        <circle cx="22" cy="22" r="4.5" fill="var(--amber)"/>
+      </svg>
+      <div><h1>원의 한가운데</h1><p>중심을 찾고 지름과 반지름을 알아봅니다</p></div>
+    </div>
+    <div class="tabs" role="tablist">
+      <button class="tab" role="tab" id="t0" aria-selected="true">1 · 접어서 중심 찾기</button>
+      <button class="tab" role="tab" id="t1" aria-selected="false">2 · 지름 그어 보기</button>
+      <button class="tab" role="tab" id="t2" aria-selected="false">3 · 반지름과 지름</button>
+    </div>
+  </header>
+
+  <main>
+    <div class="play">
+      <div class="stage">
+        <svg class="board" id="board" viewBox="0 0 620 560" preserveAspectRatio="xMidYMid meet"
+             role="img" aria-label="원 활동 화면"></svg>
+      </div>
+      <div class="saybar" id="saybar" role="status" aria-live="polite">
+        <h2 id="guideTitle" class="sr-only">접어서 중심 찾기</h2>
+        <p class="msg" id="guideText"></p>
+        <div class="note" id="extra"></div>
+      </div>
+    </div>
+
+    <div class="side">
+      <div class="panel controls" id="controls"></div>
+    </div>
+  </main>
+</div>
+
+<script>
+(function () {
+  "use strict";
+  var NS = "http://www.w3.org/2000/svg";
+  var board = document.getElementById("board");
+  var guideTitle = document.getElementById("guideTitle");
+  var guideText = document.getElementById("guideText");
+  var controls = document.getElementById("controls");
+  var extra = document.getElementById("extra");
+  var saybar = document.getElementById("saybar");
+  var tabs = [document.getElementById("t0"), document.getElementById("t1"), document.getElementById("t2")];
+
+  var CX = 310, CY = 250, PX_PER_CM = 40;
+  function setBoard(height, cy) {
+    board.setAttribute("viewBox", "0 0 620 " + height);
+    CY = cy;
+  }
+  var mode = 0;
+
+  function n(tag, attrs, parent) {
+    var el = document.createElementNS(NS, tag);
+    for (var k in attrs) if (attrs.hasOwnProperty(k)) el.setAttribute(k, attrs[k]);
+    (parent || board).appendChild(el);
+    return el;
+  }
+  function clear() { board.textContent = ""; }
+  function cm(px) { return (px / PX_PER_CM).toFixed(1); }
+  function el(id) { return document.getElementById(id); }
+
+  /* ───────── 1 · 접어서 중심 찾기 ───────── */
+  var foldStep = 0;
+  var FOLD_TEXT = [
+    "종이 원이 한 장 있습니다. 이 원의 한가운데가 어디인지 눈으로는 정확히 알 수 없어요. 아래 단추를 눌러 접어 봅시다.",
+    "가장자리가 딱 겹치도록 반으로 접었습니다. 겹쳐진다는 것은 이 원이 진짜 원이라는 뜻이에요.",
+    "펴 보니 접힌 자국이 하나 남았습니다. 이 자국은 원을 끝에서 끝까지 가로지릅니다.",
+    "이번에는 다른 쪽으로 한 번 더 접었습니다.",
+    "자국이 두 개가 되었어요. 두 자국이 만나는 곳이 보이나요?",
+    "두 자국이 만나는 점이 바로 원의 중심입니다. 그리고 중심을 지나 원을 가로지르는 이 선을 지름이라고 해요."
+  ];
+  var FOLD_BTN = ["반으로 접기", "펴기", "다시 접기", "펴기", "중심 찍기", "처음부터"];
+
+  function drawFold() {
+    clear();
+    var R = 210;
+    n("circle", { cx: CX, cy: CY, r: R + 12, fill: "none", stroke: "var(--line)", "stroke-width": 1, "stroke-dasharray": "4 8" });
+
+    if (foldStep === 1 || foldStep === 3) {
+      var d = foldStep === 1
+        ? "M " + (CX - R) + " " + CY + " a " + R + " " + R + " 0 0 1 " + (2 * R) + " 0 z"
+        : "M " + CX + " " + (CY - R) + " a " + R + " " + R + " 0 0 1 0 " + (2 * R) + " z";
+      n("path", { d: d, fill: "var(--brand-wash)", stroke: "var(--mark)", "stroke-width": 3, "stroke-linejoin": "round" });
+      n("text", { x: CX, y: foldStep === 1 ? CY + 52 : CY, "text-anchor": "middle", "font-size": 21,
+        fill: "var(--brand-ink)", "font-family": "Jua, sans-serif" }).textContent = "딱 겹쳐요!";
+    } else {
+      n("circle", { cx: CX, cy: CY, r: R, fill: "var(--brand-wash)", stroke: "var(--mark)", "stroke-width": 3 });
+    }
+
+    if (foldStep >= 2) n("line", { x1: CX - R, y1: CY, x2: CX + R, y2: CY, stroke: "var(--brand)", "stroke-width": 5, "stroke-linecap": "round" });
+    if (foldStep >= 4) n("line", { x1: CX, y1: CY - R, x2: CX, y2: CY + R, stroke: "var(--brand)", "stroke-width": 5, "stroke-linecap": "round" });
+    if (foldStep >= 5) {
+      n("circle", { cx: CX, cy: CY, r: 30, fill: "none", stroke: "var(--amber)", "stroke-width": 3.5, "stroke-dasharray": "8 7" });
+      n("circle", { cx: CX, cy: CY, r: 10, fill: "var(--rose)" });
+      n("text", { x: CX + 44, y: CY - 18, "font-size": 22, fill: "var(--rose)", "font-family": "Jua, sans-serif" }).textContent = "원의 중심";
+      n("text", { x: CX - R + 34, y: CY - 16, "font-size": 21, fill: "var(--brand-ink)", "font-family": "Jua, sans-serif" }).textContent = "지름";
+    }
+    say("", FOLD_TEXT[foldStep]);
+    extra.innerHTML = (foldStep === 5 ? "<b>다 찾았어요</b>" : "<b>" + (foldStep + 1) + "</b> / 6단계");
+    var b = el("foldBtn");
+    if (b) b.textContent = FOLD_BTN[foldStep];
+  }
+
+  function renderFold() {
+    setBoard(468, 234);
+    guideTitle.textContent = "접어서 중심 찾기";
+    controls.innerHTML =
+      '<p class="step-label">순서대로 눌러 보세요</p>' +
+      '<button class="btn primary" id="foldBtn">반으로 접기</button>' +
+      '<button class="btn ghost small" id="foldReset">처음으로</button>';
+    extra.className = "note";
+    el("foldBtn").addEventListener("click", function () {
+      foldStep = (foldStep + 1) % 6;
+      drawFold();
+    });
+    el("foldReset").addEventListener("click", function () { foldStep = 0; drawFold(); });
+    foldStep = 0;
+    drawFold();
+  }
+
+  /* ───────── 2 · 지름 그어 보기 ───────── */
+  var R2 = 200, first = null, lines = [], diaCount = 0, chordCount = 0;
+
+  function pointOnCircle(ev) {
+    var pt = board.createSVGPoint();
+    pt.x = ev.clientX; pt.y = ev.clientY;
+    var p = pt.matrixTransform(board.getScreenCTM().inverse());
+    var a = Math.atan2(p.y - CY, p.x - CX);
+    return { x: CX + R2 * Math.cos(a), y: CY + R2 * Math.sin(a), a: a };
+  }
+
+  function drawDiameterBoard() {
+    clear();
+    n("circle", { cx: CX, cy: CY, r: R2, fill: "var(--brand-wash)", stroke: "var(--mark)", "stroke-width": 3, id: "hit", style: "cursor:crosshair" });
+    lines.forEach(function (L, i) {
+      var last = i === lines.length - 1;
+      n("line", { x1: L.x1, y1: L.y1, x2: L.x2, y2: L.y2, stroke: L.ok ? "var(--brand)" : "var(--soft)",
+        "stroke-width": L.ok ? (last ? 7 : 4) : 3, "stroke-linecap": "round",
+        "stroke-dasharray": L.ok ? "" : "9 7", opacity: last ? 1 : 0.45, "pointer-events": "none" });
+      if (!last) return;
+      /* 방금 그은 선에만 길이를 적는다. 중심에서 벗어난 자리에 두고, 선 위로 겹치지 않게 살짝 밀어 둔다 */
+      var t = 0.74, dx = L.x2 - L.x1, dy = L.y2 - L.y1, len = Math.sqrt(dx * dx + dy * dy) || 1;
+      var lx = L.x1 + dx * t + (-dy / len) * 26, ly = L.y1 + dy * t + (dx / len) * 26;
+      var label = n("text", { x: lx, y: ly, "text-anchor": "middle", "dominant-baseline": "middle", "font-size": 22,
+        fill: L.ok ? "var(--brand-ink)" : "var(--soft)", "font-family": "Jua, sans-serif", "pointer-events": "none",
+        stroke: "var(--card)", "stroke-width": 7, "paint-order": "stroke", "stroke-linejoin": "round" });
+      label.textContent = L.len + "cm";
+    });
+    /* 중심 표시는 선 위에 올려 항상 보이게 한다 */
+    n("circle", { cx: CX, cy: CY, r: 11, fill: "var(--card)", "pointer-events": "none" });
+    n("circle", { cx: CX, cy: CY, r: 8, fill: "var(--rose)", "pointer-events": "none" });
+    n("text", { x: CX + 18, y: CY - 16, "font-size": 20, fill: "var(--rose)", "font-family": "Jua, sans-serif",
+      "pointer-events": "none", stroke: "var(--card)", "stroke-width": 6, "paint-order": "stroke",
+      "stroke-linejoin": "round" }).textContent = "중심";
+    if (first) n("circle", { cx: first.x, cy: first.y, r: 12, fill: "var(--amber)", "pointer-events": "none" });
+    board.querySelector("#hit").addEventListener("pointerdown", tapCircle);
+  }
+
+  /* 손으로 그으면 중심을 정확히 지나기 어렵다.
+     거의 반대편을 눌렀다면 중심을 지나도록 맞춰 주고(그래야 길이도 정확히 지름),
+     그보다 벗어나면 지름이 아닌 선으로 두어 길이가 지름보다 짧게 나오도록 한다. */
+  var SNAP = 13 * Math.PI / 180;
+
+  function tapCircle(ev) {
+    var p = pointOnCircle(ev);
+    if (!first) { first = p; say("", "이제 반대쪽 점을 눌러 선을 그으세요."); drawDiameterBoard(); return; }
+
+    var gap = Math.abs(p.a - first.a) % (2 * Math.PI);
+    if (gap > Math.PI) gap = 2 * Math.PI - gap;      /* 두 점 사이의 각도 (0~180°) */
+    var offBy = Math.abs(Math.PI - gap);             /* 정반대에서 벗어난 정도 */
+    var ok = offBy <= SNAP;
+    var end = ok ? { x: 2 * CX - first.x, y: 2 * CY - first.y } : p;   /* 지름이면 정확히 반대편으로 */
+    var nudged = ok && offBy > 2 * Math.PI / 180;
+
+    var len = Math.sqrt((end.x - first.x) * (end.x - first.x) + (end.y - first.y) * (end.y - first.y));
+    lines.push({ x1: first.x, y1: first.y, x2: end.x, y2: end.y, ok: ok, len: cm(len) });
+    first = null;
+
+    if (ok) {
+      diaCount++;
+      say("yes", "지름이 맞아요! 중심을 지나갔고 길이는 " + cm(len) + "cm예요." +
+        (nudged ? " (중심을 지나도록 살짝 맞췄어요.)" : ""));
+    } else {
+      chordCount++;
+      say("no", "중심을 지나지 않았어요. 길이 " + cm(len) + "cm로 지름 " + cm(2 * R2) +
+        "cm보다 짧아요. 원에서 가장 긴 선이 지름이에요.");
+    }
+    drawDiameterBoard();
+    updateTally();
+  }
+
+  function say(kind, text) {
+    saybar.className = "saybar" + (kind === "yes" || kind === "no" ? " " + kind : "");
+    guideText.textContent = text;
+  }
+  var setVerdict = say;
+  function updateTally() {
+    var t = el("tally");
+    if (!t) return;
+    var lens = lines.filter(function (L) { return L.ok; }).map(function (L) { return L.len; });
+    var same = lens.length > 1 && lens.every(function (v) { return v === lens[0]; });
+    t.innerHTML = "지름 <b>" + diaCount + "개</b> · 아닌 선 " + chordCount + "개" +
+      (same ? "<br>모두 <b>" + lens[0] + "cm</b>예요" : "");
+  }
+
+  function renderDiameter() {
+    setBoard(468, 234);
+    guideTitle.textContent = "지름 그어 보기";
+    controls.innerHTML =
+      '<p class="step-label">원 위의 점 두 개를 누르세요</p>' +
+      '<button class="btn ghost" id="clearLines">모두 지우기</button>';
+    extra.className = "note";
+    extra.innerHTML = '<span id="tally"></span>';
+    say("", "원 위의 점 두 개를 눌러 선을 그어 보세요. 중심을 지나면 지름, 지나지 않으면 지름이 아니에요.");
+    el("clearLines").addEventListener("click", function () {
+      lines = []; first = null; diaCount = 0; chordCount = 0;
+      say("", "원 위의 점 두 개를 눌러 선을 그어 보세요. 중심을 지나면 지름, 지나지 않으면 지름이 아니에요.");
+      updateTally(); drawDiameterBoard();
+    });
+    lines = []; first = null; diaCount = 0; chordCount = 0;
+    updateTally();
+    drawDiameterBoard();
+  }
+
+  /* ───────── 3 · 반지름과 지름 ───────── */
+  var rCm = 4, angle = -0.6, showDia = false;
+
+  function drawRadius() {
+    clear();
+    var R = rCm * PX_PER_CM;
+    var hx = CX + R * Math.cos(angle), hy = CY + R * Math.sin(angle);
+    var ox = CX - R * Math.cos(angle), oy = CY - R * Math.sin(angle);
+
+    n("circle", { cx: CX, cy: CY, r: R, fill: "var(--brand-wash)", stroke: "var(--mark)", "stroke-width": 3 });
+    /* 선 위에 글자가 겹치지 않도록 선과 직각 방향으로 밀어 둔다 */
+    var px = -Math.sin(angle) * 30, py = Math.cos(angle) * 30;
+    if (showDia) {
+      n("line", { x1: ox, y1: oy, x2: hx, y2: hy, stroke: "var(--amber)", "stroke-width": 8, "stroke-linecap": "round" });
+      n("text", { x: (CX + ox) / 2 + px, y: (CY + oy) / 2 + py, "text-anchor": "middle", "font-size": 20,
+        fill: "var(--amber)", "font-family": "Jua, sans-serif" }).textContent = "반지름 " + rCm.toFixed(1) + "cm";
+    }
+    n("line", { x1: CX, y1: CY, x2: hx, y2: hy, stroke: "var(--brand)", "stroke-width": 8, "stroke-linecap": "round" });
+    n("text", { x: (CX + hx) / 2 - px, y: (CY + hy) / 2 - py, "text-anchor": "middle", "font-size": 20,
+      fill: "var(--brand-ink)", "font-family": "Jua, sans-serif" }).textContent = "반지름 " + rCm.toFixed(1) + "cm";
+    n("circle", { cx: CX, cy: CY, r: 9, fill: "var(--rose)" });
+    var h = n("circle", { cx: hx, cy: hy, r: 17, fill: "var(--brand)", style: "cursor:grab" });
+    h.addEventListener("pointerdown", function (ev) {
+      ev.preventDefault();
+      board.setPointerCapture(ev.pointerId);
+      var move = function (e) {
+        var pt = board.createSVGPoint(); pt.x = e.clientX; pt.y = e.clientY;
+        var p = pt.matrixTransform(board.getScreenCTM().inverse());
+        angle = Math.atan2(p.y - CY, p.x - CX);
+        drawRadius();
+      };
+      var up = function () { board.removeEventListener("pointermove", move); board.removeEventListener("pointerup", up); };
+      board.addEventListener("pointermove", move);
+      board.addEventListener("pointerup", up);
+    });
+    if (showDia) {
+      n("text", { x: CX, y: CY + R + 42, "text-anchor": "middle", "font-size": 23, fill: "var(--amber)",
+        "font-family": "Jua, sans-serif" }).textContent = "지름 " + (rCm * 2).toFixed(1) + "cm = 반지름 " + rCm.toFixed(1) + "cm + 반지름 " + rCm.toFixed(1) + "cm";
+    }
+    var rv = el("rVal"), dv = el("dVal");
+    if (rv) rv.textContent = rCm.toFixed(1) + "cm";
+    if (dv) dv.textContent = (rCm * 2).toFixed(1) + "cm";
+  }
+
+  function renderRadius() {
+    setBoard(566, 252);
+    guideTitle.textContent = "반지름과 지름";
+    say("", "파란 점을 잡고 돌려 보세요. 어느 방향으로 옮겨도 반지름의 길이는 그대로입니다. 원의 크기를 바꾸면 지름은 어떻게 될까요?");
+    controls.innerHTML =
+      '<p class="step-label">길이 재기</p>' +
+      '<div class="readout"><div>반지름 <b id="rVal">4.0cm</b></div><div>지름 <b id="dVal">8.0cm</b></div></div>' +
+      '<label class="slider">원의 크기 바꾸기<input type="range" id="rRange" min="2" max="6" step="0.5" value="4"></label>' +
+      '<button class="btn primary" id="diaToggle" style="margin-top:11px">지름 만들기</button>';
+    extra.className = "note";
+    extra.innerHTML = "";
+    el("rRange").addEventListener("input", function (e) { rCm = parseFloat(e.target.value); drawRadius(); });
+    el("diaToggle").addEventListener("click", function () {
+      showDia = !showDia;
+      this.textContent = showDia ? "반지름만 보기" : "지름 만들기";
+      drawRadius();
+    });
+    showDia = false;
+    drawRadius();
+  }
+
+  /* ───────── 탭 ───────── */
+  var RENDER = [renderFold, renderDiameter, renderRadius];
+  tabs.forEach(function (tab, i) {
+    tab.addEventListener("click", function () {
+      mode = i;
+      tabs.forEach(function (t, k) { t.setAttribute("aria-selected", String(k === i)); });
+      RENDER[i]();
+    });
+  });
+  RENDER[0]();
+})();
+</script>
+</body>
+</html>
