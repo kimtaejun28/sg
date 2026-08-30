@@ -1,0 +1,410 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>동그란 까닭</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Jua&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet" />
+<style>
+:root{
+  --paper:#EDF1F4; --card:#FFFFFF; --ink:#14293B; --soft:#4A6478; --line:#CFDBE3;
+  --brand:#0F8A80; --brand-ink:#0B615A; --brand-wash:#DDF0ED;
+  --amber:#D9821C; --amber-wash:#FBEBD5; --rose:#C0483F;
+  --shadow:0 18px 44px -26px rgba(20,41,59,.6);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#0E1A22; --card:#17252E; --ink:#E7EFF3; --soft:#9DB3C0; --line:#2B3F4B;
+    --brand:#2EC0B4; --brand-ink:#8FE6DD; --brand-wash:#123A38;
+    --amber:#F0A94E; --amber-wash:#3B2A15; --rose:#E88A80;
+    --shadow:0 18px 44px -26px rgba(0,0,0,.8);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0E1A22; --card:#17252E; --ink:#E7EFF3; --soft:#9DB3C0; --line:#2B3F4B;
+  --brand:#2EC0B4; --brand-ink:#8FE6DD; --brand-wash:#123A38;
+  --amber:#F0A94E; --amber-wash:#3B2A15; --rose:#E88A80;
+  --shadow:0 18px 44px -26px rgba(0,0,0,.8);
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--paper);color:var(--ink);
+  font-family:"Noto Sans KR","Apple SD Gothic Neo",system-ui,sans-serif}
+h1,h2{font-family:"Jua","Noto Sans KR",sans-serif;font-weight:400}
+.app{height:100dvh;display:flex;flex-direction:column;gap:10px;padding:12px clamp(10px,2vw,22px) 14px}
+header{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:11px;margin-right:auto}
+.brand h1{margin:0;font-size:clamp(19px,3.2vh,60px)}
+.brand p{margin:2px 0 0;font-size:clamp(13px,1.7vh,30px);color:var(--soft)}
+.topic-name{font-family:"Jua","Noto Sans KR",sans-serif;font-size:clamp(17px,2.7vh,52px);
+  background:var(--brand-wash);color:var(--brand-ink);padding:clamp(6px,1vh,18px) clamp(14px,1.8vh,32px);border-radius:999px}
+
+main{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) clamp(250px,26vw,660px);gap:clamp(12px,1.2vh,26px)}
+.play{display:flex;flex-direction:column;gap:clamp(10px,1vh,20px);min-height:0}
+.stage{flex:1;min-height:0;background:var(--card);border:1px solid var(--line);border-radius:18px;
+  box-shadow:var(--shadow);display:grid;place-items:center;overflow:hidden;padding:6px}
+svg.board{width:100%;height:100%}
+.saybar{flex:0 0 auto;display:flex;align-items:center;gap:clamp(12px,1.2vw,24px);
+  padding:clamp(12px,1vh,20px) clamp(16px,1.8vh,34px);border-radius:16px;
+  background:var(--card);border:1px solid var(--line);box-shadow:var(--shadow);
+  height:clamp(92px,12vh,230px);overflow:auto;transition:background .25s}
+.saybar .msg{flex:1;margin:0;font-size:clamp(16px,3vh,58px);line-height:1.45;color:var(--ink);font-weight:500}
+.saybar.ask{background:var(--amber-wash);border-color:transparent}
+.saybar.ask .msg{color:var(--amber);font-weight:700}
+.saybar.why{background:var(--brand-wash);border-color:transparent}
+.saybar.why .msg{color:var(--brand-ink);font-weight:700}
+
+.side{display:flex;flex-direction:column;gap:clamp(10px,1vh,20px);min-height:0}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:16px;
+  padding:clamp(12px,1.5vh,28px) clamp(13px,1.5vh,30px);box-shadow:var(--shadow);flex:0 0 auto}
+.step-label{font-size:clamp(12.5px,1.9vh,34px);letter-spacing:.08em;color:var(--soft);margin:0 0 clamp(8px,1.2vh,20px)}
+.topics{display:flex;flex-direction:column;gap:clamp(7px,1vh,18px)}
+.btn{display:block;width:100%;font-family:"Jua","Noto Sans KR",sans-serif;
+  font-size:clamp(15px,2.5vh,48px);padding:clamp(11px,1.7vh,32px) 14px;border-radius:clamp(12px,1.4vh,24px);
+  border:1.8px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer;transition:.15s;line-height:1.3}
+.btn:hover{transform:translateY(-1px)}
+.btn:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+.btn[aria-pressed="true"]{background:var(--brand);border-color:var(--brand);color:#fff}
+.btn.primary{background:var(--amber);border-color:var(--amber);color:#fff}
+.btn.ghost{background:transparent;color:var(--soft)}
+.btn+.btn{margin-top:clamp(8px,1.1vh,20px)}
+.hide{display:none!important}
+@media (max-width:900px){
+  main{grid-template-columns:1fr;grid-template-rows:minmax(0,1fr) auto}
+  .side{flex-direction:row;overflow-x:auto}
+  .topics{flex-direction:row}
+  .btn{white-space:nowrap}
+  .brand p{display:none}
+  .saybar{height:auto;min-height:78px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="brand">
+      <svg width="40" height="40" viewBox="0 0 44 44" aria-hidden="true">
+        <circle cx="22" cy="22" r="18" fill="none" stroke="var(--brand)" stroke-width="4"/>
+        <path d="M 22 4 L 22 40 M 4 22 L 40 22" stroke="var(--amber)" stroke-width="2.5"/>
+      </svg>
+      <div><h1>동그란 까닭</h1><p>우리 주변의 원을 찾고, 왜 동그란지 알아봅니다</p></div>
+    </div>
+    <span class="topic-name" id="topicName">잘 굴러가요</span>
+  </header>
+
+  <main>
+    <div class="play">
+      <div class="stage">
+        <svg class="board" id="board" viewBox="0 0 900 500" preserveAspectRatio="xMidYMid meet"
+             role="img" aria-label="원이 쓰이는 곳"></svg>
+      </div>
+      <div class="saybar" id="saybar" role="status" aria-live="polite">
+        <p class="msg" id="msg"></p>
+      </div>
+    </div>
+
+    <div class="side">
+      <div class="panel">
+        <p class="step-label">까닭 고르기</p>
+        <div class="topics" id="topics"></div>
+      </div>
+      <div class="panel">
+        <button class="btn primary" id="reveal">까닭 보기</button>
+        <button class="btn ghost hide" id="demo">실험 보기</button>
+      </div>
+    </div>
+  </main>
+</div>
+<script>
+(function () {
+  "use strict";
+  var NS = "http://www.w3.org/2000/svg";
+  var board = document.getElementById("board"), msgEl = document.getElementById("msg");
+  var saybar = document.getElementById("saybar"), topicsBox = document.getElementById("topics");
+  var revealBtn = document.getElementById("reveal"), demoBtn = document.getElementById("demo");
+  var topicName = document.getElementById("topicName");
+
+  /* ── 그리기 도우미 ── */
+  var c = function (cx, cy, r, fill, a) { return { t: "circle", a: Object.assign({ cx: cx, cy: cy, r: r, fill: fill }, a || {}) }; };
+  var el = function (cx, cy, rx, ry, fill, a) { return { t: "ellipse", a: Object.assign({ cx: cx, cy: cy, rx: rx, ry: ry, fill: fill }, a || {}) }; };
+  var rc = function (x, y, w, h, fill, a) { return { t: "rect", a: Object.assign({ x: x, y: y, width: w, height: h, fill: fill }, a || {}) }; };
+  var pg = function (points, fill, a) { return { t: "polygon", a: Object.assign({ points: points, fill: fill }, a || {}) }; };
+  var pt = function (d, fill, a) { return { t: "path", a: Object.assign({ d: d, fill: fill }, a || {}) }; };
+  var ln = function (x1, y1, x2, y2, stroke, w) {
+    return { t: "line", a: { x1: x1, y1: y1, x2: x2, y2: y2, stroke: stroke, "stroke-width": w || 4, "stroke-linecap": "round" } };
+  };
+  var ring = function (cx, cy, r, stroke, w, a) {
+    return c(cx, cy, r, "none", Object.assign({ stroke: stroke, "stroke-width": w }, a || {}));
+  };
+  var around = function (cx, cy, R, n, make) {
+    var out = [], i, t;
+    for (i = 0; i < n; i++) { t = (i * 2 * Math.PI) / n - Math.PI / 2; out.push(make(cx + R * Math.cos(t), cy + R * Math.sin(t), i)); }
+    return out;
+  };
+  var spokes = function (cx, cy, r, n, stroke, w) {
+    return around(cx, cy, r, n, function (x, y) { return ln(cx, cy, x, y, stroke, w); });
+  };
+
+  var INK = "#33414D", STEEL = "#B6C0C8", WOOD = "#C89055", SKY = "#CDE9F7",
+      RED = "#E4574C", BLUE = "#4C86D6", YELL = "#F2C33C", GREEN = "#57A86B", CREAM = "#F5EFE0";
+
+  /* ── 여섯 가지 까닭과 사례 ── */
+  var TOPICS = [
+    {
+      name: "잘 굴러가요",
+      ask: "바퀴는 왜 네모가 아니라 동그랄까요?",
+      why: "중심에서 가장자리까지 길이가 모두 같아서, 굴러가는 동안 높이가 변하지 않아요. 그래서 덜컹거리지 않고 부드럽게 굴러갑니다.",
+      demo: "wheel",
+      items: [
+        { name: "자전거 바퀴", art: [c(205, 90, 72, INK), c(205, 90, 58, CREAM)].concat(spokes(205, 90, 54, 10, "#9AA6B0", 3), [c(205, 90, 12, INK)]) },
+        { name: "자동차 바퀴", art: [c(205, 90, 74, "#2F3A44"), c(205, 90, 44, STEEL)].concat(around(205, 90, 30, 5, function (x, y) { return c(x, y, 6, "#6E7A85"); }), [c(205, 90, 12, "#6E7A85")]) },
+        { name: "여행 가방 바퀴", art: [
+            pt("M 206 40 L 206 18 M 176 18 L 236 18", "none", { stroke: "#5C6975", "stroke-width": 8, "stroke-linecap": "round" }),
+            rc(140, 40, 132, 74, BLUE, { rx: 12 }), rc(160, 58, 92, 12, "#3B6BB5", { rx: 6 }),
+            c(168, 138, 24, INK), c(168, 138, 10, STEEL), c(246, 138, 24, INK), c(246, 138, 10, STEEL)] },
+        { name: "인라인 스케이트", art: [
+            pt("M 128 44 h 78 q 26 0 26 26 v 24 h 42 q 14 0 14 14 v 12 H 128 z", "#6FA0E0"),
+            rc(126, 120, 168, 12, "#5C6975", { rx: 6 }),
+            c(150, 150, 20, INK), c(150, 150, 8, STEEL), c(198, 150, 20, INK), c(198, 150, 8, STEEL),
+            c(246, 150, 20, INK), c(246, 150, 8, STEEL)] }
+      ]
+    },
+    {
+      name: "돌려도 딱 맞아요",
+      ask: "맨홀 뚜껑과 냄비 뚜껑은 왜 동그랄까요?",
+      why: "원은 어느 쪽으로 재도 폭이 같아요. 그래서 아무렇게나 돌려서 덮어도 딱 맞고, 맨홀 뚜껑은 구멍 안으로 빠지지 않아요.",
+      demo: "manhole",
+      items: [
+        { name: "맨홀 뚜껑", art: [c(205, 90, 74, "#8C949B"), ring(205, 90, 58, "#6E7A85", 4),
+            ln(150, 70, 260, 70, "#6E7A85", 5), ln(150, 90, 260, 90, "#6E7A85", 5), ln(150, 110, 260, 110, "#6E7A85", 5),
+            c(205, 90, 10, "#5C6975")] },
+        { name: "냄비 뚜껑", art: [c(205, 96, 72, STEEL), c(205, 96, 52, "#CBD3D9"), rc(183, 30, 44, 20, "#5C6975", { rx: 10 }), ln(205, 50, 205, 62, "#5C6975", 8)] },
+        { name: "병뚜껑", art: [c(205, 90, 56, BLUE)].concat(around(205, 90, 56, 16, function (x, y) { return c(x, y, 7, "#3B6BB5"); }), [c(205, 90, 40, "#6FA0E0"), ring(205, 90, 28, "#3B6BB5", 3)]) },
+        { name: "컵 뚜껑", art: [c(205, 90, 68, CREAM), ring(205, 90, 68, "#DCD3BE", 6), c(205, 90, 46, "#EDE3D0"), rc(196, 52, 18, 26, "#9AA6B0", { rx: 8 })] }
+      ]
+    },
+    {
+      name: "고르게 퍼져요",
+      ask: "물에 돌을 던지면 왜 동그란 물결이 퍼질까요?",
+      why: "가운데에서 모든 방향으로 똑같이 퍼지면 저절로 원이 됩니다. 물결도, 물뿌리개의 물도, 우산이 막아 주는 자리도 모두 그래요.",
+      items: [
+        { name: "물결", art: [ring(205, 95, 82, "#9BD3E8", 5), ring(205, 95, 60, "#79BEE6", 6), ring(205, 95, 38, "#57A8D8", 7), c(205, 95, 14, "#3E7FA8")] },
+        { name: "물뿌리개", art: [rc(196, 96, 18, 54, "#6E7A85", { rx: 4 }), c(205, 92, 14, "#5C6975"),
+            ring(205, 92, 44, "#79BEE6", 5, { "stroke-dasharray": "10 9" }), ring(205, 92, 70, "#9BD3E8", 5, { "stroke-dasharray": "10 9" })]
+            .concat(around(205, 92, 88, 8, function (x, y) { return c(x, y, 7, "#57A8D8"); })) },
+        { name: "우산", art: [pt("M 133 118 A 72 72 0 0 1 277 118 Z", RED),
+            pt("M 133 118 q 18 16 36 0 q 18 16 36 0 q 18 16 36 0 q 18 16 36 0", CREAM),
+            ln(205, 46, 205, 156, "#5C6975", 7), pt("M 205 156 q 0 16 -16 16", "none", { stroke: "#5C6975", "stroke-width": 7, "stroke-linecap": "round" })] },
+        { name: "피자", art: [c(205, 92, 74, "#E8B054"), c(205, 92, 62, "#F2C87A")]
+            .concat(spokes(205, 92, 62, 6, "#D89A3C", 4), around(205, 92, 38, 5, function (x, y) { return c(x, y, 9, RED); })) }
+      ]
+    },
+    {
+      name: "잘 돌아요",
+      ask: "시계 바늘과 선풍기 날개는 왜 동그란 자리에서 돌까요?",
+      why: "가운데를 축으로 돌면 어느 쪽이든 거리가 같아 흔들리지 않아요. 축이 가운데를 벗어나면 덜덜 떨리게 됩니다.",
+      items: [
+        { name: "시계", art: [c(205, 90, 74, "#FFFFFF"), ring(205, 90, 74, INK, 5)]
+            .concat(around(205, 90, 60, 12, function (x, y) { return c(x, y, 4, "#9AA6B0"); }),
+              [ln(205, 90, 205, 46, INK, 7), ln(205, 90, 240, 108, RED, 5), c(205, 90, 8, INK)]) },
+        { name: "선풍기", art: [ring(205, 90, 74, STEEL, 7), ring(205, 90, 56, "#CBD3D9", 4),
+            pt("M 205 90 q 40 -46 56 -6 q -18 30 -56 6 z", "#8FD3CB"),
+            pt("M 205 90 q -6 60 -50 34 q 6 -34 50 -34 z", "#8FD3CB"),
+            pt("M 205 90 q -34 -44 6 -56 q 24 22 -6 56 z", "#8FD3CB"), c(205, 90, 14, "#5C6975")] },
+        { name: "관람차", art: [pg("196,90 214,90 244,164 166,164", "#6E7A85"), ring(205, 86, 68, "#E7A23C", 8)]
+            .concat(spokes(205, 86, 68, 8, "#F0C070", 4), around(205, 86, 68, 6, function (x, y, i) { return c(x, y, 13, [RED, BLUE, GREEN, YELL, "#9B7BD4", "#57A8D8"][i]); })) },
+        { name: "도자기 물레", art: [c(205, 108, 76, "#B08A5E"), c(205, 108, 58, "#C89A6A"),
+            el(205, 78, 34, 16, "#E0A96D"), pt("M 173 78 q 6 -34 32 -34 q 26 0 32 34", "none", { stroke: "#E0A96D", "stroke-width": 12 }),
+            pt("M 118 132 a 88 88 0 0 0 24 24", "none", { stroke: "#8C6A4A", "stroke-width": 5, "stroke-dasharray": "8 7" })] }
+      ]
+    },
+    {
+      name: "튼튼해요",
+      ask: "물이 지나가는 관과 음료수 캔은 왜 동그랄까요?",
+      why: "원은 모서리가 없어서 힘이 한 곳에 몰리지 않고 고르게 퍼져요. 그래서 세게 눌러도 잘 찌그러지지 않습니다.",
+      items: [
+        { name: "수도관", art: [rc(80, 58, 160, 66, "#9FAEB8"), el(240, 91, 22, 33, STEEL), el(240, 91, 12, 19, "#6E7A85"), el(80, 91, 22, 33, "#8C949B")]
+            .concat(around(240, 91, 0, 1, function () { return c(0, 0, 0, "none"); })) },
+        { name: "음료수 캔", art: [rc(168, 40, 76, 116, "#E4574C", { rx: 10 }), el(206, 40, 38, 13, "#F08A80"), el(206, 40, 26, 8, "#C0483F"),
+            rc(168, 92, 76, 22, "#FFFFFF"), el(206, 156, 38, 12, "#C0483F")] },
+        { name: "터널", art: [rc(60, 150, 292, 26, "#6E7A85"), pt("M 120 150 A 86 86 0 0 1 292 150 Z", "#8C949B"),
+            pt("M 148 150 A 58 58 0 0 1 264 150 Z", "#2F3A44"), rc(180, 162, 56, 8, "#F2C33C", { rx: 4 })] },
+        { name: "냄비", art: [c(205, 96, 72, "#8C949B"), c(205, 96, 56, "#B6C0C8"), c(205, 96, 40, "#CBD3D9"),
+            rc(96, 84, 42, 20, "#5C6975", { rx: 9 }), rc(274, 84, 42, 20, "#5C6975", { rx: 9 })] }
+      ]
+    },
+    {
+      name: "공평해요",
+      ask: "둥글게 모여 앉으면 무엇이 좋을까요?",
+      why: "가운데에서 모두 같은 거리에 있어서 아무도 멀거나 가깝지 않아요. 원탁도, 강강술래도, 과녁도 그래서 원입니다.",
+      items: [
+        { name: "원탁", art: [c(205, 96, 66, WOOD), c(205, 96, 50, "#DDB98A")]
+            .concat(around(205, 96, 92, 6, function (x, y) { return c(x, y, 16, "#6FA0E0"); })) },
+        { name: "강강술래", art: around(205, 92, 74, 8, function (x, y, i) { return c(x, y, 17, [RED, YELL, GREEN, BLUE, "#9B7BD4", "#F0688E", "#57A8D8", "#E7A23C"][i]); })
+            .concat([ring(205, 92, 74, "#C9D6DE", 4, { "stroke-dasharray": "6 12" })]) },
+        { name: "과녁", art: [c(205, 92, 74, "#FFFFFF"), ring(205, 92, 74, INK, 4), c(205, 92, 56, RED), c(205, 92, 38, "#FFFFFF"), c(205, 92, 20, RED)] },
+        { name: "모닥불 둘레", art: [pt("M 205 60 q 26 34 12 52 q -12 16 -12 16 q 0 0 -12 -16 q -14 -18 12 -52 z", "#F2A03C"),
+            pt("M 205 86 q 14 20 6 30 q -6 10 -6 10 q 0 0 -6 -10 q -8 -10 6 -30 z", "#F2C33C"), el(205, 132, 46, 12, "#8C6A4A")]
+            .concat(around(205, 100, 92, 6, function (x, y) { return c(x, y, 15, "#6E7A85"); })) }
+      ]
+    }
+  ];
+
+  /* ── 상태 ── */
+  var cur = 0, shown = false, demoOn = false, raf = null;
+
+  function node(spec, parent) {
+    var e = document.createElementNS(NS, spec.t);
+    for (var k in spec.a) if (spec.a.hasOwnProperty(k)) e.setAttribute(k, spec.a[k]);
+    (parent || board).appendChild(e);
+    return e;
+  }
+  function group(x, y, parent) {
+    var g = document.createElementNS(NS, "g");
+    g.setAttribute("transform", "translate(" + x + "," + y + ")");
+    (parent || board).appendChild(g);
+    return g;
+  }
+  function text(x, y, str, size, fill, parent, anchor) {
+    var e = document.createElementNS(NS, "text");
+    e.setAttribute("x", x); e.setAttribute("y", y);
+    e.setAttribute("text-anchor", anchor || "middle");
+    e.setAttribute("font-size", size);
+    e.setAttribute("fill", fill);
+    e.setAttribute("font-family", "Jua, 'Noto Sans KR', sans-serif");
+    e.textContent = str;
+    (parent || board).appendChild(e);
+    return e;
+  }
+  function clear() { if (raf) { cancelAnimationFrame(raf); raf = null; } board.textContent = ""; }
+
+  /* ── 사례 네 가지 보여 주기 ── */
+  function drawTopic() {
+    clear();
+    var cells = [[10, 20], [460, 20], [10, 262], [460, 262]];
+    TOPICS[cur].items.forEach(function (item, i) {
+      var g = group(cells[i][0], cells[i][1]);
+      node(rc(0, -6, 430, 232, "var(--paper)", { rx: 16 }), g);
+      item.art.forEach(function (spec) { node(spec, g); });
+      text(212, 212, item.name, 30, "var(--ink)", g);
+    });
+  }
+
+  /* ── 실험 1 · 네모 바퀴와 동그란 바퀴 ── */
+  function demoWheel() {
+    clear();
+    var g1 = group(0, 0), g2 = group(0, 0);
+    node(ln(60, 210, 860, 210, "var(--line)", 8), g1);
+    node(ln(60, 450, 860, 450, "var(--line)", 8), g2);
+    text(70, 60, "동그란 바퀴", 34, "var(--brand-ink)", g1, "start");
+    text(70, 300, "네모난 바퀴", 34, "var(--rose)", g2, "start");
+    text(860, 60, "높이가 그대로예요", 28, "var(--brand-ink)", g1, "end");
+    text(860, 300, "위아래로 덜컹거려요", 28, "var(--rose)", g2, "end");
+    var trail1 = node(pt("", "none", { stroke: "var(--brand)", "stroke-width": 3, "stroke-dasharray": "6 8" }), g1);
+    var trail2 = node(pt("", "none", { stroke: "var(--rose)", "stroke-width": 3, "stroke-dasharray": "6 8" }), g2);
+    var wheel1 = node(c(0, 0, 52, "#EDE3D0", { stroke: INK, "stroke-width": 9 }), g1);
+    var mark1 = node(ln(0, 0, 0, -52, INK, 6), g1);
+    var body1 = node(rc(-70, -34, 140, 46, "var(--brand)", { rx: 10 }), g1);
+    var wheel2 = node(pg("-46,-46 46,-46 46,46 -46,46", "#EDE3D0", { stroke: INK, "stroke-width": 9 }), g2);
+    var body2 = node(rc(-70, -34, 140, 46, "var(--rose)", { rx: 10 }), g2);
+
+    var t0 = null, S = 92, R = S / Math.SQRT2, d1 = "", d2 = "";
+    function frame(ts) {
+      if (t0 === null) t0 = ts;
+      var t = (ts - t0) / 1000, w = 1.9, r = 52;
+      /* 동그란 바퀴 : 높이가 늘 같다 */
+      var x1 = 120 + w * r * t;
+      if (x1 > 830) { t0 = ts; d1 = ""; d2 = ""; return (raf = requestAnimationFrame(frame)); }
+      var y1 = 210 - r;
+      wheel1.setAttribute("cx", x1); wheel1.setAttribute("cy", y1);
+      mark1.setAttribute("x1", x1); mark1.setAttribute("y1", y1);
+      mark1.setAttribute("x2", x1 + r * Math.cos(w * t - Math.PI / 2));
+      mark1.setAttribute("y2", y1 + r * Math.sin(w * t - Math.PI / 2));
+      body1.setAttribute("x", x1 - 70); body1.setAttribute("y", y1 - 34 - 30);
+      d1 += (d1 ? " L " : "M ") + x1.toFixed(1) + " " + (y1 - 64).toFixed(1);
+      trail1.setAttribute("d", d1);
+      /* 네모난 바퀴 : 모서리로 구르며 높이가 오르내린다 */
+      var turn = (w * t) % (Math.PI / 2), steps = Math.floor((w * t) / (Math.PI / 2));
+      var pivot = 120 + steps * S, ang = turn;
+      var x2 = pivot - R * Math.cos(Math.PI / 4 + ang), y2 = 450 - R * Math.sin(Math.PI / 4 + ang);
+      wheel2.setAttribute("transform", "translate(" + x2 + "," + y2 + ") rotate(" + (ang * 180 / Math.PI) + ")");
+      body2.setAttribute("x", x2 - 70); body2.setAttribute("y", y2 - 34 - 30);
+      d2 += (d2 ? " L " : "M ") + x2.toFixed(1) + " " + (y2 - 64).toFixed(1);
+      trail2.setAttribute("d", d2);
+      raf = requestAnimationFrame(frame);
+    }
+    raf = requestAnimationFrame(frame);
+  }
+
+  /* ── 실험 2 · 맨홀 뚜껑은 왜 빠지지 않을까 ── */
+  function demoManhole() {
+    clear();
+    var L = group(0, 0), Rg = group(450, 0);
+    [[L, "동그란 뚜껑", "var(--brand-ink)"], [Rg, "네모난 뚜껑", "var(--rose)"]].forEach(function (p) {
+      text(225, 62, p[1], 34, p[2], p[0]);
+    });
+    /* 바닥과 구멍 — 네모 구멍은 대각선 쪽을 자른 모습이라 더 넓다 */
+    node(rc(10, 300, 150, 40, "#8C949B", { rx: 6 }), L); node(rc(292, 300, 150, 40, "#8C949B", { rx: 6 }), L);
+    node(rc(10, 300, 140, 40, "#8C949B", { rx: 6 }), Rg); node(rc(302, 300, 140, 40, "#8C949B", { rx: 6 }), Rg);
+    node(rc(160, 300, 132, 150, "#2F3A44"), L); node(rc(150, 300, 152, 150, "#2F3A44"), Rg);
+    text(226, 372, "구멍 폭 132", 24, "#9AA6B0", L); text(226, 372, "대각선 쪽 폭 152", 24, "#9AA6B0", Rg);
+    var lidL = node(c(0, 0, 69, "#9FAEB8", { stroke: "#6E7A85", "stroke-width": 6 }), L);
+    var lidR = node(rc(-67, -67, 134, 134, "#E8A49E", { stroke: "#C0483F", "stroke-width": 6, rx: 4 }), Rg);
+    var noteL = text(225, 470, "", 30, "var(--brand-ink)", L);
+    var noteR = text(225, 470, "", 30, "var(--rose)", Rg);
+
+    var t0 = null;
+    function frame(ts) {
+      if (t0 === null) t0 = ts;
+      var p = ((ts - t0) / 4200) % 1;
+      var tilt = Math.min(1, p / 0.35) * 45;                    /* 기울이기 */
+      var drop = p < 0.35 ? 0 : Math.min(1, (p - 0.35) / 0.35);  /* 내려가기 */
+      var yL = 190 + drop * 112;                                 /* 원은 구멍 위에 걸린다 */
+      var yR = 190 + drop * 300;                                 /* 네모는 대각선으로 빠진다 */
+      lidL.setAttribute("transform", "translate(225," + yL + ") rotate(" + tilt + ")");
+      lidR.setAttribute("transform", "translate(225," + yR + ") rotate(" + tilt + ")");
+      noteL.textContent = drop > 0.6 ? "어느 쪽으로 재도 폭이 같아 걸려요" : "";
+      noteR.textContent = drop > 0.6 ? "구멍의 대각선이 더 길어서 쏙 빠져요" : "";
+      raf = requestAnimationFrame(frame);
+    }
+    raf = requestAnimationFrame(frame);
+  }
+
+  /* ── 화면 갱신 ── */
+  function say(kind, str) {
+    saybar.className = "saybar" + (kind ? " " + kind : "");
+    msgEl.textContent = str;
+  }
+  function render() {
+    var topic = TOPICS[cur];
+    topicName.textContent = topic.name;
+    Array.prototype.forEach.call(topicsBox.children, function (b, i) {
+      b.setAttribute("aria-pressed", String(i === cur));
+    });
+    demoBtn.classList.toggle("hide", !topic.demo);
+    demoBtn.textContent = demoOn ? "사례 다시 보기" : "실험 보기";
+    revealBtn.textContent = shown ? "질문 다시 보기" : "까닭 보기";
+    if (demoOn && topic.demo === "wheel") demoWheel();
+    else if (demoOn && topic.demo === "manhole") demoManhole();
+    else drawTopic();
+    say(shown ? "why" : "ask", shown ? topic.why : topic.ask);
+  }
+
+  TOPICS.forEach(function (topic, i) {
+    var b = document.createElement("button");
+    b.className = "btn";
+    b.textContent = topic.name;
+    b.setAttribute("aria-pressed", String(i === 0));
+    b.addEventListener("click", function () { cur = i; shown = false; demoOn = false; render(); });
+    topicsBox.appendChild(b);
+  });
+  revealBtn.addEventListener("click", function () { shown = !shown; render(); });
+  demoBtn.addEventListener("click", function () { demoOn = !demoOn; render(); });
+  render();
+})();
+</script>
+</body>
+</html>
