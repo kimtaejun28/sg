@@ -177,7 +177,7 @@ svg.board{width:100%;height:100%}
     {
       name: "돌려도 딱 맞아요",
       ask: "맨홀 뚜껑과 냄비 뚜껑은 왜 동그랄까요?",
-      why: "원은 어느 쪽으로 재도 폭이 같아요. 그래서 아무렇게나 돌려서 덮어도 딱 맞고, 맨홀 뚜껑은 구멍 안으로 빠지지 않아요.",
+      why: "원은 어느 쪽으로 재도 폭이 같아요. 그래서 아무렇게나 돌려도 그대로 들어맞습니다. 네모는 조금만 돌려도 모서리가 걸려요.",
       demo: "manhole",
       items: [
         { name: "맨홀 뚜껑", art: [c(205, 90, 74, "#8C949B"), ring(205, 90, 58, "#6E7A85", 4),
@@ -360,57 +360,79 @@ svg.board{width:100%;height:100%}
     };
   };
 
-  /* 2 · 맨홀 뚜껑은 왜 빠지지 않을까 */
+  /* 2 · 돌려서 넣어 보기 — 원만 어느 각도에서나 들어간다 */
   DEMOS.manhole = function () {
     var L = group(0, 0), Rg = group(450, 0);
-    text(225, 62, "동그란 뚜껑", 34, "var(--brand-ink)", L);
-    text(225, 62, "네모난 뚜껑", 34, "var(--rose)", Rg);
-    node(rc(10, 300, 150, 40, "#8C949B", { rx: 6 }), L); node(rc(292, 300, 150, 40, "#8C949B", { rx: 6 }), L);
-    node(rc(10, 300, 140, 40, "#8C949B", { rx: 6 }), Rg); node(rc(302, 300, 140, 40, "#8C949B", { rx: 6 }), Rg);
-    node(rc(160, 300, 132, 150, "#2F3A44"), L); node(rc(150, 300, 152, 150, "#2F3A44"), Rg);
-    text(226, 372, "구멍 폭 132", 24, "#9AA6B0", L);
-    text(226, 372, "대각선 쪽 폭 152", 24, "#9AA6B0", Rg);
-    var lidL = node(c(0, 0, 69, "#9FAEB8", { stroke: "#6E7A85", "stroke-width": 6 }), L);
-    var lidR = node(rc(-67, -67, 134, 134, "#E8A49E", { stroke: "#C0483F", "stroke-width": 6, rx: 4 }), Rg);
-    var noteL = text(225, 470, "", 30, "var(--brand-ink)", L);
-    var noteR = text(225, 470, "", 30, "var(--rose)", Rg);
+    text(225, 56, "동그란 마개", 34, "var(--brand-ink)", L);
+    text(225, 56, "네모난 마개", 34, "var(--rose)", Rg);
+    [L, Rg].forEach(function (g) {
+      node(rc(10, 300, 149, 44, "#8C949B", { rx: 6 }), g);
+      node(rc(291, 300, 149, 44, "#8C949B", { rx: 6 }), g);
+      node(rc(159, 300, 132, 160, "#2F3A44"), g);
+      text(225, 380, "구멍 폭 132", 24, "#9AA6B0", g);
+    });
+    var plugL = document.createElementNS(NS, "g"); L.appendChild(plugL);
+    node(c(0, 0, 60, "#9FAEB8", { stroke: "#6E7A85", "stroke-width": 6 }), plugL);
+    node(rc(-9, -60, 18, 24, "#5C6975", { rx: 4 }), plugL);        /* 돌아가는 것이 보이도록 표시 */
+    var plugR = document.createElementNS(NS, "g"); Rg.appendChild(plugR);
+    node(rc(-59, -59, 118, 118, "#E8A49E", { stroke: "#C0483F", "stroke-width": 6, rx: 4 }), plugR);
+    node(rc(-9, -59, 18, 24, "#C0483F", { rx: 4 }), plugR);
+    var noteL = text(225, 476, "", 30, "var(--brand-ink)", L);
+    var noteR = text(225, 476, "", 30, "var(--rose)", Rg);
+    var stopMark = node(pt("M 190 252 L 260 322 M 260 252 L 190 322", "none",
+      { stroke: "var(--rose)", "stroke-width": 9, "stroke-linecap": "round", opacity: 0 }), Rg);
     return function (t) {
-      var p = Math.min(1, t / 3.4);
-      var tilt = Math.min(1, p / 0.35) * 45;
-      var drop = p < 0.35 ? 0 : Math.min(1, (p - 0.35) / 0.4);
-      lidL.setAttribute("transform", "translate(225," + (190 + drop * 112) + ") rotate(" + tilt + ")");
-      lidR.setAttribute("transform", "translate(225," + (190 + drop * 300) + ") rotate(" + tilt + ")");
-      noteL.textContent = drop > 0.6 ? "어느 쪽으로 재도 폭이 같아 걸려요" : "";
-      noteR.textContent = drop > 0.6 ? "구멍의 대각선이 더 길어서 쏙 빠져요" : "";
+      var turn = Math.min(1, t / 1.2) * 35;                          /* 먼저 돌린다 */
+      var down = t < 1.4 ? 0 : Math.min(1, (t - 1.4) / 1.8);
+      var yL = 170 + down * 270;                                     /* 원은 끝까지 내려간다 */
+      var yR = 170 + Math.min(down, 0.32) * 270;                     /* 네모는 옆이 걸려 멈춘다 */
+      if (down > 0.36) yR += Math.sin(t * 26) * 2.5;                 /* 걸린 채 덜컹거린다 */
+      plugL.setAttribute("transform", "translate(225," + yL + ") rotate(" + turn + ")");
+      plugR.setAttribute("transform", "translate(225," + yR + ") rotate(" + turn + ")");
+      stopMark.setAttribute("opacity", down > 0.45 ? 1 : 0);
+      noteL.textContent = down > 0.5 ? "돌려도 폭이 같아 쑥 들어가요" : "";
+      noteR.textContent = down > 0.5 ? "돌리면 모서리가 걸려 멈춰요" : "";
     };
   };
 
-  /* 3 · 물결은 같은 거리에 함께 닿는다 */
+  /* 3 · 같은 거리에 있는 것은 함께 반짝인다 */
   DEMOS.ripple = function () {
     var g = group(0, 0);
-    node(rc(40, 40, 820, 420, "#EAF4FA", { rx: 20 }), g);
-    text(450, 88, "가운데에 돌을 떨어뜨리면", 30, "#3E7FA8", g);
-    var CXr = 450, CYr = 270;
-    var leaves = [[110, -90], [110, 30], [110, 150], [110, 210], [180, -35], [180, 145], [60, 90]];
-    var rings = [node(ring(CXr, CYr, 0, "#57A8D8", 6), g), node(ring(CXr, CYr, 0, "#79BEE6", 5), g)];
-    var marks = leaves.map(function (L) {
-      var t = L[1] * Math.PI / 180;
-      var x = CXr + L[0] * Math.cos(t), y = CYr + L[0] * Math.sin(t);
-      node(ln(CXr, CYr, x, y, "#B7D6E8", 2), g);
-      return { x: x, y: y, d: L[0], el: node(el(x, y, 17, 11, "#7FB56A", { stroke: "#4C8A50", "stroke-width": 2 }), g) };
-    });
-    node(c(CXr, CYr, 12, "#3E7FA8"), g);
-    var note = text(450, 430, "", 30, "#2C6B92", g);
-    return function (t) {
-      var r = (t * 90) % 260;
-      rings[0].setAttribute("r", r);
-      rings[1].setAttribute("r", Math.max(0, r - 46));
-      marks.forEach(function (m) {
-        var hit = Math.abs(r - m.d) < 16;
-        m.el.setAttribute("ry", hit ? 5 : 11);
-        m.el.setAttribute("fill", hit ? "#F2C33C" : "#7FB56A");
+    node(rc(40, 30, 820, 440, "#EAF4FA", { rx: 20 }), g);
+    var CXr = 450, CYr = 244;
+    var GROUPS = [
+      { d: 62, color: "#E4574C", angles: [20, 140, 260] },
+      { d: 108, color: "#F2A03C", angles: [70, 190, 310] },
+      { d: 154, color: "#3FA167", angles: [0, 90, 180, 270] },
+      { d: 194, color: "#4C86D6", angles: [45, 135, 225, 315] }
+    ];
+    GROUPS.forEach(function (G) {
+      node(ring(CXr, CYr, G.d, G.color, 2.5, { opacity: 0.35, "stroke-dasharray": "7 9" }), g);
+      G.dots = G.angles.map(function (deg) {
+        var th = deg * Math.PI / 180;
+        return node(c(CXr + G.d * Math.cos(th), CYr + G.d * Math.sin(th), 13, G.color, { opacity: 0.45 }), g);
       });
-      note.textContent = t > 0.8 ? "같은 거리에 있는 잎은 언제나 함께 흔들려요" : "";
+    });
+    var wave = node(ring(CXr, CYr, 0, "#2C6B92", 7), g);
+    var wave2 = node(ring(CXr, CYr, 0, "#79BEE6", 5), g);
+    node(c(CXr, CYr, 13, "#2C6B92"), g);
+    var note = text(450, 462, "같은 색은 가운데에서 거리가 같아요", 30, "#2C6B92", g);
+    return function (t) {
+      var r = (t * 78) % 242;
+      wave.setAttribute("r", r);
+      wave2.setAttribute("r", Math.max(0, r - 40));
+      var flashing = "";
+      GROUPS.forEach(function (G) {
+        var hit = Math.abs(r - G.d) < 15;
+        if (hit) flashing = G.color;
+        G.dots.forEach(function (d) {
+          d.setAttribute("r", hit ? 21 : 13);
+          d.setAttribute("opacity", hit ? 1 : 0.45);
+        });
+      });
+      note.textContent = flashing ? "같은 색이 함께 반짝여요 — 가운데에서 거리가 같으니까요"
+        : "같은 색은 가운데에서 거리가 같아요";
+      note.setAttribute("fill", flashing || "#2C6B92");
     };
   };
 
