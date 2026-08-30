@@ -189,26 +189,27 @@ svg.board{width:100%;height:100%}
       ]
     },
     {
-      name: "고르게 퍼져요",
+      name: "사방으로 퍼져요",
       ask: "물에 돌을 던지면 왜 동그란 물결이 퍼질까요?",
-      why: "가운데에서 모든 방향으로 똑같이 퍼지면 저절로 원이 됩니다. 물결도, 물뿌리개의 물도, 우산이 막아 주는 자리도 모두 그래요.",
+      why: "가운데에서 모든 방향으로 같은 빠르기로 퍼지면, 같은 시간에 닿은 자리가 저절로 원이 됩니다. 그래서 퍼져 나가는 것은 동그란 모양이 돼요.",
       demo: "ripple",
       items: [
         { name: "물결", art: [ring(205, 95, 82, "#9BD3E8", 5), ring(205, 95, 60, "#79BEE6", 6), ring(205, 95, 38, "#57A8D8", 7), c(205, 95, 14, "#3E7FA8")] },
-        { name: "물뿌리개", art: [rc(196, 96, 18, 54, "#6E7A85", { rx: 4 }), c(205, 92, 14, "#5C6975"),
-            ring(205, 92, 44, "#79BEE6", 5, { "stroke-dasharray": "10 9" }), ring(205, 92, 70, "#9BD3E8", 5, { "stroke-dasharray": "10 9" })]
-            .concat(around(205, 92, 88, 8, function (x, y) { return c(x, y, 7, "#57A8D8"); })) },
-        { name: "우산", art: [pt("M 133 118 A 72 72 0 0 1 277 118 Z", RED),
-            pt("M 133 118 q 18 16 36 0 q 18 16 36 0 q 18 16 36 0 q 18 16 36 0", CREAM),
-            ln(205, 46, 205, 156, "#5C6975", 7), pt("M 205 156 q 0 16 -16 16", "none", { stroke: "#5C6975", "stroke-width": 7, "stroke-linecap": "round" })] },
-        { name: "피자", art: [c(205, 92, 74, "#E8B054"), c(205, 92, 62, "#F2C87A")]
-            .concat(spokes(205, 92, 62, 6, "#D89A3C", 4), around(205, 92, 38, 5, function (x, y) { return c(x, y, 9, RED); })) }
+        { name: "불꽃놀이", art: [c(205, 92, 10, "#F2C33C")]
+            .concat(around(205, 92, 78, 12, function (x, y, i) {
+              return ln(205 + (x - 205) * 0.25, 92 + (y - 92) * 0.25, x, y, [YELL, "#F2A03C", RED][i % 3], 6);
+            }), around(205, 92, 88, 12, function (x, y, i) { return c(x, y, 8, [YELL, "#F2A03C", RED][i % 3]); })) },
+        { name: "스프링클러가 적신 자리", art: [c(205, 96, 78, "#CFE7DA"), ring(205, 96, 78, "#7FB56A", 5, { "stroke-dasharray": "12 10" }),
+            rc(196, 96, 18, 46, "#6E7A85", { rx: 4 }), c(205, 92, 14, "#5C6975"),
+            ring(205, 92, 46, "#79BEE6", 5, { "stroke-dasharray": "10 9" })] },
+        { name: "물에 떨어뜨린 잉크", art: [c(205, 96, 84, "#EAF4FA", { stroke: "#B7D6E8", "stroke-width": 4 }),
+            c(205, 96, 58, "#BBD8EE"), c(205, 96, 36, "#7FA8D8"), c(205, 96, 16, "#3E63A8")] }
       ]
     },
     {
       name: "잘 돌아요",
       ask: "시계 바늘과 선풍기 날개는 왜 동그란 자리에서 돌까요?",
-      why: "가운데를 축으로 돌면 어느 쪽이든 거리가 같아 흔들리지 않아요. 축이 가운데를 벗어나면 덜덜 떨리게 됩니다.",
+      why: "가운데를 축으로 돌면 어느 쪽이든 거리가 같아 흔들리지 않아요. 돌리면서 만든 피자 반죽과 도자기가 동그래지는 것도 같은 까닭입니다.",
       demo: "axis",
       items: [
         { name: "시계", art: [c(205, 90, 74, "#FFFFFF"), ring(205, 90, 74, INK, 5)]
@@ -220,6 +221,10 @@ svg.board{width:100%;height:100%}
             pt("M 205 90 q -34 -44 6 -56 q 24 22 -6 56 z", "#8FD3CB"), c(205, 90, 14, "#5C6975")] },
         { name: "관람차", art: [pg("196,90 214,90 244,164 166,164", "#6E7A85"), ring(205, 86, 68, "#E7A23C", 8)]
             .concat(spokes(205, 86, 68, 8, "#F0C070", 4), around(205, 86, 68, 6, function (x, y, i) { return c(x, y, 13, [RED, BLUE, GREEN, YELL, "#9B7BD4", "#57A8D8"][i]); })) },
+        { name: "피자 반죽", art: [c(205, 92, 74, "#E8B054"), c(205, 92, 62, "#F2C87A"),
+            pt("M 205 30 a 62 62 0 0 1 0 124", "none", { stroke: "#D89A3C", "stroke-width": 5, "stroke-dasharray": "9 8" }),
+            c(205, 92, 10, "#D89A3C")]
+            .concat(around(205, 92, 38, 5, function (x, y) { return c(x, y, 9, RED); })) },
         { name: "도자기 물레", art: [c(205, 108, 76, "#B08A5E"), c(205, 108, 58, "#C89A6A"),
             el(205, 78, 34, 16, "#E0A96D"), pt("M 173 78 q 6 -34 32 -34 q 26 0 32 34", "none", { stroke: "#E0A96D", "stroke-width": 12 }),
             pt("M 118 132 a 88 88 0 0 0 24 24", "none", { stroke: "#8C6A4A", "stroke-width": 5, "stroke-dasharray": "8 7" })] }
@@ -290,12 +295,23 @@ svg.board{width:100%;height:100%}
   /* ── 사례 네 가지 보여 주기 ── */
   function drawTopic() {
     clear();
-    var cells = [[10, 20], [460, 20], [10, 262], [460, 262]];
-    TOPICS[cur].items.forEach(function (item, i) {
-      var g = group(cells[i][0], cells[i][1]);
-      node(rc(0, -6, 430, 232, "var(--paper)", { rx: 16 }), g);
-      item.art.forEach(function (spec) { node(spec, g); });
-      text(212, 212, item.name, 30, "var(--ink)", g);
+    var items = TOPICS[cur].items, n = items.length;
+    /* 사례 수가 몇 개든 알맞게 배치한다 */
+    var cols = n <= 2 ? n : (n <= 4 ? 2 : 3);
+    var rows = Math.ceil(n / cols);
+    var gap = 12, W = (880 - (cols - 1) * gap) / cols;
+    var H = rows === 1 ? 300 : 228, y0 = rows === 1 ? 100 : 18;
+    var scale = Math.min(1, (W - 16) / 430);
+    var artY = rows === 1 ? 40 : 6;
+    items.forEach(function (item, i) {
+      var g = group(10 + (i % cols) * (W + gap), y0 + Math.floor(i / cols) * (H + 16));
+      node(rc(0, -6, W, H, "var(--paper)", { rx: 16 }), g);
+      var inner = document.createElementNS(NS, "g");
+      inner.setAttribute("transform",
+        "translate(" + (W / 2 - 205 * scale) + "," + artY + ") scale(" + scale + ")");
+      g.appendChild(inner);
+      item.art.forEach(function (spec) { node(spec, inner); });
+      text(W / 2, H - 22, item.name, rows === 1 ? 32 : 28, "var(--ink)", g);
     });
   }
 
