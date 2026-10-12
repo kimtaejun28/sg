@@ -25,6 +25,7 @@ export default function TeacherPage({
   records,
   password,
   onLock,
+  onAddStudent,
   onEditStudent,
   onSetStudentActive,
   onDeleteRecord,
@@ -102,6 +103,7 @@ export default function TeacherPage({
       {tab === 'students' && (
         <StudentsTab
           students={students}
+          onAddStudent={onAddStudent}
           onEditStudent={onEditStudent}
           onSetActive={onSetStudentActive}
           showToast={showToast}

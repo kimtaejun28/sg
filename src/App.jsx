@@ -275,6 +275,7 @@ export default function App() {
           records={records}
           password={password}
           onLock={lock}
+          onAddStudent={() => setStudentModal({})}
           onEditStudent={(s) => setStudentModal(s)}
           onSetStudentActive={setStudentActive}
           onDeleteRecord={deleteRecord}

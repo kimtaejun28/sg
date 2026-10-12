@@ -1,8 +1,8 @@
 import { useState } from 'react'
-import { Pencil, RotateCcw, Trash2 } from 'lucide-react'
+import { Pencil, Plus, RotateCcw, Trash2 } from 'lucide-react'
 import ConfirmModal from '../ConfirmModal'
 
-export default function StudentsTab({ students, onEditStudent, onSetActive, showToast }) {
+export default function StudentsTab({ students, onAddStudent, onEditStudent, onSetActive, showToast }) {
   const [confirmTarget, setConfirmTarget] = useState(null)
 
   function handleConfirm() {
@@ -16,12 +16,35 @@ export default function StudentsTab({ students, onEditStudent, onSetActive, show
     showToast(`${student.name} 학생이 복원되었습니다`)
   }
 
+  const addButton = (
+    <button
+      type="button"
+      onClick={onAddStudent}
+      className="flex items-center justify-center gap-1.5 rounded-2xl bg-sky-500 px-4 py-2.5 text-sm font-bold text-white shadow-sm transition active:scale-95"
+    >
+      <Plus size={18} />
+      학생 추가
+    </button>
+  )
+
   if (students.length === 0) {
-    return <p className="text-center text-slate-400">등록된 학생이 없습니다.</p>
+    return (
+      <div className="flex min-h-[240px] flex-col items-center justify-center gap-4 rounded-3xl border-2 border-dashed border-slate-300">
+        <p className="text-slate-400">등록된 학생이 없습니다.</p>
+        {addButton}
+      </div>
+    )
   }
 
   return (
     <div className="space-y-3">
+      <div className="flex items-center justify-between">
+        <p className="text-sm text-slate-500">
+          전체 {students.length}명 · 활성 {students.filter((s) => s.active).length}명
+        </p>
+        {addButton}
+      </div>
+
       {students.map((s) => (
         <div
           key={s.id}

@@ -53,18 +53,37 @@ export default function BehaviorsTab({ behaviors, onAdd, onUpdate, onDelete, sho
         />
 
         <label className="mb-2 block text-sm font-semibold text-slate-600">색상</label>
-        <div className="mb-4 flex flex-wrap gap-2">
+        <div className="mb-3 grid grid-cols-6 gap-2 sm:grid-cols-12">
           {BEHAVIOR_COLOR_PRESETS.map((c) => (
             <button
               key={c}
               type="button"
               onClick={() => setForm((f) => ({ ...f, color: c }))}
               style={{ backgroundColor: c }}
-              className="flex h-9 w-9 items-center justify-center rounded-full shadow-sm transition active:scale-90"
+              aria-label={`색상 ${c}`}
+              className={`flex h-9 w-9 items-center justify-center rounded-full shadow-sm transition active:scale-90 ${
+                form.color === c ? 'ring-2 ring-slate-800 ring-offset-2' : ''
+              }`}
             >
               {form.color === c && <Check size={16} className="text-white" />}
             </button>
           ))}
+        </div>
+
+        {/* 목록에 없는 색이 필요할 때를 위해 직접 고르기도 열어 둔다 */}
+        <div className="mb-4 flex items-center gap-2">
+          <label className="flex cursor-pointer items-center gap-2 rounded-xl bg-slate-100 px-3 py-2 text-sm font-medium text-slate-600">
+            <input
+              type="color"
+              value={form.color}
+              onChange={(e) => setForm((f) => ({ ...f, color: e.target.value.toUpperCase() }))}
+              className="h-6 w-6 cursor-pointer rounded border-0 bg-transparent p-0"
+            />
+            직접 고르기
+          </label>
+          <span className="rounded-lg bg-slate-50 px-2 py-1 font-mono text-xs text-slate-400">
+            {form.color}
+          </span>
         </div>
 
         <label className="mb-4 flex items-center gap-2 text-sm font-semibold text-slate-600">
