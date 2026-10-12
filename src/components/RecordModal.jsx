@@ -1,6 +1,30 @@
 import { useEffect, useRef, useState } from 'react'
 import { PenLine, Star } from 'lucide-react'
 import Modal from './Modal'
+import { useLongPress } from '../hooks/useLongPress'
+
+// 짧게 누르면 바로 기록, 길게 누르면 상세 입력 화면으로 넘어간다
+function BehaviorButton({ behavior, isPriority, onQuickRecord, onOpenDetail }) {
+  const handlers = useLongPress({
+    onShortPress: () => onQuickRecord(behavior),
+    onLongPress: () => onOpenDetail(behavior),
+  })
+
+  return (
+    <button
+      type="button"
+      {...handlers}
+      style={{ backgroundColor: behavior.color, touchAction: 'manipulation' }}
+      className="relative flex select-none items-center justify-center gap-2 rounded-2xl px-4 py-6 text-lg font-bold text-white shadow-sm transition active:scale-95"
+    >
+      {isPriority && (
+        <Star size={14} fill="currentColor" className="absolute left-3 top-3 opacity-80" />
+      )}
+      {behavior.requiresDetail && <PenLine size={18} />}
+      <span>{behavior.name}</span>
+    </button>
+  )
+}
 
 export default function RecordModal({ student, behaviors, detailHistory, onSave, onClose }) {
   const [step, setStep] = useState(1)
@@ -16,11 +40,21 @@ export default function RecordModal({ student, behaviors, detailHistory, onSave,
     }
   }, [step])
 
-  function chooseBehavior(behavior) {
+  function openDetail(behavior) {
     setSelected(behavior)
     setDetail('')
     setError('')
     setStep(2)
+  }
+
+  // 짧게 누르면 상세 없이 즉시 저장한다.
+  // 다만 입력이 필수인 유형은 건너뛸 수 없으므로 상세 입력으로 보낸다.
+  function quickRecord(behavior) {
+    if (behavior.requiresDetail) {
+      openDetail(behavior)
+      return
+    }
+    onSave(behavior, '')
   }
 
   function handleModalClose() {
@@ -63,7 +97,10 @@ export default function RecordModal({ student, behaviors, detailHistory, onSave,
       {step === 1 && (
         <>
           <h3 className="mb-1 pr-6 text-2xl font-display text-slate-800">{student.name}</h3>
-          <p className="mb-5 text-sm text-slate-500">행동을 선택한 뒤 내용을 적어 저장하세요</p>
+          <p className="mb-5 text-sm text-slate-500">
+            한 번 누르면 <span className="font-semibold text-slate-700">바로 기록</span>, 꾹 누르면{' '}
+            <span className="font-semibold text-slate-700">자세히 적기</span>
+          </p>
           {visibleBehaviors.length === 0 ? (
             <p className="rounded-2xl bg-slate-50 px-4 py-8 text-center text-sm text-slate-400">
               사용할 수 있는 행동유형이 없습니다.
@@ -73,19 +110,13 @@ export default function RecordModal({ student, behaviors, detailHistory, onSave,
           ) : (
             <div className="grid grid-cols-2 gap-3">
               {visibleBehaviors.map((b) => (
-                <button
+                <BehaviorButton
                   key={b.id}
-                  type="button"
-                  onClick={() => chooseBehavior(b)}
-                  style={{ backgroundColor: b.color }}
-                  className="relative flex items-center justify-center gap-2 rounded-2xl px-4 py-6 text-lg font-bold text-white shadow-sm transition active:scale-95"
-                >
-                  {priorityIds.includes(b.id) && (
-                    <Star size={14} fill="currentColor" className="absolute left-3 top-3 opacity-80" />
-                  )}
-                  {b.requiresDetail && <PenLine size={18} />}
-                  <span>{b.name}</span>
-                </button>
+                  behavior={b}
+                  isPriority={priorityIds.includes(b.id)}
+                  onQuickRecord={quickRecord}
+                  onOpenDetail={openDetail}
+                />
               ))}
             </div>
           )}

@@ -20,13 +20,21 @@ import PasswordModal from './components/PasswordModal'
 import Toast from './components/Toast'
 
 export default function App() {
-  const [toast, setToast] = useState('')
+  const [toast, setToast] = useState(null) // { message, onUndo } | null
   const toastTimer = useRef(null)
 
-  function showToast(message) {
-    setToast(message)
+  // onUndo가 있으면 되돌릴 시간을 주기 위해 조금 더 오래 띄운다
+  function showToast(message, onUndo = null) {
+    setToast({ message, onUndo })
     if (toastTimer.current) clearTimeout(toastTimer.current)
-    toastTimer.current = setTimeout(() => setToast(''), 1800)
+    toastTimer.current = setTimeout(() => setToast(null), onUndo ? 4000 : 1800)
+  }
+
+  function handleUndo() {
+    const action = toast?.onUndo
+    setToast(null)
+    if (toastTimer.current) clearTimeout(toastTimer.current)
+    if (action) action()
   }
 
   function onSaveError() {
@@ -140,7 +148,11 @@ export default function App() {
 
     rememberDetail(behavior.id, detail)
 
-    showToast(`${recordStudent.name} · ${behavior.name} 기록됨 (${period})`)
+    // 짧게 눌러 바로 저장되는 흐름이라 잘못 누른 기록을 되돌릴 수단이 필요하다
+    showToast(`${recordStudent.name} · ${behavior.name} 기록됨 (${period})`, () => {
+      setRecords((prev) => prev.filter((r) => r.id !== record.id))
+      showToast('기록을 취소했습니다')
+    })
     setRecordStudent(null)
   }
 
@@ -309,7 +321,7 @@ export default function App() {
         <PasswordModal onSubmit={handlePasswordSubmit} onClose={() => setShowPasswordModal(false)} />
       )}
 
-      <Toast message={toast} />
+      <Toast toast={toast} onUndo={handleUndo} />
     </>
   )
 }
