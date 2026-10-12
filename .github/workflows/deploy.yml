@@ -30,10 +30,9 @@ jobs:
 
       - run: npm run build
 
+      # 저장소 Settings > Pages 에서 Source를 "GitHub Actions"로 한 번 켜 두어야 한다.
+      # 워크플로 토큰으로는 Pages 사이트를 생성할 권한이 없다.
       - uses: actions/configure-pages@v5
-        with:
-          # 저장소 설정에서 Pages를 켜지 않았어도 워크플로가 직접 켜도록 한다
-          enablement: true
 
       - uses: actions/upload-pages-artifact@v3
         with:
