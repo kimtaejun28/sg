@@ -53,7 +53,7 @@ export default function BehaviorsTab({ behaviors, onAdd, onUpdate, onDelete, sho
         />
 
         <label className="mb-2 block text-sm font-semibold text-slate-600">색상</label>
-        <div className="mb-3 grid grid-cols-6 gap-2 sm:grid-cols-12">
+        <div className="mb-3 flex flex-wrap gap-2">
           {BEHAVIOR_COLOR_PRESETS.map((c) => (
             <button
               key={c}
@@ -61,9 +61,7 @@ export default function BehaviorsTab({ behaviors, onAdd, onUpdate, onDelete, sho
               onClick={() => setForm((f) => ({ ...f, color: c }))}
               style={{ backgroundColor: c }}
               aria-label={`색상 ${c}`}
-              className={`flex h-9 w-9 items-center justify-center rounded-full shadow-sm transition active:scale-90 ${
-                form.color === c ? 'ring-2 ring-slate-800 ring-offset-2' : ''
-              }`}
+              className="flex h-9 w-9 items-center justify-center rounded-full shadow-sm transition active:scale-90"
             >
               {form.color === c && <Check size={16} className="text-white" />}
             </button>
